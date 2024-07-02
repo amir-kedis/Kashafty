@@ -13,7 +13,6 @@ import { Line } from "react-chartjs-2";
 import { useGetSectorsQuery } from "../../redux/slices/sectorApiSlice";
 import CustomSelect from "../common/CustomSelect";
 import { useGetGraphDataQuery } from "../../redux/slices/statsApiSlice";
-import InfoBox from "../common/InfoBox";
 
 ChartJS.register(
   CategoryScale,
@@ -22,7 +21,7 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export default function AbsenceInfo() {
@@ -53,11 +52,8 @@ export default function AbsenceInfo() {
     sectors = sectors?.body;
   }
 
-  const {
-    data: absenceData,
-    isFetching: isFetchingAbsenceData,
-    isSuccess: isSuccessAbsenceData,
-  } = useGetGraphDataQuery(chosenSectorFullName);
+  const { data: absenceData, isSuccess: isSuccessAbsenceData } =
+    useGetGraphDataQuery(chosenSectorFullName);
 
   let dataArr = [];
 
@@ -101,11 +97,11 @@ export default function AbsenceInfo() {
           isFetchingSectors
             ? [{ sectorId: "", fullName: "جاري التحميل" }]
             : !sectors
-            ? [{ sectorId: "", fullName: "لا يوجد قطاعات" }]
-            : sectors?.map((sector) => ({
-                ...sector,
-                fullName: sector.baseName + " - " + sector.suffixName,
-              }))
+              ? [{ sectorId: "", fullName: "لا يوجد قطاعات" }]
+              : sectors?.map((sector) => ({
+                  ...sector,
+                  fullName: sector.baseName + " - " + sector.suffixName,
+                }))
         }
         displayMember={"fullName"}
         valueMember={"fullName"}
