@@ -2,12 +2,11 @@ import db from "../database/db.js";
 
 const getCurrentTermMiddleware = async (req, res, next) => {
   try {
-    const result = await db.query(`CALL "getCurrentTerm"($1, $2, $3, $4);`, [
-      null,
-      null,
-      null,
-      null,
-    ]);
+    const result = await db.query(
+      `SELECT * FROM "Term" WHERE "termNumber" IN 
+            (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term");`,
+    );
+
     if (!result.rows.length) {
       req.currentTerm = {
         termNumber: 0,
@@ -30,10 +29,6 @@ const getCurrentWeekMiddleware = async (req, res, next) => {
             (SELECT COALESCE(MAX("weekNumber"), 0) FROM "Week" WHERE "termNumber" IN
             (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term"));`,
     );
-    // const result = await db.query(
-    //     `CALL "getCurrentWeek"($1, $2, $3, $4);`,
-    //     [null, null, null, null]
-    // )
     if (!result.rows.length) {
       req.currentWeek = {
         termNumber: 0,
