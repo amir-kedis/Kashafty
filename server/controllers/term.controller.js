@@ -44,7 +44,7 @@ const termController = {
       const result = await db.query(
         `INSERT INTO "Term" VALUES ($1, $2, $3, $4)
                 RETURNING *;`,
-        [termNumber, termName, startDate, endDate]
+        [termNumber, termName, startDate, endDate],
       );
 
       const newTerm = result.rows[0];
@@ -80,7 +80,7 @@ const termController = {
       let result = await db.query(
         `SELECT * FROM "Term"
                 ORDER BY "termNumber" DESC
-                LIMIT 1 OFFSET 1;`
+                LIMIT 1 OFFSET 1;`,
       );
       if (!result.rowCount) {
         req.previousTerm = {
@@ -102,7 +102,7 @@ const termController = {
                 WHERE "termNumber" IN
                 (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term")
                 RETURNING *;`,
-        [termName, startDate, endDate]
+        [termName, startDate, endDate],
       );
       if (!result.rows.length) {
         return res.status(400).json({
@@ -154,7 +154,7 @@ const termController = {
       const result = await db.query(
         `SELECT * FROM "Week"
                 WHERE "termNumber" = $1;`,
-        [req.currentTerm.termNumber]
+        [req.currentTerm.termNumber],
       );
 
       res.status(200).json({
@@ -184,7 +184,7 @@ const termController = {
         `UPDATE "Week" SET "cancelled" = true
                 WHERE "termNumber" = $1 AND "weekNumber" = $2
                 RETURNING *;`,
-        [req.currentWeek.termNumber, req.currentWeek.weekNumber]
+        [req.currentWeek.termNumber, req.currentWeek.weekNumber],
       );
 
       const updatedWeek = result.rows[0];
@@ -217,7 +217,7 @@ const termController = {
       }
 
       const remainingWeeks = Math.ceil(
-        (req.currentTerm.endDate - currentDate) / (1000 * 60 * 60 * 24 * 7)
+        (req.currentTerm.endDate - currentDate) / (1000 * 60 * 60 * 24 * 7),
       );
 
       res.status(200).json({

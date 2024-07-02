@@ -6,6 +6,7 @@ import alertRouter from "./routes/alert.route.js";
 import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 import path from "path";
 import cookieParser from "cookie-parser";
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -29,11 +30,11 @@ if (process.env.NODE_ENV === "production") {
   const __dirname = path.resolve();
   app.use(express.static(path.join(__dirname, "/client/dist")));
 
-  app.get("*", (req, res) =>
+  app.get("*", (_, res) =>
     res.sendFile(path.resolve(__dirname, "client", "dist", "index.html")),
   );
 } else {
-  app.get("/", (req, res) => {
+  app.get("/", (_, res) => {
     res.send("API is running");
   });
 }
