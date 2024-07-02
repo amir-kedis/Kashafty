@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.1 (Ubuntu 16.1-1.pgdg22.04+1)
--- Dumped by pg_dump version 16.1 (Ubuntu 16.1-1.pgdg22.04+1)
+-- Dumped from database version 16.3 (Debian 16.3-1.pgdg120+1)
+-- Dumped by pg_dump version 16.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,26 +16,12 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP DATABASE IF EXISTS kashafty;
 --
--- Name: scoutsManagementSystem; Type: DATABASE; Schema: -; Owner: -
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
 
-CREATE DATABASE kashafty WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'C';
+CREATE SCHEMA public;
 
-
-\connect kashafty
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
 
 --
 -- Name: ActivityType; Type: TYPE; Schema: public; Owner: -
@@ -120,6 +106,17 @@ CREATE TYPE public."FinanceItemType" AS ENUM (
 CREATE TYPE public."Gender" AS ENUM (
     'male',
     'female'
+);
+
+
+--
+-- Name: NotificationStatus; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."NotificationStatus" AS ENUM (
+    'read',
+    'unread',
+    'archived'
 );
 
 
@@ -245,8 +242,8 @@ CREATE TABLE public."Captain" (
     "middleName" character varying(255) NOT NULL,
     "lastName" character varying(255) NOT NULL,
     "phoneNumber" character varying(255) NOT NULL,
-    "email" character varying(255) NOT NULL,
-    "password" character varying(255) NOT NULL,
+    email character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
     "rSectorBaseName" character varying(255),
     "rSectorSuffixName" character varying(255),
     gender public."Gender" NOT NULL,
@@ -323,7 +320,7 @@ ALTER SEQUENCE public."FinanceItem_itemId_seq" OWNED BY public."FinanceItem"."it
 --
 
 CREATE TABLE public."Notification" (
-    "NotificationId" integer NOT NULL,
+    "notificationId" integer NOT NULL,
     "timestamp" timestamp(0) without time zone NOT NULL,
     message character varying(255) NOT NULL,
     "contentType" public."NotificationType" NOT NULL
@@ -347,7 +344,7 @@ CREATE SEQUENCE public."Notification_NotificationId_seq"
 -- Name: Notification_NotificationId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public."Notification_NotificationId_seq" OWNED BY public."Notification"."NotificationId";
+ALTER SEQUENCE public."Notification_NotificationId_seq" OWNED BY public."Notification"."notificationId";
 
 
 --
@@ -367,7 +364,8 @@ CREATE TABLE public."OtherItem" (
 
 CREATE TABLE public."RecieveNotification" (
     "notificationId" integer NOT NULL,
-    "captainId" integer NOT NULL
+    "captainId" integer NOT NULL,
+    status character varying(255)
 );
 
 
@@ -660,10 +658,10 @@ ALTER TABLE ONLY public."FinanceItem" ALTER COLUMN "itemId" SET DEFAULT nextval(
 
 
 --
--- Name: Notification NotificationId; Type: DEFAULT; Schema: public; Owner: -
+-- Name: Notification notificationId; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."Notification" ALTER COLUMN "NotificationId" SET DEFAULT nextval('public."Notification_NotificationId_seq"'::regclass);
+ALTER TABLE ONLY public."Notification" ALTER COLUMN "notificationId" SET DEFAULT nextval('public."Notification_NotificationId_seq"'::regclass);
 
 
 --
@@ -706,6 +704,235 @@ ALTER TABLE ONLY public."Subscription" ALTER COLUMN "itemId" SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public."Term" ALTER COLUMN "termNumber" SET DEFAULT nextval('public."Term_termNumber_seq"'::regclass);
+
+
+--
+-- Data for Name: Activity; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: ActivityAttendance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: ActivityGuidance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: ActivitySectorParticipation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: Aspect; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: Captain; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Captain" ("captainId", "firstName", "middleName", "lastName", "phoneNumber", email, password, "rSectorBaseName", "rSectorSuffixName", gender, type) VALUES (1, 'amir', 'anwar', 'test', '01009648948', 'amir.kedis@gmail.com', '$2a$10$AHnSM3cmrKJIgB9dLLEJu./aEC7AxQG7xYF7MPqxEY5dYF7UM4Pz.', NULL, NULL, 'male', 'general');
+INSERT INTO public."Captain" ("captainId", "firstName", "middleName", "lastName", "phoneNumber", email, password, "rSectorBaseName", "rSectorSuffixName", gender, type) VALUES (3, 'amir', 'anwar', 'test', '01221461992', 'regular@gmail.com', '$2a$10$Vp2arlrpJypUg2TpDmZcie76qiWtKnWgMhLDxWKRVfTp7OV7aDnaq', NULL, NULL, 'male', 'general');
+INSERT INTO public."Captain" ("captainId", "firstName", "middleName", "lastName", "phoneNumber", email, password, "rSectorBaseName", "rSectorSuffixName", gender, type) VALUES (4, 'aa', 'bb', 'cc', '01000000000', 'reg@gmail.com', '$2a$10$m.QeJBub9gcfsdySPF74fOPY5bHH/Bl9OnOPHd3VJF9/svDfYHiO2', 'test', 'test', 'male', 'regular');
+
+
+--
+-- Data for Name: CaptainAttendance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: FinanceItem; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."FinanceItem" ("itemId", value, "timestamp", type) VALUES (1, 0, '2024-07-02 12:24:51', 'income');
+INSERT INTO public."FinanceItem" ("itemId", value, "timestamp", type) VALUES (2, 1000, '2024-07-02 13:04:00', 'income');
+
+
+--
+-- Data for Name: Notification; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Notification" ("notificationId", "timestamp", message, "contentType") VALUES (1, '2024-07-02 07:17:49', 'testr', 'other');
+INSERT INTO public."Notification" ("notificationId", "timestamp", message, "contentType") VALUES (2, '2024-07-02 07:18:15', 'asdfsdf', 'other');
+INSERT INTO public."Notification" ("notificationId", "timestamp", message, "contentType") VALUES (3, '2024-07-02 11:54:25', 'test', 'other');
+INSERT INTO public."Notification" ("notificationId", "timestamp", message, "contentType") VALUES (4, '2024-07-02 12:47:44', 'test', 'other');
+INSERT INTO public."Notification" ("notificationId", "timestamp", message, "contentType") VALUES (5, '2024-07-02 12:51:54', 'test', 'other');
+
+
+--
+-- Data for Name: OtherItem; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."OtherItem" (description, "itemId", "generalCaptainId") VALUES ('12', 2, 3);
+
+
+--
+-- Data for Name: RecieveNotification; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."RecieveNotification" ("notificationId", "captainId", status) VALUES (5, 1, 'unread');
+INSERT INTO public."RecieveNotification" ("notificationId", "captainId", status) VALUES (5, 3, 'unread');
+INSERT INTO public."RecieveNotification" ("notificationId", "captainId", status) VALUES (5, 4, 'unread');
+
+
+--
+-- Data for Name: Report; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: Scout; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Scout" ("scoutId", "firstName", "middleName", "lastName", expelled, "sectorBaseName", "sectorSuffixName", gender) VALUES (2, 'test', 'test', 'tests', false, 'test', 'test', NULL);
+
+
+--
+-- Data for Name: ScoutAttendance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."ScoutAttendance" ("scoutId", "weekNumber", "termNumber", "attendanceStatus") VALUES (2, 1, 1, 'attended');
+
+
+--
+-- Data for Name: ScoutProfile; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: ScoutScore; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: Sector; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Sector" ("baseName", "suffixName", "unitCaptainId") VALUES ('test', 'test', NULL);
+
+
+--
+-- Data for Name: Session; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: SessionSectorParticipation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+
+
+--
+-- Data for Name: Subscription; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Subscription" ("itemId", "sectorBaseName", "sectorSuffixName", "weekNumber", "termNumber") VALUES (1, 'test', 'test', 1, 1);
+
+
+--
+-- Data for Name: Term; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Term" ("termNumber", "termName", "startDate", "endDate") VALUES (1, 'test', '2024-07-02', '2024-08-10');
+
+
+--
+-- Data for Name: Week; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+INSERT INTO public."Week" ("weekNumber", cancelled, "startDate", "termNumber") VALUES (1, false, '2024-01-07', 1);
+
+
+--
+-- Name: Activity_activityId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Activity_activityId_seq"', 1, false);
+
+
+--
+-- Name: Aspect_aspectId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Aspect_aspectId_seq"', 1, false);
+
+
+--
+-- Name: Captain_captainId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Captain_captainId_seq"', 4, true);
+
+
+--
+-- Name: FinanceItem_itemId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."FinanceItem_itemId_seq"', 2, true);
+
+
+--
+-- Name: Notification_NotificationId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Notification_NotificationId_seq"', 5, true);
+
+
+--
+-- Name: Report_captainId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Report_captainId_seq"', 1, false);
+
+
+--
+-- Name: Report_reportId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Report_reportId_seq"', 1, false);
+
+
+--
+-- Name: Scout_scoutId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Scout_scoutId_seq"', 2, true);
+
+
+--
+-- Name: Session_sessionId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Session_sessionId_seq"', 1, false);
+
+
+--
+-- Name: Subscription_itemId_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Subscription_itemId_seq"', 1, false);
+
+
+--
+-- Name: Term_termNumber_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public."Term_termNumber_seq"', 1, false);
 
 
 --
@@ -777,7 +1004,7 @@ ALTER TABLE ONLY public."FinanceItem"
 --
 
 ALTER TABLE ONLY public."Notification"
-    ADD CONSTRAINT "Notification_pkey" PRIMARY KEY ("NotificationId");
+    ADD CONSTRAINT "Notification_pkey" PRIMARY KEY ("notificationId");
 
 
 --
@@ -1041,7 +1268,7 @@ ALTER TABLE ONLY public."RecieveNotification"
 --
 
 ALTER TABLE ONLY public."RecieveNotification"
-    ADD CONSTRAINT "recNot_notification_FK" FOREIGN KEY ("notificationId") REFERENCES public."Notification"("NotificationId") ON UPDATE RESTRICT ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT "recNot_notification_FK" FOREIGN KEY ("notificationId") REFERENCES public."Notification"("notificationId") ON UPDATE RESTRICT ON DELETE CASCADE NOT VALID;
 
 
 --
@@ -1151,3 +1378,4 @@ ALTER TABLE ONLY public."Week"
 --
 -- PostgreSQL database dump complete
 --
+
