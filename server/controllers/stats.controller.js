@@ -1,8 +1,5 @@
 import db from "../database/db.js";
-import {
-  computeAbsenceRate,
-  computeAttendanceRate,
-} from "../utils/computeAbsenceRate.js";
+import { computeAttendanceRate } from "../utils/computeAbsenceRate.js";
 
 const statsController = {
   // @desc    Get absence rate for all scouts
@@ -62,17 +59,23 @@ const statsController = {
       }
 
       const result = await db.query(
-        `CALL "getScoutsInUnitAbsenceRate"($1, $2, $3, $4, $5);`,
-        [
-          req.currentWeek.termNumber,
-          req.currentWeek.weekNumber,
-          Number(unitCaptainId),
-          null,
-          null,
-        ],
+        `SELECT 
+                COUNT(*) FILTER (WHERE "attendanceStatus" = 'absent') AS absence_count,
+                COUNT(*) FILTER (WHERE "attendanceStatus" = 'attended') AS attendance_count 
+                FROM "ScoutAttendance" AS SA, "Scout" AS SC, "Sector" AS SE, "Week" AS W
+                WHERE
+                SA."weekNumber" = W."weekNumber" AND
+                SA."termNumber" = W."termNumber" AND
+                SA."scoutId" = SC."scoutId" AND
+                SC."sectorBaseName" = SE."baseName" AND
+                SC."sectorSuffixName" = SE."suffixName" AND
+                W."cancelled" = false AND
+                SA."termNumber" = $1 AND
+                SE."unitCaptainId" = $2;`,
+        [req.currentWeek.termNumber, unitCaptainId],
       );
 
-      const absenceRate = computeAbsenceRate(result.rows[0]);
+      const absenceRate = computeAttendanceRate(result.rows[0]);
       if (absenceRate == null) {
         return res.status(400).json({
           error: "There are no attendance records for this unit",
@@ -105,17 +108,21 @@ const statsController = {
       }
 
       const result = await db.query(
-        `CALL "getScoutsInSectorAbsenceRate"($1, $2, $3, $4, $5, $6);`,
-        [
-          req.currentWeek.termNumber,
-          req.currentWeek.weekNumber,
-          sectorBaseName,
-          sectorSuffixName,
-          null,
-          null,
-        ],
+        `SELECT 
+                COUNT(*) FILTER (WHERE "attendanceStatus" = 'absent') AS absence_count,
+                COUNT(*) FILTER (WHERE "attendanceStatus" = 'attended') AS attendance_count 
+                FROM "ScoutAttendance" AS SA, "Scout" AS SC, "Week" AS W
+                WHERE
+                SA."weekNumber" = W."weekNumber" AND
+                SA."termNumber" = W."termNumber" AND
+                SA."scoutId" = SC."scoutId" AND
+                SC."sectorBaseName" = $1 AND
+                SC."sectorSuffixName" = $2 AND
+                W."cancelled" = false AND
+                SA."termNumber" = $3;`,
+        [sectorBaseName, sectorSuffixName, req.currentWeek.termNumber],
       );
-      const absenceRate = computeAbsenceRate(result.rows[0]);
+      const absenceRate = computeAttendanceRate(result.rows[0]);
       if (absenceRate == null) {
         return res.status(400).json({
           error: "There are no attendance records for this sector",
@@ -150,7 +157,7 @@ const statsController = {
           `CALL "getAllScoutsAbsenceRate"($1, $2, $3, $4);`,
           [req.currentWeek.termNumber, i, null, null],
         );
-        const absenceRate = computeAbsenceRate(result.rows[0]);
+        const absenceRate = computeAttendanceRate(result.rows[0]);
         ans.push({ weekNumber: i, absenceRate: absenceRate });
       }
 
@@ -184,7 +191,7 @@ const statsController = {
           `CALL "getScoutsInUnitAbsenceRate"($1, $2, $3, $4, $5);`,
           [req.currentWeek.termNumber, i, Number(unitCaptainId), null, null],
         );
-        const absenceRate = computeAbsenceRate(result.rows[0]);
+        const absenceRate = computeAttendanceRate(result.rows[0]);
         ans.push({ weekNumber: i, absenceRate: absenceRate });
       }
 
@@ -225,7 +232,7 @@ const statsController = {
             null,
           ],
         );
-        const absenceRate = computeAbsenceRate(result.rows[0]);
+        const absenceRate = computeAttendanceRate(result.rows[0]);
         ans.push({ weekNumber: i, absenceRate: absenceRate });
       }
 
@@ -255,17 +262,21 @@ const statsController = {
       }
 
       const result = await db.query(
-        `CALL "getScoutAbsenceRate"($1, $2, $3, $4, $5);`,
-        [
-          req.currentWeek.termNumber,
-          req.currentWeek.weekNumber,
-          scoutId,
-          null,
-          null,
-        ],
+        `SELECT 
+                COUNT(*) FILTER (WHERE "attendanceStatus" = 'absent') AS absence_count,
+                COUNT(*) FILTER (WHERE "attendanceStatus" = 'attended') AS attendance_count 
+                FROM "ScoutAttendance" AS SA, "Scout" AS SC, "Week" AS W
+                WHERE
+                SA."weekNumber" = W."weekNumber" AND
+                SA."termNumber" = W."termNumber" AND
+                SA."scoutId" = SC."scoutId" AND
+                SC."scoutId" = $1 AND
+                W."cancelled" = false AND
+                SA."termNumber" = $2;`,
+        [scoutId, req.currentTerm.termNumber],
       );
 
-      const absenceRate = computeAbsenceRate(result.rows[0]);
+      const absenceRate = computeAttendanceRate(result.rows[0]);
       if (absenceRate == null) {
         return res.status(400).json({
           error: "There are no attendance records for this scout",
