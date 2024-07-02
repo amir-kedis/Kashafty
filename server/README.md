@@ -1,24 +1,14 @@
-# Server side
+# Server
 
-## Technologies
+## broken endpoint
 
-- JavaScript
-- NodeJs
-- Express
-
-## Installation
-
-```bash
-cd server
-npm install
-```
-
-## Usage
-
-```bash
-node app
-```
-
-## Endpoints
-
-- TBD
+- /term/remaining
+- /stats/Scouts
+- /finance/
+- /term
+- /term/week
+- /finance/subscriptions/all
+- /stats/scouts/
+- /scouts/graph
+- /alert/\*
+- anything that cass `CALL on it.
