@@ -1,240 +1,246 @@
-import db from '../database/db.js'
+import db from "../database/db.js";
 
 const financeController = {
-    // @desc    Get a budget
-    // @route   GET /api/finance/budget
-    // @access  Private
-    getBudget: async (req, res) => {
-        try {
-            // get income
-            let result = await db.query(`CALL "getIncome"($1);`, [null])
-            const { income } = result.rows[0]
+  // @desc    Get a budget
+  // @route   GET /api/finance/budget
+  // @access  Private
+  getBudget: async (_, res) => {
+    try {
+      // get income
+      let result = await db.query(
+        `SELECT COALESCE(SUM(value), 0) AS sum FROM "FinanceItem"
+                WHERE "type" = 'income';`,
+      );
+      const income = result.rows[0].sum;
 
-            // get expense
-            result = await db.query(`CALL "getExpense"($1);`, [null])
-            const { expense } = result.rows[0]
+      // get expense
+      result = await db.query(
+        `SELECT COALESCE(SUM("value"), 0) AS sum FROM "FinanceItem"
+                WHERE "type" = 'expense';`,
+      );
+      const expense = result.rows[0].sum;
 
-            const budget = income - expense
-            res.status(200).json({
-                message: 'Get budget successfully',
-                body: budget,
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while getting the budget',
-            })
-        }
-    },
+      const budget = income - expense;
+      res.status(200).json({
+        message: "Get budget successfully",
+        body: budget,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while getting the budget",
+      });
+    }
+  },
 
-    // @desc    Get income
-    // @route   GET /api/finance/income
-    // @access  Private
-    getIncome: async (req, res) => {
-        try {
-            const result = await db.query(
-                `SELECT * FROM "FinanceItem" AS F, "OtherItem" AS O
-                WHERE F."itemId" = O."itemId" AND F."type" = 'income';`
-            )
+  // @desc    Get income
+  // @route   GET /api/finance/income
+  // @access  Private
+  getIncome: async (_, res) => {
+    try {
+      const result = await db.query(
+        `SELECT * FROM "FinanceItem" AS F, "OtherItem" AS O
+                WHERE F."itemId" = O."itemId" AND F."type" = 'income';`,
+      );
 
-            const subscriptionIncome = await db.query(
-                `SELECT * FROM "FinanceItem" AS F , "Subscription" AS S
-                WHERE F."itemId" = S."itemId";`
-            )
-            const income = [...subscriptionIncome.rows, ...result.rows]
+      const subscriptionIncome = await db.query(
+        `SELECT * FROM "FinanceItem" AS F , "Subscription" AS S
+                WHERE F."itemId" = S."itemId";`,
+      );
+      const income = [...subscriptionIncome.rows, ...result.rows];
 
-            res.status(200).json({
-                message: 'Get income successfully',
-                body: income,
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while getting the income',
-            })
-        }
-    },
+      res.status(200).json({
+        message: "Get income successfully",
+        body: income,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while getting the income",
+      });
+    }
+  },
 
-    // @desc    Get expense
-    // @route   GET /api/finance/expense
-    // @access  Private
-    getExpense: async (req, res) => {
-        try {
-            const result = await db.query(
-                `SELECT * FROM "FinanceItem" AS F , "OtherItem" AS O
-                WHERE F."itemId"=O."itemId" AND "type" = 'expense';`
-            )
-            const expense = result.rows
+  // @desc    Get expense
+  // @route   GET /api/finance/expense
+  // @access  Private
+  getExpense: async (_, res) => {
+    try {
+      const result = await db.query(
+        `SELECT * FROM "FinanceItem" AS F , "OtherItem" AS O
+                WHERE F."itemId"=O."itemId" AND "type" = 'expense';`,
+      );
+      const expense = result.rows;
 
-            res.status(200).json({
-                message: 'Get expense successfully',
-                body: expense,
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while getting the expense',
-            })
-        }
-    },
+      res.status(200).json({
+        message: "Get expense successfully",
+        body: expense,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while getting the expense",
+      });
+    }
+  },
 
-    // @desc    Add a subscription
-    // @route   POST /api/finance/subscription
-    // @access  Private
-    addSubscription: async (req, res) => {
-        try {
-            const {
-                value,
-                sectorBaseName,
-                sectorSuffixName,
-                termNumber,
-                weekNumber,
-            } = req.body
+  // @desc    Add a subscription
+  // @route   POST /api/finance/subscription
+  // @access  Private
+  addSubscription: async (req, res) => {
+    try {
+      const {
+        value,
+        sectorBaseName,
+        sectorSuffixName,
+        termNumber,
+        weekNumber,
+      } = req.body;
 
-            let result = await db.query(
-                `SELECT "itemId" AS id
+      let result = await db.query(
+        `SELECT "itemId" AS id
                 FROM "Subscription"
                 WHERE "sectorBaseName" = $1 AND "sectorSuffixName" = $2 AND "termNumber" = $3 AND "weekNumber" = $4;`,
-                [sectorBaseName, sectorSuffixName, termNumber, weekNumber]
-            )
+        [sectorBaseName, sectorSuffixName, termNumber, weekNumber],
+      );
 
-            if (!result.rowCount) {
-                result = await db.query(
-                    `INSERT INTO "FinanceItem" ("value", "timestamp", "type")
+      if (!result.rowCount) {
+        result = await db.query(
+          `INSERT INTO "FinanceItem" ("value", "timestamp", "type")
                     VALUES ($1, NOW(), 'income') RETURNING *;`,
-                    [value]
-                )
-            } else {
-                result = await db.query(
-                    `UPDATE "FinanceItem"
+          [value],
+        );
+      } else {
+        result = await db.query(
+          `UPDATE "FinanceItem"
                     SET "value"=$1, "timestamp"=NOW()
                     WHERE "itemId"=$2 RETURNING *;`,
-                    [value, result.rows[0].id]
-                )
-            }
+          [value, result.rows[0].id],
+        );
+      }
 
-            const financeItem = result.rows[0]
+      const financeItem = result.rows[0];
 
-            result = await db.query(
-                `INSERT INTO "Subscription" ("itemId", "sectorBaseName", "sectorSuffixName", "weekNumber", "termNumber")
+      result = await db.query(
+        `INSERT INTO "Subscription" ("itemId", "sectorBaseName", "sectorSuffixName", "weekNumber", "termNumber")
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT ("itemId") DO UPDATE
                 SET "sectorBaseName" = $2, "sectorSuffixName" = $3, "weekNumber" = $4, "termNumber" = $5
                 RETURNING *;`,
-                [
-                    financeItem.itemId,
-                    sectorBaseName,
-                    sectorSuffixName,
-                    weekNumber,
-                    termNumber,
-                ]
-            )
+        [
+          financeItem.itemId,
+          sectorBaseName,
+          sectorSuffixName,
+          weekNumber,
+          termNumber,
+        ],
+      );
 
-            const subscription = result.rows[0]
+      const subscription = result.rows[0];
 
-            res.status(200).json({
-                message: 'Add subscription successfully',
-                body: { financeItem: financeItem, subscription: subscription },
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while adding subscription',
-            })
-        }
-    },
+      res.status(200).json({
+        message: "Add subscription successfully",
+        body: { financeItem: financeItem, subscription: subscription },
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while adding subscription",
+      });
+    }
+  },
 
-    // @desc    Get a subscription
-    // @route   GET /api/finance/subscription
-    // @access  Private
-    getSubscription: async (req, res) => {
-        try {
-            const { sectorBaseName, sectorSuffixName, weekNumber, termNumber } =
-                req.query
+  // @desc    Get a subscription
+  // @route   GET /api/finance/subscription
+  // @access  Private
+  getSubscription: async (req, res) => {
+    try {
+      const { sectorBaseName, sectorSuffixName, weekNumber, termNumber } =
+        req.query;
 
-            const result = await db.query(
-                `SELECT F."value"
+      const result = await db.query(
+        `SELECT F."value"
                 FROM "Subscription" AS S, "FinanceItem" AS F
                 WHERE S."itemId" = F."itemId" AND
                 "sectorBaseName" = $1 AND "sectorSuffixName" = $2 AND
                 "weekNumber" = $3 AND "termNumber" = $4;`,
-                [sectorBaseName, sectorSuffixName, weekNumber, termNumber]
-            )
-            const subscription = result.rows[0].value
+        [sectorBaseName, sectorSuffixName, weekNumber, termNumber],
+      );
+      const subscription = result.rows[0].value;
 
-            res.status(200).json({
-                message: 'Get subscription successfully',
-                body: subscription,
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while getting the subscription',
-            })
-        }
-    },
+      res.status(200).json({
+        message: "Get subscription successfully",
+        body: subscription,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while getting the subscription",
+      });
+    }
+  },
 
-    // @desc    Get all subscriptions of current week
-    // @route   GET /api/finance/subscription/all
-    // @access  Private
-    getAllSubscriptionsOfCurrentWeek: async (req, res) => {
-        try {
-            const result = await db.query(
-                `SELECT COALESCE(SUM(F."value"), 0) AS sum
+  // @desc    Get all subscriptions of current week
+  // @route   GET /api/finance/subscription/all
+  // @access  Private
+  getAllSubscriptionsOfCurrentWeek: async (req, res) => {
+    try {
+      const result = await db.query(
+        `SELECT COALESCE(SUM(F."value"), 0) AS sum
                 FROM "Subscription" AS S, "FinanceItem" AS F
                 WHERE S."itemId" = F."itemId" AND
                 S."termNumber" = $1 AND
                 S."weekNumber" = $2;`,
-                [req.currentWeek.termNumber, req.currentWeek.weekNumber]
-            )
-            const subscription = result.rows[0].sum
+        [req.currentWeek.termNumber, req.currentWeek.weekNumber],
+      );
+      const subscription = result.rows[0].sum;
 
-            res.status(200).json({
-                message: 'Get subscription successfully',
-                body: subscription,
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while getting the subscription',
-            })
-        }
-    },
+      res.status(200).json({
+        message: "Get subscription successfully",
+        body: subscription,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while getting the subscription",
+      });
+    }
+  },
 
-    // @desc    Add an other item
-    // @route   POST /api/finance/otherItem
-    // @access  Private
-    addOtherItem: async (req, res) => {
-        try {
-            const { value, type, description } = req.body
+  // @desc    Add an other item
+  // @route   POST /api/finance/otherItem
+  // @access  Private
+  addOtherItem: async (req, res) => {
+    try {
+      const { value, type, description } = req.body;
 
-            let result = await db.query(
-                `INSERT INTO "FinanceItem" ("value", "timestamp", "type")
+      let result = await db.query(
+        `INSERT INTO "FinanceItem" ("value", "timestamp", "type")
                 VALUES ($1, NOW(), $2) RETURNING *;`,
-                [value, type]
-            )
+        [value, type],
+      );
 
-            const financeItem = result.rows[0]
+      const financeItem = result.rows[0];
 
-            result = await db.query(
-                `INSERT INTO "OtherItem" ("description", "itemId", "generalCaptainId")
+      result = await db.query(
+        `INSERT INTO "OtherItem" ("description", "itemId", "generalCaptainId")
                 VALUES ($1, $2, $3) RETURNING *;`,
-                [description, financeItem.itemId, req.captain.captainId]
-            )
+        [description, financeItem.itemId, req.captain.captainId],
+      );
 
-            const otherItem = result.rows[0]
+      const otherItem = result.rows[0];
 
-            res.status(200).json({
-                message: 'Add other item successfully',
-                body: { financeItem: financeItem, otherItem: otherItem },
-            })
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({
-                error: 'An error occurred while adding other item',
-            })
-        }
-    },
-}
+      res.status(200).json({
+        message: "Add other item successfully",
+        body: { financeItem: financeItem, otherItem: otherItem },
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        error: "An error occurred while adding other item",
+      });
+    }
+  },
+};
 
-export default financeController
+export default financeController;
