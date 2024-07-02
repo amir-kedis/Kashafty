@@ -34,19 +34,19 @@ export default function InfoSection() {
             isFetchingBudget
               ? "جاري التحميل"
               : !budget
-              ? "لا يوجد بيانات"
-              : budget?.body + " جنيه"
+                ? "لا يوجد بيانات"
+                : budget?.body + " جنيه"
           }
           color="purple"
         />
         <InfoBox
-          title="متوسط نسبة الغياب"
+          title="متوسط نسبة الحضور"
           value={
             isFetchingAbsence
               ? "جاري التحميل"
               : !absenceRate
-              ? "لا يوجد بيانات"
-              : Math.round(absenceRate?.body * 100) + "%"
+                ? "لا يوجد بيانات"
+                : Math.round(absenceRate?.body * 100) + "%"
           }
           color="dark"
         />
@@ -56,8 +56,8 @@ export default function InfoSection() {
             isFetchingScoutsCount
               ? "جاري التحميل"
               : !scouts
-              ? "لا يوجد بيانات"
-              : scouts?.body?.length
+                ? "لا يوجد بيانات"
+                : scouts?.body?.length
           }
           color="dark"
         />
@@ -67,8 +67,8 @@ export default function InfoSection() {
             isFetching
               ? "جاري التحميل"
               : !captainCount
-              ? "لا يوجد بيانات"
-              : captainCount
+                ? "لا يوجد بيانات"
+                : captainCount
           }
           color="dark"
         />
@@ -92,8 +92,8 @@ export default function InfoSection() {
             isFetchingAbsence
               ? "جاري التحميل"
               : !absenceRate
-              ? "لا يوجد بيانات"
-              : absenceRate?.body?.absenceRate + "%"
+                ? "لا يوجد بيانات"
+                : absenceRate?.body?.absenceRate + "%"
           }
           color="dark"
         />
@@ -103,8 +103,8 @@ export default function InfoSection() {
             isFetchingScoutsCount
               ? "جاري التحميل"
               : !scouts
-              ? "لا يوجد بيانات"
-              : scouts?.body?.length
+                ? "لا يوجد بيانات"
+                : scouts?.body?.length
           }
           color="dark"
         />
@@ -131,8 +131,8 @@ export default function InfoSection() {
             isFetchingAbsence
               ? "جاري التحميل"
               : !absenceRate
-              ? "لا يوجد بيانات"
-              : absenceRate?.body?.absenceRate + "%"
+                ? "لا يوجد بيانات"
+                : absenceRate?.body?.absenceRate + "%"
           }
           color="dark"
           className="span-2-cols"
@@ -143,8 +143,8 @@ export default function InfoSection() {
             isFetching
               ? "جاري التحميل"
               : !captainCount
-              ? "لا يوجد بيانات"
-              : captainCount
+                ? "لا يوجد بيانات"
+                : captainCount
           }
           color="dark"
         />
@@ -154,8 +154,8 @@ export default function InfoSection() {
             isFetchingScoutsCount
               ? "جاري التحميل"
               : !scouts
-              ? "لا يوجد بيانات"
-              : scouts?.body?.length
+                ? "لا يوجد بيانات"
+                : scouts?.body?.length
           }
           color="dark"
         />
