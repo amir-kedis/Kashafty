@@ -17,14 +17,25 @@ services:
     ports:
       - 8080:8080
 
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: amir.kedis@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+
   web:
     build: .
     ports:
       - 3001:3001
     environment:
+      # - DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<database>
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres?sslmode=disable
     depends_on:
       - db
+      - pgadmin
     # TODO: remove or refactor for production
     # those are used just for hot reolad and
     # node modules caching
