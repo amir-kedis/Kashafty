@@ -14,6 +14,7 @@ model Activity {
   termNumber                  Int
   day                         Days
   type                        ActivityType
+  name                        String                        @db.VarChar(255)
   Week                        Week                          @relation(fields: [weekNumber, termNumber], references: [weekNumber, termNumber], onUpdate: Restrict, map: "activity_weeknumber_FK")
   ActivityAttendance          ActivityAttendance[]
   ActivityGuidance            ActivityGuidance[]
