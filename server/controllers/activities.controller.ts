@@ -1,21 +1,23 @@
 import { Request, Response } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
 
 const activitiesController = {
   insertActivity: async (req: Request, res: Response): Promise<any> => {
     try {
       const { name, place, weekNumber, termNumber, day, type } = req.body;
 
-      const result = await db.query(
-        `
-          INSERT INTO "Activity" ( "name" , "place", "weekNumber", "termNumber", "day", "type")
-          VALUES ($1, $2, $3, $4, $5 , $6)
-          RETURNING *
-        `,
-        [name, place, weekNumber, termNumber, day, type],
-      );
+      const activity = await prisma.activity.create({
+        data: {
+          name,
+          place,
+          weekNumber: parseInt(weekNumber),
+          termNumber: parseInt(termNumber),
+          day,
+          type,
+        },
+      });
 
-      if (result.rowCount === 0) {
+      if (!activity) {
         return res.status(400).json({
           error: "Insertion failed",
         });
@@ -23,8 +25,7 @@ const activitiesController = {
 
       return res.status(200).json({
         message: "Successful insertion",
-        body: result.rows,
-        count: result.rowCount,
+        body: activity,
       });
     } catch (error) {
       console.log(error);
@@ -37,15 +38,12 @@ const activitiesController = {
 
   getAllActivities: async (_: Request, res: Response): Promise<any> => {
     try {
-      const result = await db.query(`
-        SELECT *
-        FROM "Activity"
-      `);
+      const activities = await prisma.activity.findMany();
 
       return res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: activities,
+        count: activities.length,
       });
     } catch (error) {
       console.log(error);
