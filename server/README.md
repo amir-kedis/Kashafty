@@ -1,14 +1,17 @@
 # Server
 
-## broken endpoint
+## Controllors to migrate
 
-- /term/remaining
-- /stats/Scouts
-- /finance/
-- /term
-- /term/week
-- /finance/subscriptions/all
-- /stats/scouts/
-- /scouts/graph
-- /alert/\*
-- anything that cass `CALL on it.
+- [ ] auth controllor
+- [ ] captain controllor
+- [ ] captainAttendance controllor
+- [ ] finance controllor
+- [ ] scout controllor
+- [ ] scoutAttendance controllor
+- [ ] sector controllor
+- [ ] stats controllor
+- [ ] term controllor
+
+## Needs Major system refactoring
+
+- [ ] alert system
