@@ -19,11 +19,12 @@ export default function EditPassword() {
     try {
       const res = await changePassword({ oldPassword, newPassword }).unwrap();
       if (res.status === 400 || res.status === 500)
-        throw new Error("Something went wrong while changing the password");
+        toast.error("حدث خطأ أثناء تغيير كلمة السر");
       toast.success("تم تغيير كلمة السر بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء تغيير كلمة السر");
-      toast.error(JSON.stringify(err));
+      toast.error(err.data.error);
+      console.info(err);
     }
   };
 

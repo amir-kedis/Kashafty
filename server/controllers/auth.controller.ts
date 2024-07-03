@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import db from "../database/db";
+import { prisma } from "../database/db";
 import generateToken from "../utils/generateToken";
+import { Gender } from "@prisma/client";
 
 interface SignupRequestBody {
   firstName: string;
@@ -37,14 +38,10 @@ const authController = {
         gender,
       } = req.body;
 
-      // Check if email already exists
-      const captain = await db.query(
-        `SELECT "email", "password"
-         FROM "Captain" 
-         WHERE "email" = $1;`,
-        [email.toLowerCase()],
-      );
-      if (captain.rows.length) {
+      const captain = await prisma.captain.findUnique({
+        where: { email: email.toLowerCase() },
+      });
+      if (captain) {
         return res.status(400).json({ error: "Email is taken!!" });
       }
 
@@ -52,24 +49,21 @@ const authController = {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create a new Captain
-      const result = await db.query(
-        `INSERT INTO "Captain"("firstName", "middleName", "lastName", "phoneNumber", "email", "password", "gender", "type")
-         VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`,
-        [
+      const newCaptain = await prisma.captain.create({
+        data: {
           firstName,
           middleName,
           lastName,
           phoneNumber,
-          email.toLowerCase(),
-          hashedPassword,
-          gender,
-          "regular",
-        ],
-      );
-      const newCaptain = result.rows[0];
+          email: email.toLowerCase(),
+          password: hashedPassword,
+          gender: gender == "male" ? Gender.male : Gender.female,
+          type: "regular",
+        },
+      });
 
       // Generate a JWT token
-      generateToken(res, newCaptain.captainId);
+      generateToken(res, newCaptain.captainId.toString());
 
       // Send the response
       res.status(201).json({
@@ -94,21 +88,14 @@ const authController = {
     try {
       const { email, password } = req.body;
 
-      // Check if email already exists
-      const result = await db.query(
-        `SELECT *
-         FROM "Captain" 
-         WHERE "email" = $1;`,
-        [email.toLowerCase()],
-      );
-      if (!result.rows.length) {
+      const captain = await prisma.captain.findUnique({
+        where: { email: email.toLowerCase() },
+      });
+      if (!captain) {
         return res.status(400).json({
           error: "Invalid email",
         });
       }
-
-      // Get Captain's data
-      const captain = result.rows[0];
 
       // Check if the password is correct
       const isCorrect = await bcrypt.compare(password, captain.password);
@@ -119,7 +106,7 @@ const authController = {
       }
 
       // Generate a JWT token
-      generateToken(res, captain.captainId);
+      generateToken(res, captain.captainId.toString());
 
       // Send the response
       res.status(200).json({
@@ -159,18 +146,15 @@ const authController = {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
       // Update the password
-      const result = await db.query(
-        `UPDATE "Captain"
-         SET "password" = $1
-         WHERE "captainId" = $2
-         RETURNING *;`,
-        [hashedPassword, req.captain?.captainId],
-      );
+      const result = await prisma.captain.update({
+        where: { captainId: req.captain?.captainId },
+        data: { password: hashedPassword },
+      });
 
       // Send the response
       res.status(200).json({
         message: "Password updated successfully",
-        body: result.rows[0],
+        body: result,
       });
     } catch (error) {
       console.log(error);
