@@ -1,4 +1,5 @@
 import pg, { Pool } from "pg";
+import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 import newWeekScheduler from "./scheduler";
 
@@ -15,6 +16,8 @@ console.log({
 });
 
 let db: Pool;
+
+const prisma = new PrismaClient();
 
 if (process.env.DB === "online") {
   console.log("trying to connect to online db");
@@ -37,4 +40,5 @@ if (process.env.DB === "online") {
 
 newWeekScheduler.start();
 
+export { prisma };
 export default db;
