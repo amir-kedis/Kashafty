@@ -40,11 +40,14 @@ services:
     # those are used just for hot reolad and
     # node modules caching
     volumes:
-      - source: ./server
-        target: /kashafty/server
-        type: bind
-      - source: ./client
-        target: /kashafty/client
+      # - source: ./server
+      #   target: /kashafty/server
+      #   type: bind
+      # - source: ./client
+      #   target: /kashafty/client
+      #   type: bind
+      - source: .
+        target: /kashafty
         type: bind
       - source: ./node_modules
         target: /kashafty/node_modules
