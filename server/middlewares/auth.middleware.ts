@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import db from "../database/db";
+import { prisma } from "../database/db";
 
 // Define the Captain type
 interface Captain {
@@ -44,17 +44,18 @@ const authMiddleware = async (
     const id = decoded.id;
 
     // Get captain's data
-    const result = await db.query(
-      `SELECT * FROM "Captain" WHERE "captainId" = $1;`,
-      [id],
-    );
+    const captain = await prisma.captain.findUnique({
+      where: {
+        captainId: parseInt(id),
+      },
+    });
 
-    if (!result.rows.length) {
+    if (!captain) {
       return res.status(404).json({ error: "Captain not found" });
     }
 
     // Attach captain to the request object
-    req.captain = result.rows[0];
+    req.captain = captain;
 
     next();
   } catch (err: any) {
