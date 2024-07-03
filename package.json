@@ -9,11 +9,13 @@
     "client": "npm run dev --prefix client",
     "build-client": "npm run build --prefix client",
     "build-server": "tsc",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "ts-node ./prisma/seed.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@prisma/client": "^5.16.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
