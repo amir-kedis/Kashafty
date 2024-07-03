@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
 
 declare global {
   namespace Express {
@@ -22,16 +22,17 @@ const getCurrentTermMiddleware = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await db.query(
-      `SELECT * FROM "Term" WHERE "termNumber" IN 
-            (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term");`,
-    );
+    const currentTerm = await prisma.term.findFirst({
+      orderBy: {
+        termNumber: "desc",
+      },
+    });
 
-    if (!result.rows.length) {
+    if (!currentTerm) {
       req.currentTerm = {
         termNumber: 0,
       };
-    } else req.currentTerm = result.rows[0];
+    } else req.currentTerm = currentTerm;
 
     next();
   } catch (error) {
@@ -48,18 +49,27 @@ const getCurrentWeekMiddleware = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await db.query(
-      `SELECT * FROM "Week" WHERE "weekNumber" IN
-            (SELECT COALESCE(MAX("weekNumber"), 0) FROM "Week" WHERE "termNumber" IN
-            (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term"));`,
-    );
+    const currentTerm = await prisma.term.findFirst({
+      orderBy: {
+        termNumber: "desc",
+      },
+    });
 
-    if (!result.rows.length) {
+    const currentWeek = await prisma.week.findFirst({
+      where: {
+        termNumber: currentTerm?.termNumber,
+      },
+      orderBy: {
+        weekNumber: "desc",
+      },
+    });
+
+    if (!currentWeek) {
       req.currentWeek = {
         termNumber: 0,
         weekNumber: 0,
       };
-    } else req.currentWeek = result.rows[0];
+    } else req.currentWeek = currentWeek;
 
     next();
   } catch (error) {
