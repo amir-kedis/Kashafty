@@ -45,3 +45,5 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server started listening at port ${PORT}`);
 });
+
+export default app;
