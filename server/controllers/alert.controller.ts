@@ -172,17 +172,6 @@ const alertController = {
     try {
       const { status, contentType } = req.query;
 
-      // const result = await db.query(
-      //   `SELECT N.*, R."status"
-      //    FROM "Notification" AS N, "RecieveNotification" AS R
-      //    WHERE N."notificationId" = R."notificationId" AND
-      //          R."captainId" = $1
-      //    ORDER BY N."timestamp" DESC;`,
-      //   [req.captain?.captainId],
-      // );
-      //
-      // let alerts = result.rows;
-
       let alerts = await prisma.notification.findMany({
         where: {
           RecieveNotification: {
@@ -194,6 +183,7 @@ const alertController = {
         orderBy: {
           timestamp: "desc",
         },
+        take: 3,
         select: {
           notificationId: true,
           message: true,
