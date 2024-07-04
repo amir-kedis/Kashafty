@@ -167,6 +167,7 @@ async function main() {
     await prisma.activity.deleteMany();
     await prisma.scoutAttendance.deleteMany();
     await prisma.captainAttendance.deleteMany();
+    await prisma.subscription.deleteMany();
     await prisma.week.deleteMany();
     await prisma.term.deleteMany();
   } catch (e) {
@@ -212,6 +213,14 @@ async function main() {
       email: {
         in: fixedCaptains.map((captain) => captain.email),
       },
+    },
+  });
+
+  // TODO: delete later
+  await prisma.captain.updateMany({
+    data: {
+      rSectorBaseName: fixedSectors[0].baseName,
+      rSectorSuffixName: fixedSectors[0].suffixName,
     },
   });
 
