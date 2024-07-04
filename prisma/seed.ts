@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import { CaptainType, Gender, PrismaClient } from "@prisma/client";
+import { CaptainType, Gender, PrismaClient, Term } from "@prisma/client";
 import { fakerAR, fakerEN } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
@@ -42,6 +42,13 @@ const fixedSectors = [
 ];
 
 const scoutsCount = 30;
+
+const fixedTerm: Term = {
+  startDate: new Date(new Date().getDate() - 8 * 7),
+  endDate: new Date(new Date().getDate() + 8 * 7),
+  termName: "هلم نبني",
+  termNumber: 1,
+};
 
 async function main() {
   console.log("Start seeding ...");
@@ -149,6 +156,26 @@ async function main() {
   }
 
   console.log("Finished seeding scouts ...");
+
+  console.log("Seeding terms ...");
+
+  try {
+    await prisma.activity.deleteMany();
+    await prisma.scoutAttendance.deleteMany();
+    await prisma.captainAttendance.deleteMany();
+    await prisma.week.deleteMany();
+    await prisma.term.deleteMany();
+  } catch (e) {
+    console.warn(e);
+  }
+
+  const term = await prisma.term.create({
+    data: fixedTerm,
+  });
+
+  console.log(term);
+
+  console.log("Finished seeding terms ...");
 
   console.log("Finished seeding ...");
 }
