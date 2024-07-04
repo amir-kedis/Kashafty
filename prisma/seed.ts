@@ -42,10 +42,14 @@ const fixedSectors = [
 ];
 
 const scoutsCount = 30;
-
+const today = new Date();
+let startDate: any = new Date(today).setDate(today.getDate() - 7 * 8);
+startDate = new Date(startDate);
+let endDate: any = new Date(today).setDate(today.getDate() + 7 * 8);
+endDate = new Date(endDate);
 const fixedTerm: Term = {
-  startDate: new Date(new Date().getDate() - 8 * 7),
-  endDate: new Date(new Date().getDate() + 8 * 7),
+  startDate,
+  endDate,
   termName: "هلم نبني",
   termNumber: 1,
 };
@@ -176,6 +180,26 @@ async function main() {
   console.log(term);
 
   console.log("Finished seeding terms ...");
+
+  console.log("Seeding weeks ...");
+
+  await prisma.week.deleteMany();
+
+  for (let i = 0; i < 8; i++) {
+    const weekDate = new Date(fixedTerm.startDate).setDate(
+      fixedTerm.startDate.getDate() + i * 7,
+    );
+    const week = await prisma.week.create({
+      data: {
+        weekNumber: i + 1,
+        termNumber: fixedTerm.termNumber,
+        startDate: new Date(weekDate),
+      },
+    });
+    console.log(week);
+  }
+
+  console.log("Finished seeding weeks ...");
 
   console.log("Finished seeding ...");
 }
