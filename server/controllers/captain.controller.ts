@@ -101,6 +101,7 @@ const captainController = {
       // );
 
       // TODO: this needs testing
+      console.log(unitCaptainId);
       const result = await prisma.captain.findMany({
         where: {
           Sector_Sector_unitCaptainIdToCaptain: {
@@ -119,6 +120,8 @@ const captainController = {
         body: result,
         count: result.length,
       });
+
+      console.log(result);
     } catch (error) {
       console.error(error);
       res.status(500).json({

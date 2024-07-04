@@ -19,4 +19,3 @@ captainAttendanceRouter.get(
 );
 
 export default captainAttendanceRouter;
-
