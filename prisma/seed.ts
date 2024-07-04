@@ -201,6 +201,22 @@ async function main() {
 
   console.log("Finished seeding weeks ...");
 
+  console.log("Seeding connections between captains and sectors ...");
+
+  await prisma.captain.updateMany({
+    data: {
+      rSectorBaseName: fixedSectors[0].baseName,
+      rSectorSuffixName: fixedSectors[0].suffixName,
+    },
+    where: {
+      email: {
+        in: fixedCaptains.map((captain) => captain.email),
+      },
+    },
+  });
+
+  console.log("Finished seeding connections between captains and sectors ...");
+
   console.log("Finished seeding ...");
 }
 
