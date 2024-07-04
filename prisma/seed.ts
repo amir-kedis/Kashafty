@@ -15,14 +15,17 @@ const fixedCaptains = [
   {
     type: CaptainType.regular,
     email: "regular@gmail.com",
+    firstName: "عادي",
   },
   {
     type: CaptainType.unit,
     email: "unit@gmail.com",
+    firstName: "وحدة",
   },
   {
     type: CaptainType.general,
     email: "general@gmail.com",
+    firstName: "عام",
   },
 ];
 
@@ -37,6 +40,8 @@ const fixedSectors = [
     suffixName: "ج",
   },
 ];
+
+const scoutsCount = 30;
 
 async function main() {
   console.log("Start seeding ...");
@@ -69,7 +74,7 @@ async function main() {
   for (const captain of fixedCaptains) {
     const newCaptain = await prisma.captain.create({
       data: {
-        firstName: fakerAR.person.firstName(),
+        firstName: captain.firstName,
         middleName: fakerAR.person.firstName(),
         lastName: fakerAR.person.lastName(),
         password: unifiedPassword,
@@ -89,18 +94,22 @@ async function main() {
   await prisma.sector.deleteMany();
 
   for (let i = 0; i < numberOfSectors; i++) {
-    const sector = await prisma.sector.create({
-      data: {
-        baseName: fakerAR.helpers.arrayElement([
-          "أشبال",
-          "جوالة",
-          "فريق",
-          "مرشدات",
-        ]),
-        suffixName: fakerAR.helpers.arrayElement(["أ", "ب", "ج", "د", "ه"]),
-      },
-    });
-    console.log(sector);
+    try {
+      const sector = await prisma.sector.create({
+        data: {
+          baseName: fakerAR.helpers.arrayElement([
+            "أشبال",
+            "جوالة",
+            "فريق",
+            "مرشدات",
+          ]),
+          suffixName: fakerAR.helpers.arrayElement(["أ", "ب", "ج", "د", "ه"]),
+        },
+      });
+      console.log(sector);
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   for (const sector of fixedSectors) {
@@ -118,6 +127,28 @@ async function main() {
   }
 
   console.log("Finished seeding sectors ...");
+
+  console.log("Seeding scouts ...");
+
+  await prisma.scout.deleteMany();
+
+  for (let i = 0; i < scoutsCount; i++) {
+    const gender = fakerEN.helpers.arrayElement([Gender.male, Gender.female]);
+
+    const scout = await prisma.scout.create({
+      data: {
+        firstName: fakerAR.person.firstName(gender),
+        middleName: fakerAR.person.firstName(),
+        lastName: fakerAR.person.lastName(),
+        gender,
+        sectorBaseName: fixedSectors[0].baseName,
+        sectorSuffixName: fixedSectors[0].suffixName,
+      },
+    });
+    console.log({ scoutName: scout.firstName });
+  }
+
+  console.log("Finished seeding scouts ...");
 
   console.log("Finished seeding ...");
 }
