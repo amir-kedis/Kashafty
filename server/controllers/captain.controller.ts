@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
+import { Captain } from "@prisma/client";
 
 interface GetAllCaptainsRequest extends Request {
   query: {
@@ -34,27 +35,16 @@ const captainController = {
     try {
       const { type } = req.query;
 
-      let result;
-      if (type === "regular") {
-        result = await db.query(
-          `SELECT * FROM "Captain" WHERE "type" = 'regular'`,
-        );
-      } else if (type === "unit") {
-        result = await db.query(
-          `SELECT * FROM "Captain" WHERE "type" = 'unit'`,
-        );
-      } else if (type === "general") {
-        result = await db.query(
-          `SELECT * FROM "Captain" WHERE "type" = 'general'`,
-        );
-      } else {
-        result = await db.query(`SELECT * FROM "Captain"`);
+      let result: Captain[] = await prisma.captain.findMany();
+
+      if (type) {
+        result = result.filter((captain) => captain.type === type);
       }
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.error(error);
@@ -72,17 +62,17 @@ const captainController = {
     try {
       const { baseName, suffixName } = req.query;
 
-      const result = await db.query(
-        `SELECT *
-         FROM "Captain"
-         WHERE "rSectorBaseName" = $1 AND "rSectorSuffixName" = $2`,
-        [baseName, suffixName],
-      );
+      const result = await prisma.captain.findMany({
+        where: {
+          rSectorBaseName: baseName,
+          rSectorSuffixName: suffixName,
+        },
+      });
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.error(error);
@@ -100,19 +90,34 @@ const captainController = {
     try {
       const { unitCaptainId } = req.params;
 
-      const result = await db.query(
-        `SELECT C.*
-         FROM "Captain" AS C, "Sector" AS S
-         WHERE S."unitCaptainId" = $1 AND
-               C."rSectorBaseName" = S."baseName" AND
-               C."rSectorSuffixName" = S."suffixName";`,
-        [unitCaptainId],
-      );
+      // NOTE: left as a ref remove after the testing the below todo
+      // const result = await db.query(
+      //   `SELECT C.*
+      //    FROM "Captain" AS C, "Sector" AS S
+      //    WHERE S."unitCaptainId" = $1 AND
+      //          C."rSectorBaseName" = S."baseName" AND
+      //          C."rSectorSuffixName" = S."suffixName";`,
+      //   [unitCaptainId],
+      // );
+
+      // TODO: this needs testing
+      const result = await prisma.captain.findMany({
+        where: {
+          Sector_Sector_unitCaptainIdToCaptain: {
+            some: {
+              unitCaptainId: parseInt(unitCaptainId),
+            },
+          },
+        },
+        include: {
+          Sector_Sector_unitCaptainIdToCaptain: true,
+        },
+      });
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.error(error);
@@ -127,14 +132,13 @@ const captainController = {
     try {
       const { captainId } = req.params;
 
-      const result = await db.query(
-        `SELECT *
-         FROM "Captain"
-         WHERE "captainId" = $1`,
-        [captainId],
-      );
+      const result = await prisma.captain.findUnique({
+        where: {
+          captainId: parseInt(captainId),
+        },
+      });
 
-      if (result.rows.length === 0) {
+      if (!result) {
         return res.status(404).json({
           error: "Captain not found!",
         });
@@ -142,7 +146,7 @@ const captainController = {
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows[0],
+        body: result,
       });
     } catch (error) {
       console.error(error);
@@ -173,17 +177,18 @@ const captainController = {
         });
       }
 
-      const result = await db.query(
-        `UPDATE "Captain"
-         SET "type" = $2
-         WHERE "captainId" = $1
-         RETURNING *;`,
-        [captainId, type],
-      );
+      const result = await prisma.captain.update({
+        where: {
+          captainId: parseInt(captainId),
+        },
+        data: {
+          type,
+        },
+      });
 
       res.status(200).json({
         message: "Successful update",
-        body: result.rows,
+        body: result,
       });
     } catch (error) {
       console.error(error);
