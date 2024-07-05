@@ -1,6 +1,5 @@
 import express, { Application } from "express";
 import cors from "cors";
-import db from "./database/db";
 import apiRouter from "./routes/api.route";
 import alertRouter from "./routes/alert.route";
 import { notFound, errorHandler } from "./middlewares/error.middleware";
@@ -9,14 +8,6 @@ import cookieParser from "cookie-parser";
 
 const app: Application = express();
 const PORT: Number = process.env.PORT ? parseInt(process.env.PORT) : 5000;
-
-db.connect()
-  .then(() => {
-    console.log("Database is connected");
-  })
-  .catch((err: Error) => {
-    if (err) return console.error(err);
-  });
 
 app.use(cors());
 app.use(cookieParser());

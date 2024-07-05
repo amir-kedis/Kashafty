@@ -14,3 +14,4 @@ const prisma = new PrismaClient();
 newWeekScheduler.start();
 
 export { prisma };
+export default prisma;

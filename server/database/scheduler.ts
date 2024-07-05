@@ -1,12 +1,6 @@
 import cron from "node-cron";
-import db from "./db";
-
-// Define the Term and Scout types
-interface Term {
-  termNumber: number;
-  startDate: Date;
-  endDate: Date;
-}
+import prisma from "./db";
+import { Captain } from "@prisma/client";
 
 interface Scout {
   scoutId: number;
@@ -15,23 +9,17 @@ interface Scout {
   [key: string]: any; // Add other fields as needed
 }
 
-interface Notification {
-  notificationId: number;
-}
-
 // Run the cron job every Sunday at 00:00
 const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
   try {
     // Get the current date
     const currentDate = new Date();
 
-    // Get the current term
-    let result: any = await db.query<Term>(
-      `SELECT * FROM "Term" WHERE "termNumber" IN 
-            (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term");`,
-    );
-
-    const currentTerm = result.rows[0];
+    const currentTerm = await prisma.term.findFirst({
+      orderBy: {
+        termNumber: "desc",
+      },
+    });
 
     if (
       !currentTerm ||
@@ -43,23 +31,32 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
     const currentTermNumber = currentTerm.termNumber;
 
     // Get the current week
-    result = await db.query<{ max: number }>(
-      `SELECT COALESCE(MAX("weekNumber"), 0) AS max FROM "Week" WHERE "termNumber" = $1;`,
-      [currentTermNumber],
-    );
-    const currentWeekNumber = result.rows[0].max;
+    const currentWeek = await prisma.week.findFirst({
+      where: {
+        termNumber: currentTermNumber,
+      },
+      orderBy: {
+        weekNumber: "desc",
+      },
+    });
+    const currentWeekNumber = currentWeek ? currentWeek.weekNumber : 0;
 
     // Add a new week
-    result = await db.query(
-      `INSERT INTO "Week" ("weekNumber", "cancelled", "startDate", "termNumber")
-            VALUES ($1, $2, $3, $4)
-            RETURNING *;`,
-      [currentWeekNumber + 1, false, currentDate, currentTermNumber],
+    //);
+    const newWeek = await prisma.week.create({
+      data: {
+        weekNumber: currentWeekNumber + 1,
+        cancelled: false,
+        startDate: currentDate,
+        termNumber: currentTermNumber,
+      },
+    });
+    console.log(
+      `Added week ${newWeek.weekNumber} for term ${currentTermNumber}`,
     );
 
     // Send notification if absence is less than 50%
-    result = await db.query<Scout>(
-      `WITH AttendanceCounts AS (
+    let scouts: Scout[] = await prisma.$queryRaw`WITH AttendanceCounts AS (
                 SELECT
                     SA."scoutId",
                     COUNT(*) FILTER (WHERE SA."attendanceStatus" = 'absent') AS absence_count,
@@ -70,7 +67,7 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
                     JOIN "Scout" AS SC ON SA."scoutId" = SC."scoutId"
                 WHERE
                     W."cancelled" = false AND
-                    SA."termNumber" = $1
+                    SA."termNumber" = ${currentTermNumber}
                 GROUP BY
                     SA."scoutId"
             )
@@ -82,27 +79,33 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
                     SELECT "scoutId"
                     FROM AttendanceCounts
                     WHERE absence_count / (absence_count + attendance_count) < 0.5
-                );`,
-      [currentTermNumber],
-    );
-
-    const scouts = result.rows;
+                );`;
 
     for (const scout of scouts) {
       const message = `نسبة 50% من الغياب الكلي ${scout.firstName} ${scout.middleName} لقد تخطى الكشاف`;
-      result = await db.query<Notification>(
-        `INSERT INTO "Notification" ("timestamp", "message", "contentType")
-                VALUES(NOW(), $1, 'attendance') RETURNING *;`,
-        [message],
-      );
-      const alert = result.rows[0];
 
-      await db.query(
-        `INSERT INTO "RecieveNotification" ("notificationId", "captainId", "status")
-                (SELECT $1::integer, C."captainId", 'unread'::"NotificationStatus"
-                FROM "Captain" AS C
-                WHERE C."type" = 'general');`,
-        [alert.notificationId],
+      const generalCaptains: Captain[] = await prisma.captain.findMany({
+        where: {
+          type: "general",
+        },
+      });
+
+      await prisma.notification.createMany({
+        data: generalCaptains.map((captain: Captain) => ({
+          message,
+          contentType: "attendance",
+          timestamp: currentDate,
+          RecieveNotification: {
+            create: {
+              captainId: captain.captainId,
+              status: "unread",
+            },
+          },
+        })),
+      });
+
+      console.log(
+        `Sent notification for ${scout.firstName} ${scout.middleName}`,
       );
     }
   } catch (error) {
