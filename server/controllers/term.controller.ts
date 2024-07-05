@@ -1,5 +1,9 @@
 import { Response } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
+
+// ==============================================
+// TODO: needs integration testing
+// ==============================================
 
 const termController = {
   // @desc    Get a term
@@ -43,14 +47,15 @@ const termController = {
       }
 
       const termNumber = req.currentTerm.termNumber + 1;
-      const result = await db.query(
-        `INSERT INTO "Term" ("termNumber", "termName", "startDate", "endDate")
-                VALUES ($1, $2, $3, $4)
-                RETURNING *;`,
-        [termNumber, termName, startDate, endDate],
-      );
 
-      const newTerm = result.rows[0];
+      const newTerm = await prisma.term.create({
+        data: {
+          termNumber,
+          termName,
+          startDate,
+          endDate,
+        },
+      });
 
       res.status(201).json({
         message: "Term added successfully",
@@ -80,16 +85,19 @@ const termController = {
         });
       }
 
-      let result = await db.query(
-        `SELECT * FROM "Term"
-                ORDER BY "termNumber" DESC
-                LIMIT 1 OFFSET 1;`,
-      );
-      if (!result.rowCount) {
+      let prevTerm = await prisma.term.findMany({
+        orderBy: {
+          termNumber: "desc",
+        },
+        take: 1,
+        skip: 1,
+      });
+
+      if (!prevTerm.length) {
         req.previousTerm = {
           termNumber: 0,
         };
-      } else req.previousTerm = result.rows[0];
+      } else req.previousTerm = prevTerm[0];
 
       if (
         req?.previousTerm?.termNumber &&
@@ -101,20 +109,16 @@ const termController = {
         });
       }
 
-      result = await db.query(
-        `UPDATE "Term" SET "termName" = $1, "startDate" = $2, "endDate" = $3
-                WHERE "termNumber" IN
-                (SELECT COALESCE(MAX("termNumber"), 0) FROM "Term")
-                RETURNING *;`,
-        [termName, startDate, endDate],
-      );
-      if (!result.rows.length) {
-        return res.status(400).json({
-          error: "There is no terms in the system",
-        });
-      }
-
-      const updatedTerm = result.rows[0];
+      const updatedTerm = await prisma.term.update({
+        where: {
+          termNumber: req.currentTerm.termNumber,
+        },
+        data: {
+          termName,
+          startDate,
+          endDate,
+        },
+      });
 
       res.status(200).json({
         message: "Term updated successfully",
@@ -155,15 +159,15 @@ const termController = {
   // @access  Private
   getAllWeeks: async (req: any, res: Response) => {
     try {
-      const result = await db.query(
-        `SELECT * FROM "Week"
-                WHERE "termNumber" = $1;`,
-        [req.currentTerm.termNumber],
-      );
+      const weeks = await prisma.week.findMany({
+        where: {
+          termNumber: req.currentTerm.termNumber,
+        },
+      });
 
       res.status(200).json({
         message: "all weeks in current term found successfully",
-        body: result.rows,
+        body: weeks,
       });
     } catch (error) {
       console.log(error);
@@ -184,14 +188,21 @@ const termController = {
         });
       }
 
-      const result = await db.query(
-        `UPDATE "Week" SET "cancelled" = true
-                WHERE "termNumber" = $1 AND "weekNumber" = $2
-                RETURNING *;`,
-        [req.currentWeek.termNumber, req.currentWeek.weekNumber],
-      );
+      const termNumber = parseInt(req.currentWeek.termNumber);
+      const weekNumber = parseInt(req.currentWeek.weekNumber);
 
-      const updatedWeek = result.rows[0];
+      // TODO: needs testing
+      const updatedWeek = await prisma.week.update({
+        where: {
+          weekNumber_termNumber: {
+            termNumber,
+            weekNumber,
+          },
+        },
+        data: {
+          cancelled: true,
+        },
+      });
 
       res.status(200).json({
         message: "Week cancelled successfully",
