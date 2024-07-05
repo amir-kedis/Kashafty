@@ -129,6 +129,11 @@ async function main() {
         data: {
           baseName: sector.baseName,
           suffixName: sector.suffixName,
+          Captain_Sector_unitCaptainIdToCaptain: {
+            connect: {
+              email: fixedCaptains[1].email,
+            },
+          },
         },
       });
       console.log(newSector);

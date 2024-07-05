@@ -6,7 +6,7 @@
 - [x] captain controllor
 - [x] captainAttendance controllor
 - [x] finance controllor
-- [ ] scout controllor
+- [x] scout controllor
 - [ ] scoutAttendance controllor
 - [ ] sector controllor
 - [ ] stats controllor

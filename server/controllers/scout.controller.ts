@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
+import { Gender } from "@prisma/client";
+
+// =================================================
+// TODO: This module needs testing
+// =================================================
 
 interface GetScoutsInSectorRequest extends Request {
   query: {
@@ -52,11 +57,12 @@ interface InsertScoutRequest extends Request {
 const scoutController = {
   getAllScouts: async (_: Request, res: Response) => {
     try {
-      const result = await db.query(`SELECT * FROM "Scout";`);
+      const scouts = await prisma.scout.findMany();
+
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: scouts,
+        count: scouts.length,
       });
     } catch (error) {
       console.log(error);
@@ -71,17 +77,17 @@ const scoutController = {
     try {
       const { baseName, suffixName } = req.query;
 
-      const result = await db.query(
-        `SELECT *
-                FROM "Scout"
-                WHERE "sectorBaseName" = $1 AND "sectorSuffixName" = $2;`,
-        [baseName, suffixName],
-      );
+      const result = await prisma.scout.findMany({
+        where: {
+          sectorBaseName: baseName,
+          sectorSuffixName: suffixName,
+        },
+      });
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.log(error);
@@ -96,19 +102,27 @@ const scoutController = {
     try {
       const { unitCaptainId } = req.params;
 
-      const result = await db.query(
-        `SELECT scout.*
-                FROM "Scout" AS scout, "Sector" AS sector
-                WHERE sector."unitCaptainId" = $1 AND
-                scout."sectorBaseName" = sector."baseName" AND
-                scout."sectorSuffixName" = sector."suffixName";`,
-        [unitCaptainId],
-      );
+      // const result = await db.query(
+      //   `SELECT scout.*
+      //           FROM "Scout" AS scout, "Sector" AS sector
+      //           WHERE sector."unitCaptainId" = $1 AND
+      //           scout."sectorBaseName" = sector."baseName" AND
+      //           scout."sectorSuffixName" = sector."suffixName";`,
+      //   [unitCaptainId],
+      // );
+
+      const result = await prisma.scout.findMany({
+        where: {
+          Sector: {
+            unitCaptainId: parseInt(unitCaptainId),
+          },
+        },
+      });
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.log(error);
@@ -123,14 +137,13 @@ const scoutController = {
     try {
       const { scoutId } = req.params;
 
-      const result = await db.query(
-        `SELECT *
-                FROM "Scout"
-                WHERE "scoutId" = $1;`,
-        [scoutId],
-      );
+      const result = await prisma.scout.findUnique({
+        where: {
+          scoutId: parseInt(scoutId),
+        },
+      });
 
-      if (!result.rows.length) {
+      if (!result) {
         return res.status(404).json({
           error: "No scout found",
         });
@@ -138,7 +151,7 @@ const scoutController = {
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows[0],
+        body: result,
       });
     } catch (error) {
       console.log(error);
@@ -166,41 +179,32 @@ const scoutController = {
         birthCertificate,
       } = req.body;
 
-      const result1 = await db.query(
-        `UPDATE "Scout"
-                SET "firstName" = $1, "middleName" = $2, "lastName" = $3, "gender" = $4, "sectorBaseName" = $5,
-                "sectorSuffixName" = $6
-                WHERE "scoutId" = $7
-                RETURNING *;`,
-        [
+      const scout = await prisma.scout.update({
+        where: {
+          scoutId: parseInt(scoutId),
+        },
+        data: {
           firstName,
           middleName,
           lastName,
-          gender,
+          gender: gender == "male" ? Gender.male : Gender.female,
           sectorBaseName,
           sectorSuffixName,
-          scoutId,
-        ],
-      );
-
-      if (result1.rowCount === 0) {
-        return res.status(404).json({
-          error: "No rows updated for the scout",
-        });
-      }
-
-      const result2 = await db.query(
-        `UPDATE "ScoutProfile"
-                SET "birthDate" = $1, "enrollDate" = $2, "schoolGrade" = $3, "photo" = $4,
-                "birthCertificate" = $5
-                WHERE "scoutId" = $6
-                RETURNING *;`,
-        [birthDate, enrollDate, schoolGrade, photo, birthCertificate, scoutId],
-      );
+          ScoutProfile: {
+            update: {
+              birthDate,
+              enrollDate,
+              schoolGrade: parseInt(schoolGrade),
+              photo,
+              birthCertificate,
+            },
+          },
+        },
+      });
 
       res.status(200).json({
         message: "Successful update",
-        body: { scout: result1.rows[0], scoutProfile: result2.rows[0] },
+        body: scout,
       });
     } catch (error) {
       console.log(error);
@@ -227,50 +231,29 @@ const scoutController = {
         birthCertificate,
       } = req.body;
 
-      const result1 = await db.query(
-        `INSERT INTO "Scout" ("firstName", "middleName", "lastName", "gender", "sectorBaseName", "sectorSuffixName")
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING *;`,
-        [
+      const scout = prisma.scout.create({
+        data: {
           firstName,
           middleName,
           lastName,
-          gender,
+          gender: gender == "male" ? Gender.male : Gender.female,
           sectorBaseName,
           sectorSuffixName,
-        ],
-      );
-
-      if (result1.rowCount === 0) {
-        return res.status(400).json({
-          error: "No data was inserted for the scout",
-        });
-      }
-
-      const result2 = await db.query(
-        `INSERT INTO "ScoutProfile" ("birthDate", "enrollDate", "schoolGrade", "photo", "birthCertificate", "scoutId")
-                VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING *;`,
-        [
-          birthDate,
-          enrollDate,
-          schoolGrade,
-          photo,
-          birthCertificate,
-          result1.rows[0].scoutId,
-        ],
-      );
-
-      if (result2.rowCount === 0) {
-        return res.status(400).json({
-          error: "No data was inserted for the scout profile",
-          body: { scout: result1.rows[0] },
-        });
-      }
+          ScoutProfile: {
+            create: {
+              birthDate,
+              enrollDate,
+              schoolGrade: parseInt(schoolGrade),
+              photo,
+              birthCertificate,
+            },
+          },
+        },
+      });
 
       res.status(200).json({
         message: "Successful insertion",
-        body: { scout: result1.rows[0], scoutProfile: result2.rows[0] },
+        body: { scout },
       });
     } catch (error) {
       console.log(error);
