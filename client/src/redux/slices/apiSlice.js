@@ -1,10 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl =
-  // eslint-disable-next-line no-undef
-  process.env.NODE_ENV === "production"
-    ? "https://scouts-managment-system-development.onrender.com"
-    : "";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const baseQuery = fetchBaseQuery({ baseUrl });
 
