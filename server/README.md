@@ -10,7 +10,7 @@
 - [x] scoutAttendance controllor
 - [x] sector controllor
 - [x] stats controllor
-- [ ] term controllor
+- [x] term controllor
 
 ## Needs Major system refactoring
 
