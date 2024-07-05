@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
 
 interface GetSubscriptionRequest extends Request {
   query: {
@@ -17,18 +17,26 @@ const financeController = {
   getBudget: async (_: Request, res: Response) => {
     try {
       // get income
-      let result = await db.query(
-        `SELECT COALESCE(SUM(value), 0) AS sum FROM "FinanceItem"
-                WHERE "type" = 'income';`,
-      );
-      const income = result.rows[0].sum;
+      const incomeAgg = await prisma.financeItem.aggregate({
+        _sum: {
+          value: true,
+        },
+        where: {
+          type: "income",
+        },
+      });
+      const income = incomeAgg._sum.value || 0;
 
       // get expense
-      result = await db.query(
-        `SELECT COALESCE(SUM("value"), 0) AS sum FROM "FinanceItem"
-                WHERE "type" = 'expense';`,
-      );
-      const expense = result.rows[0].sum;
+      const expenseAgg = await prisma.financeItem.aggregate({
+        _sum: {
+          value: true,
+        },
+        where: {
+          type: "expense",
+        },
+      });
+      const expense = expenseAgg._sum.value || 0;
 
       const budget = income - expense;
       res.status(200).json({
@@ -48,16 +56,16 @@ const financeController = {
   // @access  Private
   getIncome: async (_: Request, res: Response) => {
     try {
-      const result = await db.query(
-        `SELECT * FROM "FinanceItem" AS F, "OtherItem" AS O
-                WHERE F."itemId" = O."itemId" AND F."type" = 'income';`,
-      );
+      const result = await prisma.financeItem.findMany({
+        where: {
+          type: "income",
+        },
+        include: {
+          OtherItem: true,
+        },
+      });
 
-      const subscriptionIncome = await db.query(
-        `SELECT * FROM "FinanceItem" AS F , "Subscription" AS S
-                WHERE F."itemId" = S."itemId";`,
-      );
-      const income = [...subscriptionIncome.rows, ...result.rows];
+      const income = result;
 
       res.status(200).json({
         message: "Get income successfully",
@@ -76,15 +84,18 @@ const financeController = {
   // @access  Private
   getExpense: async (_: Request, res: Response) => {
     try {
-      const result = await db.query(
-        `SELECT * FROM "FinanceItem" AS F , "OtherItem" AS O
-                WHERE F."itemId"=O."itemId" AND "type" = 'expense';`,
-      );
-      const expense = result.rows;
+      const expenses = await prisma.financeItem.findMany({
+        where: {
+          type: "expense",
+        },
+        include: {
+          OtherItem: true,
+        },
+      });
 
       res.status(200).json({
         message: "Get expense successfully",
-        body: expense,
+        body: expenses,
       });
     } catch (error) {
       console.log(error);
@@ -113,46 +124,66 @@ const financeController = {
         weekNumber: string;
       };
 
-      let result = await db.query(
-        `SELECT "itemId" AS id
-                FROM "Subscription"
-                WHERE "sectorBaseName" = $1 AND "sectorSuffixName" = $2 AND "termNumber" = $3 AND "weekNumber" = $4;`,
-        [sectorBaseName, sectorSuffixName, termNumber, weekNumber],
-      );
+      // let result = await db.query(
+      //   `SELECT "itemId" AS id
+      //           FROM "Subscription"
+      //           WHERE "sectorBaseName" = $1 AND "sectorSuffixName" = $2 AND "termNumber" = $3 AND "weekNumber" = $4;`,
+      //   [sectorBaseName, sectorSuffixName, termNumber, weekNumber],
+      // );
 
-      if (!result.rowCount) {
-        result = await db.query(
-          `INSERT INTO "FinanceItem" ("value", "timestamp", "type")
-                    VALUES ($1, NOW(), 'income') RETURNING *;`,
-          [value],
-        );
+      let subscr = await prisma.subscription.findFirst({
+        where: {
+          sectorBaseName: sectorBaseName,
+          sectorSuffixName: sectorSuffixName,
+          weekNumber: parseInt(weekNumber),
+          termNumber: parseInt(termNumber),
+        },
+      });
+
+      let result: any;
+
+      if (!subscr) {
+        result = await prisma.financeItem.create({
+          data: {
+            value: value,
+            type: "income",
+            timestamp: new Date(),
+          },
+        });
       } else {
-        result = await db.query(
-          `UPDATE "FinanceItem"
-                    SET "value"=$1, "timestamp"=NOW()
-                    WHERE "itemId"=$2 RETURNING *;`,
-          [value, result.rows[0].id],
-        );
+        result = await prisma.financeItem.update({
+          where: {
+            itemId: subscr.itemId,
+          },
+          data: {
+            value: value,
+            timestamp: new Date(),
+          },
+        });
       }
 
-      const financeItem = result.rows[0];
+      const financeItem = result;
 
-      result = await db.query(
-        `INSERT INTO "Subscription" ("itemId", "sectorBaseName", "sectorSuffixName", "weekNumber", "termNumber")
-                VALUES ($1, $2, $3, $4, $5)
-                ON CONFLICT ("itemId") DO UPDATE
-                SET "sectorBaseName" = $2, "sectorSuffixName" = $3, "weekNumber" = $4, "termNumber" = $5
-                RETURNING *;`,
-        [
-          financeItem.itemId,
-          sectorBaseName,
-          sectorSuffixName,
-          weekNumber,
-          termNumber,
-        ],
-      );
+      result = await prisma.subscription.upsert({
+        where: {
+          itemId: financeItem.itemId,
+        },
+        update: {
+          sectorBaseName: sectorBaseName,
+          sectorSuffixName: sectorSuffixName,
+          weekNumber: parseInt(weekNumber),
+          termNumber: parseInt(termNumber),
+        },
+        create: {
+          itemId: financeItem.itemId,
+          sectorBaseName: sectorBaseName,
+          sectorSuffixName: sectorSuffixName,
+          weekNumber: parseInt(weekNumber),
+          termNumber: parseInt(termNumber),
+        },
+      });
 
-      const subscription = result.rows[0];
+      const subscription = result;
 
       res.status(200).json({
         message: "Add subscription successfully",
@@ -174,15 +205,17 @@ const financeController = {
       const { sectorBaseName, sectorSuffixName, weekNumber, termNumber } =
         req.query;
 
-      const result = await db.query(
-        `SELECT F."value"
-                FROM "Subscription" AS S, "FinanceItem" AS F
-                WHERE S."itemId" = F."itemId" AND
-                "sectorBaseName" = $1 AND "sectorSuffixName" = $2 AND
-                "weekNumber" = $3 AND "termNumber" = $4;`,
-        [sectorBaseName, sectorSuffixName, weekNumber, termNumber],
-      );
-      const subscription = result.rows[0].value;
+      const subscription = await prisma.subscription.findFirst({
+        where: {
+          sectorBaseName: sectorBaseName,
+          sectorSuffixName: sectorSuffixName,
+          weekNumber: parseInt(weekNumber),
+          termNumber: parseInt(termNumber),
+        },
+        include: {
+          FinanceItem: true,
+        },
+      });
 
       res.status(200).json({
         message: "Get subscription successfully",
@@ -201,15 +234,15 @@ const financeController = {
   // @access  Private
   getAllSubscriptionsOfCurrentWeek: async (req: any, res: Response) => {
     try {
-      const result = await db.query(
-        `SELECT COALESCE(SUM(F."value"), 0) AS sum
-                FROM "Subscription" AS S, "FinanceItem" AS F
-                WHERE S."itemId" = F."itemId" AND
-                S."termNumber" = $1 AND
-                S."weekNumber" = $2;`,
-        [req.currentWeek.termNumber, req.currentWeek.weekNumber],
-      );
-      const subscription = result.rows[0].sum;
+      const subscription = await prisma.subscription.findMany({
+        where: {
+          termNumber: req.currentWeek.termNumber,
+          weekNumber: req.currentWeek.weekNumber,
+        },
+        include: {
+          FinanceItem: true,
+        },
+      });
 
       res.status(200).json({
         message: "Get subscription successfully",
@@ -234,21 +267,19 @@ const financeController = {
         description: string;
       };
 
-      let result = await db.query(
-        `INSERT INTO "FinanceItem" ("value", "timestamp", "type")
-                VALUES ($1, NOW(), $2) RETURNING *;`,
-        [value, type],
-      );
-
-      const financeItem = result.rows[0];
-
-      result = await db.query(
-        `INSERT INTO "OtherItem" ("description", "itemId", "generalCaptainId")
-                VALUES ($1, $2, $3) RETURNING *;`,
-        [description, financeItem.itemId, req.captain?.captainId],
-      );
-
-      const otherItem = result.rows[0];
+      const financeItem = await prisma.financeItem.create({
+        data: {
+          value: value,
+          type: type as "income" | "expense",
+          timestamp: new Date(),
+        },
+      });
+      const otherItem = await prisma.otherItem.create({
+        data: {
+          description: description,
+          itemId: financeItem.itemId,
+        },
+      });
 
       res.status(200).json({
         message: "Add other item successfully",

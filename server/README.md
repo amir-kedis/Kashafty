@@ -2,10 +2,10 @@
 
 ## Controllors to migrate
 
-- [ ] auth controllor
-- [ ] captain controllor
-- [ ] captainAttendance controllor
-- [ ] finance controllor
+- [x] auth controllor
+- [x] captain controllor
+- [x] captainAttendance controllor
+- [x] finance controllor
 - [ ] scout controllor
 - [ ] scoutAttendance controllor
 - [ ] sector controllor
