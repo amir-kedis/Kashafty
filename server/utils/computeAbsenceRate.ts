@@ -4,8 +4,8 @@ type Absence = {
 };
 
 type Attendance = {
-  attendance_count: string;
-  absence_count: string;
+  attendance_count: string | number;
+  absence_count: string | number;
 };
 
 const computeAbsenceRate = (absence: Absence) => {
