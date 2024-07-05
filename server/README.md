@@ -7,7 +7,7 @@
 - [x] captainAttendance controllor
 - [x] finance controllor
 - [x] scout controllor
-- [ ] scoutAttendance controllor
+- [x] scoutAttendance controllor
 - [ ] sector controllor
 - [ ] stats controllor
 - [ ] term controllor
