@@ -30,6 +30,7 @@ services:
     build: .
     ports:
       - 3001:3001
+      - 5000:5000
     environment:
       # - DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<database>
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres?sslmode=disable

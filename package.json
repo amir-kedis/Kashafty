@@ -4,11 +4,12 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node dist/server/app.js",
+    "start": "nodemon dist/server/app.js",
     "server": "nodemon server/app.ts -x ts-node --esm server/app.ts",
     "client": "npm run dev --prefix client",
     "build-client": "npm run build --prefix client",
-    "build-server": "tsc",
+    "build-server": "npx tsc",
+    "build": "npm run build-server && npm run build-client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "seed": "ts-node ./prisma/seed.ts"
   },
@@ -45,6 +46,7 @@
     "prisma": "^5.16.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsc": "^2.0.4",
     "typescript": "^5.5.3"
   }
 }
