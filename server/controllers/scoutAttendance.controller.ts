@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import db from "../database/db";
+import { prisma } from "../database/db";
+import { AttendanceStatus } from "@prisma/client";
+
+// =================================================
+// TODO: This module needs reconnecting with frontend
+// =================================================
 
 interface UpsertAttendanceRequest extends Request {
   body: {
@@ -46,23 +51,27 @@ const scoutAttendanceController = {
       let result = [];
 
       for (let i = 0; i < attendanceRecords.length; i++) {
-        const queryResult = await db.query(
-          `
-          INSERT INTO "ScoutAttendance" ("scoutId", "weekNumber", "termNumber", "attendanceStatus")
-          VALUES ($1, $2, $3, $4)
-          ON CONFLICT ("scoutId", "weekNumber", "termNumber")
-          DO UPDATE SET "attendanceStatus" = EXCLUDED."attendanceStatus"
-          RETURNING *;
-        `,
-          [
-            attendanceRecords[i].scoutId,
-            attendanceRecords[i].weekNumber,
-            attendanceRecords[i].termNumber,
-            attendanceRecords[i].attendanceStatus,
-          ],
-        );
-
-        result.push(queryResult.rows[0]);
+        const attendanceRecord = await prisma.scoutAttendance.upsert({
+          where: {
+            scoutId_weekNumber_termNumber: {
+              scoutId: parseInt(attendanceRecords[i].scoutId),
+              weekNumber: attendanceRecords[i].weekNumber,
+              termNumber: attendanceRecords[i].termNumber,
+            },
+          },
+          update: {
+            attendanceStatus: attendanceRecords[i]
+              .attendanceStatus as AttendanceStatus,
+          },
+          create: {
+            scoutId: parseInt(attendanceRecords[i].scoutId),
+            weekNumber: attendanceRecords[i].weekNumber,
+            termNumber: attendanceRecords[i].termNumber,
+            attendanceStatus: attendanceRecords[i]
+              .attendanceStatus as AttendanceStatus,
+          },
+        });
+        result.push(attendanceRecord);
       }
 
       res.status(200).json({
@@ -82,35 +91,56 @@ const scoutAttendanceController = {
   // @desc    Get all attendance records for all the scouts in a certain sector in a certain week & term
   // @route   GET /api/sectorAttendance/sector/all
   // @access  Private
+  // TODO: needs reconnecting with frontend
   getSectorAttendance: async (
     req: GetSectorAttendanceRequest,
     res: Response,
   ) => {
     try {
-      const { baseName, suffixName, weekNumber, termNumber } = req.query;
+      let {
+        baseName,
+        suffixName,
+        weekNumber,
+        termNumber,
+      }: {
+        baseName: string;
+        suffixName: string;
+        weekNumber: string | number;
+        termNumber: string | number;
+      } = req.query;
+      weekNumber = parseInt(weekNumber);
+      termNumber = parseInt(termNumber);
 
-      const result = await db.query(
-        `
-        SELECT "Scout".*, "ScoutAttendance".* FROM "Scout"
-        LEFT JOIN "ScoutAttendance" ON "Scout"."scoutId" = "ScoutAttendance"."scoutId"
-        AND "ScoutAttendance"."weekNumber" = $3 AND "ScoutAttendance"."termNumber" = $4
-        INNER JOIN "Sector" ON "Sector"."baseName" = "Scout"."sectorBaseName"
-        AND "Sector"."suffixName" = "Scout"."sectorSuffixName"
-        WHERE "Sector"."baseName" = $1 AND "Sector"."suffixName" = $2;
-      `,
-        [baseName, suffixName, weekNumber, termNumber],
-      );
+      const scouts = await prisma.scout.findMany({
+        where: {
+          sectorBaseName: baseName,
+          sectorSuffixName: suffixName,
+        },
+        include: {
+          ScoutAttendance: true,
+        },
+      });
 
-      if (result.rowCount === 0) {
-        return res.status(404).json({
-          error: "No data exists for the provided info",
-        });
-      }
+      // Filter ScoutAttendance for the specified weekNumber and termNumber
+      const result = scouts.map((scout) => {
+        const filteredAttendance = scout.ScoutAttendance.filter(
+          (attendance) =>
+            attendance.weekNumber === weekNumber &&
+            attendance.termNumber === termNumber,
+        );
+        return {
+          ...scout,
+          ScoutAttendance:
+            filteredAttendance.length > 0 ? filteredAttendance : null,
+        };
+      });
+
+      console.log(result);
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.log(error);
@@ -126,21 +156,31 @@ const scoutAttendanceController = {
   // @access  Private
   getScoutAttendance: async (req: GetScoutAttendanceRequest, res: Response) => {
     try {
-      const { scoutId, weekNumber, termNumber } = req.params;
+      let {
+        scoutId,
+        weekNumber,
+        termNumber,
+      }: {
+        scoutId: string | number;
+        weekNumber: string | number;
+        termNumber: string | number;
+      } = req.params;
+      scoutId = parseInt(scoutId);
+      weekNumber = parseInt(weekNumber);
+      termNumber = parseInt(termNumber);
 
-      const result = await db.query(
-        `
-        SELECT *
-        FROM "ScoutAttendance"
-        WHERE "scoutId" = $1 AND "weekNumber" = $2 AND "termNumber" = $3
-      `,
-        [scoutId, weekNumber, termNumber],
-      );
+      const result = await prisma.scoutAttendance.findMany({
+        where: {
+          scoutId: scoutId,
+          weekNumber: weekNumber,
+          termNumber: termNumber,
+        },
+      });
 
       res.status(200).json({
         message: "Successful retrieval",
-        body: result.rows,
-        count: result.rowCount,
+        body: result,
+        count: result.length,
       });
     } catch (error) {
       console.log(error);
