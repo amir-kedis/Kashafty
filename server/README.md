@@ -8,7 +8,7 @@
 - [x] finance controllor
 - [x] scout controllor
 - [x] scoutAttendance controllor
-- [ ] sector controllor
+- [x] sector controllor
 - [ ] stats controllor
 - [ ] term controllor
 
