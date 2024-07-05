@@ -91,6 +91,7 @@ const authController = {
       const captain = await prisma.captain.findUnique({
         where: { email: email.toLowerCase() },
       });
+
       if (!captain) {
         return res.status(400).json({
           error: "Invalid email",

@@ -9,6 +9,7 @@ export const usersApi = apiSlice.injectEndpoints({
         url: `${USERS_API}/login`,
         method: "POST",
         body: credentials,
+        credentials: "include",
       }),
       invalidatesTags: ["auth"],
     }),
@@ -16,6 +17,7 @@ export const usersApi = apiSlice.injectEndpoints({
       query: () => ({
         url: `${USERS_API}/logout`,
         method: "POST",
+        credentials: "include",
       }),
     }),
     signup: builder.mutation({
@@ -23,6 +25,7 @@ export const usersApi = apiSlice.injectEndpoints({
         url: `${USERS_API}/signUp`,
         method: "POST",
         body: data,
+        credentials: "include",
       }),
       invalidatesTags: ["Captains", "auth"],
     }),
@@ -31,6 +34,7 @@ export const usersApi = apiSlice.injectEndpoints({
         url: `${USERS_API}/newPassword`,
         method: "POST",
         body: data,
+        credentials: "include",
       }),
     }),
   }),

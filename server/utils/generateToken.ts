@@ -17,9 +17,10 @@ const generateToken = (res: Response, id: string): void => {
 
   // Save token in cookie
   res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    httpOnly: false,
+    secure: true,
     // sameSite: 'strict',
+    sameSite: "none",
     maxAge: maxAge,
   });
 };

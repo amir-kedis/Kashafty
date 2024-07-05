@@ -5,24 +5,20 @@ WORKDIR /kashafty
 
 # copy server package.json
 COPY package*.json ./
-COPY tsconfig.json ./
 
 # install server dependencies
 RUN npm install
 
-# copy client package.json
-COPY client/package*.json ./client/
-
-# install client dependencies
-RUN npm install --prefix client
 
 # copy the rest of the files
 COPY . .
 
+# build the app
+RUN npm run generate-pisma-types
 RUN npm run build
 
 # expose port
-EXPOSE 3001
+EXPOSE 5000
 
 # run the app
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "./start.sh"]

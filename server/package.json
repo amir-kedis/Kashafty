@@ -1,19 +1,16 @@
 {
-  "name": "scouts-management-system",
+  "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "## Controllors to migrate",
+  "main": "index.js",
   "scripts": {
-    "start": "nodemon dist/server/app.js",
-    "server": "nodemon server/app.ts -x ts-node --esm server/app.ts",
-    "client": "npm run dev --prefix client",
-    "build-db-types": "prisma generate",
-    "build-client": "npm run build --prefix client",
-    "build-server": "tsc",
-    "build": "npm run build-db-types && npm run build-server && npm run build-client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "nodemon index.ts",
+    "build": "tsc",
+    "start": "nodemon dist/index.js",
+    "generate-pisma-types": "prisma generate",
     "seed": "ts-node ./prisma/seed.ts"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
