@@ -4,7 +4,7 @@
   "description": "hi there",
   "main": "index.ts",
   "scripts": {
-    "start": "node index.ts",
+    "start": "nodemon index.ts",
     "build": "tsc",
     "vercel-build": "prisma generate",
     "start-prod": "nodemon dist/index.js",

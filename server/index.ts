@@ -8,8 +8,17 @@ import cookieParser from "cookie-parser";
 const app: Application = express();
 const PORT: Number = process.env.PORT ? parseInt(process.env.PORT) : 5000;
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://localhost:3000",
+  "http://localhost:4173",
+  "https://kashafty.vercel.app/",
+  "https://kashafty-amir-kedis-projects.vercel.app/",
+  "https://kashafty-git-main-amir-kedis-projects.vercel.app/",
+];
+
 const corsOptions = {
-  origin: "*",
+  origin: allowedOrigins,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
@@ -24,11 +33,11 @@ app.use("/api", apiRouter);
 app.use("/alert", alertRouter);
 
 app.use("/test", (_, res) => {
-  res.send("Outer endpoint running");
+  res.send("Kashafty API nested endpoints is working fine finally");
 });
 
-app.get("/test1", (_, res) => {
-  res.send("API is running");
+app.get("/", (_, res) => {
+  res.send("Kashafty API is working fine");
 });
 
 app.use(notFound);
