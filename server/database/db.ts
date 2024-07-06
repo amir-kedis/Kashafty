@@ -9,9 +9,13 @@ console.log({
   URL: process.env.DATABASE_URL,
 });
 
-const prisma = new PrismaClient();
+let prisma = new PrismaClient();
 
-// newWeekScheduler.start();
+try {
+  newWeekScheduler.start();
+} catch (error) {
+  console.error(error);
+}
 
 export { prisma };
 export default prisma;

@@ -3,7 +3,6 @@ import cors from "cors";
 import apiRouter from "./routes/api.route";
 import alertRouter from "./routes/alert.route";
 import { notFound, errorHandler } from "./middlewares/error.middleware";
-import path from "path";
 import cookieParser from "cookie-parser";
 
 const app: Application = express();
@@ -24,7 +23,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiRouter);
 app.use("/alert", alertRouter);
 
-app.get("/", (_, res) => {
+app.use("/test", (_, res) => {
+  res.send("Outer endpoint running");
+});
+
+app.get("/test1", (_, res) => {
   res.send("API is running");
 });
 
@@ -36,4 +39,3 @@ app.listen(PORT, () => {
 });
 
 export default app;
-module.exports = app;

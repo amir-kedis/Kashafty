@@ -1,11 +1,12 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "## Controllors to migrate",
+  "description": "hi there",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon index.ts",
+    "start": "node index.ts",
     "build": "tsc",
+    "vercel-build": "prisma generate",
     "start-prod": "nodemon dist/index.js",
     "generate-pisma-types": "prisma generate",
     "seed": "ts-node ./prisma/seed.ts"
