@@ -9,14 +9,14 @@ import cookieParser from "cookie-parser";
 const app: Application = express();
 const PORT: Number = process.env.PORT ? parseInt(process.env.PORT) : 5000;
 
-// app.use(
-//   cors({
-//     origin: "https://kashafty.vercel.app",
-//     methods: "GET,POST,PUT,DELETE",
-//     allowedHeaders: "Content-Type,Authorization",
-//     credentials: true,
-//   }),
-// );
+const corsOptions = {
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+};
+
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,3 +34,6 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server started listening at port ${PORT}`);
 });
+
+export default app;
+module.exports = app;

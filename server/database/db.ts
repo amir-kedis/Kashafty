@@ -11,7 +11,7 @@ console.log({
 
 const prisma = new PrismaClient();
 
-newWeekScheduler.start();
+// newWeekScheduler.start();
 
 export { prisma };
 export default prisma;
