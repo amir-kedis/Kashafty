@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
+
 import PageTitle from "../common/PageTitle";
 import TextInput from "../common/Inputs";
 import CustomSelect from "../common/CustomSelect";
 import Button from "../common/Button";
+
 import "../../assets/styles/components/MoneyPage.scss";
+
 import { useInsertActivityMutation } from "../../redux/slices/activitiesApiSlice";
 import { useGetAllWeeksQuery } from "../../redux/slices/termApiSlice";
 import { toast } from "react-toastify";
 
-const AddActivityPage = () => {
+const AddActivityPage: React.FC = () => {
   const [activityName, setActivityName] = useState("");
   const [activityType, setActivityType] = useState("");
   const [activityPlace, setActivityPlace] = useState("");
@@ -37,11 +40,11 @@ const AddActivityPage = () => {
 
   const [insertActivity, { isLoading }] = useInsertActivityMutation();
   const { data: WeeksAvailable, isFetching: isFetchingWeeks } =
-    useGetAllWeeksQuery();
+    useGetAllWeeksQuery({});
 
-  let weeksList;
+  let weeksList: any;
   if (!isFetchingWeeks && WeeksAvailable) {
-    weeksList = WeeksAvailable.body.map((week) => {
+    weeksList = WeeksAvailable.body.map((week: any) => {
       return {
         ...week,
         allWeekInfo: week.weekNumber + " - " + week.startDate.split("T")[0],
@@ -50,7 +53,7 @@ const AddActivityPage = () => {
     });
     console.log("weeks = ", WeeksAvailable, weeksList);
   }
-  const HandleSubmit = async (e) => {
+  const HandleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newActivity = {
       name: activityName,

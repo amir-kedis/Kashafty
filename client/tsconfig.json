@@ -22,6 +22,7 @@
     "jsx": "react-jsx",
     "types": [
       "node",
+      "react",
       "vite/client"
     ]
   },

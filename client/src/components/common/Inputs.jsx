@@ -70,6 +70,8 @@ TextInput.propTypes = {
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   required: PropTypes.bool,
+  pattern: PropTypes.string,
+  onInvalid: PropTypes.func,
 };
 
 function RadioInput({ label, name, required, valuesArr, onChange }) {
