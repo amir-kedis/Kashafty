@@ -9,7 +9,7 @@ export const financeApi = apiSlice.injectEndpoints({
         url: `${FINANCE_URL}`,
         method: "GET",
       }),
-      providesTags: ["finance"],
+      providesTags: ["Finance"],
     }),
     InsertSubscription: builder.mutation({
       query: (subscription) => ({
@@ -17,7 +17,7 @@ export const financeApi = apiSlice.injectEndpoints({
         method: "POST",
         body: subscription,
       }),
-      invalidatesTags: ["finance"],
+      invalidatesTags: ["Finance"],
     }),
 
     GetIncome: builder.query({
@@ -25,7 +25,7 @@ export const financeApi = apiSlice.injectEndpoints({
         url: `${FINANCE_URL}/income`,
         method: "GET",
       }),
-      providesTags: ["finance"],
+      providesTags: ["Finance"],
     }),
 
     GetExpense: builder.query({
@@ -33,7 +33,7 @@ export const financeApi = apiSlice.injectEndpoints({
         url: `${FINANCE_URL}/expense`,
         method: "GET",
       }),
-      providesTags: ["finance"],
+      providesTags: ["Finance"],
     }),
     InsertOtherItem: builder.mutation({
       query: (item) => ({
@@ -41,7 +41,7 @@ export const financeApi = apiSlice.injectEndpoints({
         method: "POST",
         body: item,
       }),
-      invalidatesTags: ["finance"],
+      invalidatesTags: ["Finance"],
     }),
     GetCurrentWeekSubscriptions: builder.query({
       query: () => ({
