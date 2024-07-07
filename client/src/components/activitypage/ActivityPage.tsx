@@ -1,3 +1,4 @@
+import React from "react";
 import PageTitle from "../common/PageTitle";
 import ActivityCard from "../common/ActivityCard";
 import Button from "../common/Button";
@@ -5,9 +6,9 @@ import Button from "../common/Button";
 import "./ActivityPage.scss";
 import { useGetAllActivitiesQuery } from "../../redux/slices/activitiesApiSlice";
 
-const ActivityPage = () => {
+const ActivityPage: React.FC = () => {
   const { data: activityList, isFetching: isFetchingActivity } =
-    useGetAllActivitiesQuery();
+    useGetAllActivitiesQuery({});
 
   if (!isFetchingActivity) {
     console.log("activities = ", activityList);
@@ -24,7 +25,7 @@ const ActivityPage = () => {
       <div className="activity-section">
         {isFetchingActivity
           ? "جاري التحميل..."
-          : activityList.body.map((act) => {
+          : activityList.body.map((act: any) => {
               return <ActivityCard key={act} activity={act} />;
             })}
       </div>
