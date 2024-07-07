@@ -1,10 +1,17 @@
 import { Link } from "react-router-dom";
-import { PropTypes } from "prop-types";
 
 // Styles
 import "../../assets/styles/components/Button.scss";
 
-export default function Button(props) {
+type ButtonProps = {
+  children: React.ReactNode;
+  className?: string;
+  linkTo?: string;
+  disabled?: boolean;
+  [key: string]: any;
+};
+
+export default function Button(props: ButtonProps) {
   const { children, className, linkTo, disabled, ...rest } = props;
 
   return (
@@ -21,10 +28,3 @@ export default function Button(props) {
     </>
   );
 }
-
-Button.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  linkTo: PropTypes.string,
-  disabled: PropTypes.bool,
-};

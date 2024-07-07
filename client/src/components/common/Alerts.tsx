@@ -1,8 +1,23 @@
-import { PropTypes } from "prop-types";
 import "../../assets/styles/components/Alert.scss";
 import { BellAlertIcon } from "@heroicons/react/24/outline";
 
-const Alert = ({ title, info, buttontext, Onclick, showRightBox, color }) => {
+type AlertProps = {
+  title: string;
+  info: string;
+  buttontext: string;
+  Onclick: () => void;
+  showRightBox: boolean;
+  color: string;
+};
+
+const Alert = ({
+  title,
+  info,
+  buttontext,
+  Onclick,
+  showRightBox,
+  color,
+}: AlertProps) => {
   return (
     <div className="alert-item">
       <div className="top-bar">
@@ -35,15 +50,6 @@ const Alert = ({ title, info, buttontext, Onclick, showRightBox, color }) => {
       </button>
     </div>
   );
-};
-
-Alert.propTypes = {
-  title: PropTypes.string.isRequired,
-  info: PropTypes.string.isRequired,
-  buttontext: PropTypes.string.isRequired,
-  Onclick: PropTypes.func.isRequired,
-  showRightBox: PropTypes.bool,
-  color: PropTypes.string,
 };
 
 export default Alert;

@@ -1,6 +1,14 @@
-import PropTypes from "prop-types";
+type CustomCheckboxProps = {
+  labels: string[];
+  values: string[];
+  checkedValues: string[];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  name: string;
+  required?: boolean;
+  className?: string;
+};
 
-export default function CustomCheckbox(props) {
+export default function CustomCheckbox(props: CustomCheckboxProps) {
   const { labels, values, checkedValues, onChange, name, required, className } =
     props;
   return (
@@ -31,13 +39,3 @@ export default function CustomCheckbox(props) {
     </div>
   );
 }
-
-CustomCheckbox.propTypes = {
-  labels: PropTypes.array.isRequired,
-  values: PropTypes.array.isRequired,
-  checkedValues: PropTypes.array,
-  onChange: PropTypes.func,
-  name: PropTypes.string,
-  required: PropTypes.bool,
-  className: PropTypes.string,
-};

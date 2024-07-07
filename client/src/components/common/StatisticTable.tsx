@@ -2,9 +2,17 @@ import React from "react";
 
 import "../../assets/styles/components/StatisitcTable.scss";
 
-const StatisticTable = ({ title, columnNames, dataRows }) => {
-  const columnsNo = Object.keys(dataRows[0]).length;
+type StatisticTableProps = {
+  title: string;
+  columnNames: { name: string }[];
+  dataRows: { [key: string]: string }[];
+};
 
+const StatisticTable: React.FC = ({
+  title,
+  columnNames,
+  dataRows,
+}: StatisticTableProps) => {
   return (
     <div className="table-box">
       <h6>{title}</h6>
