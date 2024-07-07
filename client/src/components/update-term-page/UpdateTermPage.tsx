@@ -18,7 +18,7 @@ export default function UpdateTermPage() {
 
   const [updateTerm, { isLoading }] = useUpdateTermMutation();
 
-  const { data, isFetching: isFetchingTerm } = useGetCurTermQuery();
+  const { data, isFetching: isFetchingTerm } = useGetCurTermQuery({});
 
   useEffect(() => {
     if (data && data.body) {
@@ -45,8 +45,6 @@ export default function UpdateTermPage() {
         startDate: termStartDate,
         endDate: termEndDate,
       }).unwrap();
-      if (res.status === 400 || res.status === 500)
-        throw new Error("Something went wrong while updating the term");
       toast.success("تم تعديل الفترة بنجاح");
     } catch (err) {
       console.log(err);

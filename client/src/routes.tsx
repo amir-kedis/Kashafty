@@ -14,8 +14,6 @@ import LogIn from "./components/login/logIn";
 import PublicLayout from "./components/layout/PublicLayout";
 
 // Import Testing Routes here
-import TestTypo from "./components/testing/testTypo";
-import TestLayout from "./components/testing/testLayout";
 import Dashboard from "./components/dashboard/Dashboard";
 import CaptainProfile from "./components/captain-profile/CaptainProfile";
 import InsertTermPage from "./components/insert-term/InsertTermPage";
@@ -66,11 +64,6 @@ const Routes: React.FC = () => {
           <Route path="/add-activity" element={<AddActivityPage />} />
           <Route path="/stats" element={<StatsPage />} />
         </Route>
-
-        {/* Testing Routes */}
-        {/* FIXME: Delete test routes Later */}
-        <Route path="/test/typo" element={<TestTypo />} />
-        <Route path="/test/layout" element={<TestLayout />} />
 
         {/* Not Found */}
         <Route path="*" element={<h1>Not Found</h1>} />

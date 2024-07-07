@@ -45,7 +45,7 @@ export default function AbsenceInfo() {
     data: sectors,
     isFetching: isFetchingSectors,
     isSuccess: isSuccessSectors,
-  } = useGetSectorsQuery();
+  } = useGetSectorsQuery({});
 
   if (isSuccessSectors) {
     console.log({ sectors: sectors?.body });
