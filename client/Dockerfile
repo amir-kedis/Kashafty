@@ -13,4 +13,6 @@ RUN npm run build
 EXPOSE 4173
 
 # run the app
-CMD ["npm", "run", "preview"]
+# notice this is made for dev
+# when production change dev to preview
+CMD ["npm", "run", "dev"]

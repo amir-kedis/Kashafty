@@ -11,6 +11,8 @@ const PORT: Number = process.env.PORT ? parseInt(process.env.PORT) : 5000;
 const allowedOrigins = [
   "http://localhost:3000",
   "https://localhost:3000",
+  "http://localhost:3001",
+  "https://localhost:3001",
   "http://localhost:4173",
   "https://kashafty.vercel.app",
   "https://kashafty-amir-kedis-projects.vercel.app",
