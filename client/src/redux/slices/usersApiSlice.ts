@@ -11,7 +11,7 @@ export const usersApi = apiSlice.injectEndpoints({
         body: credentials,
         credentials: "include",
       }),
-      invalidatesTags: ["auth"],
+      invalidatesTags: ["Auth"],
     }),
     logout: builder.mutation({
       query: () => ({
@@ -27,7 +27,7 @@ export const usersApi = apiSlice.injectEndpoints({
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["Captains", "auth"],
+      invalidatesTags: ["Captains", "Auth"],
     }),
     changePassword: builder.mutation({
       query: (data) => ({

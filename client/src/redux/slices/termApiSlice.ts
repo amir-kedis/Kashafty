@@ -9,7 +9,7 @@ export const termApi = apiSlice.injectEndpoints({
         url: `${TERM_URL}/`,
         method: "GET",
       }),
-      providesTags: ["Term"],
+      providesTags: ["Terms"],
     }),
     GetCurWeek: builder.query({
       query: () => ({
@@ -38,7 +38,7 @@ export const termApi = apiSlice.injectEndpoints({
         method: "POST",
         body: term,
       }),
-      invalidatesTags: ["Term", "Weeks"],
+      invalidatesTags: ["Terms", "Weeks"],
     }),
     UpdateTerm: builder.mutation({
       query: (term) => ({
@@ -46,7 +46,7 @@ export const termApi = apiSlice.injectEndpoints({
         method: "PATCH",
         body: term,
       }),
-      invalidatesTags: ["Term", "Weeks"],
+      invalidatesTags: ["Terms", "Weeks"],
     }),
     CancelWeek: builder.mutation({
       query: () => ({

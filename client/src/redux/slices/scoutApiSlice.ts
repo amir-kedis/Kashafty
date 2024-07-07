@@ -45,4 +45,3 @@ export const {
   useGetScoutsInSectorQuery,
   useUpdateScoutMutation,
 } = scoutsApi;
-

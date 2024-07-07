@@ -4,20 +4,20 @@ const ACTIVITIES_URL = "/api/activities";
 
 export const activitiesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    GetAllActivities: builder.query({
+    getAllActivities: builder.query({
       query: () => ({
         url: `${ACTIVITIES_URL}/all`,
         method: "GET",
       }),
-      providesTags: ["activites"],
+      providesTags: ["Activities"],
     }),
-    InsertActivity: builder.mutation({
+    insertActivity: builder.mutation({
       query: (activity) => ({
         url: `${ACTIVITIES_URL}`,
         method: "POST",
         body: activity,
       }),
-      invalidatesTags: ["activites"],
+      invalidatesTags: ["Activities"],
     }),
   }),
 });

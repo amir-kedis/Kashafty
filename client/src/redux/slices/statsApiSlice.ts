@@ -9,14 +9,14 @@ export const statsApi = apiSlice.injectEndpoints({
         url: `${STATS_URL}/scouts`,
         method: "GET",
       }),
-      providesTags: ["Stats", "absence"],
+      providesTags: ["Attendance", "Absence"],
     }),
     GetGraphData: builder.query({
       query: () => ({
         url: `${STATS_URL}/scouts/graph`,
         method: "GET",
       }),
-      providesTags: ["Stats"],
+      providesTags: ["Graph", "Attendance", "Absence"],
     }),
   }),
 });
