@@ -6,7 +6,7 @@ type TextInputProps = {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
+  placeholder?: string;
   required?: boolean;
   pattern?: string;
   onInvalid?: (e: React.FormEvent<HTMLInputElement>) => void;

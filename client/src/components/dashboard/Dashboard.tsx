@@ -7,9 +7,10 @@ import NotificationBox from "../common/NotificationBox";
 import TermInfoSection from "../common/TermInfoSection";
 import UserActions from "../common/UserActions";
 import InfoSection from "../common/InfoSection";
+import { RootState } from "../../redux/store";
 
 export default function Dashboard() {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {

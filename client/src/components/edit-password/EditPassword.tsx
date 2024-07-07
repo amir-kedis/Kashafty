@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import Button from "../common/Button";
 import TextInput from "../common/Inputs";
 import "./EditPassword.scss";
@@ -12,7 +12,7 @@ export default function EditPassword() {
 
   const [changePassword, { isLoading }] = useChangePasswordMutation();
 
-  const submitHandler = async (e) => {
+  const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     console.log({ oldPassword, newPassword });
 

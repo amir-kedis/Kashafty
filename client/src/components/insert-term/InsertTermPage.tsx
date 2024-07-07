@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import PageTitle from "../common/PageTitle";
 import TextInput from "../common/Inputs";
 import Button from "../common/Button";
@@ -15,7 +15,7 @@ export default function InsertTermPage() {
 
   const [insertTerm, { isLoading }] = useInsertTermMutation();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     // TODO: send request with this info to the server
     console.log({
