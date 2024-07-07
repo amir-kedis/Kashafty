@@ -36,10 +36,8 @@ services:
     environment:
       VITE_API_URL: http://localhost:5000
     volumes:
+      - ./client:/kashafty/client
       - ./client/node_modules:/kashafty/client/node_modules
-      - ./client/public:/kashafty/client/public
-      - ./client/src:/kashafty/client/src
-      - ./client/package.json:/kashafty/client/package.json
   
   backend:
     build: ./server/.
@@ -53,34 +51,3 @@ services:
       - ./server:/kashafty/server
     depends_on:
       - db
-
-  # web:
-  #   build: .
-  #   ports:
-  #     - 3001:3001
-  #     - 5000:5000
-  #   environment:
-  #     # - DATABASE_URL=postgres://<user>:<password>@<host>:<port>/<database>
-  #     - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres?sslmode=disable
-  #   depends_on:
-  #     - db
-  #     - pgadmin
-  #   # TODO: remove or refactor for production
-  #   # those are used just for hot reolad and
-  #   # node modules caching
-  #   volumes:
-  #     # - source: ./server
-  #     #   target: /kashafty/server
-  #     #   type: bind
-  #     # - source: ./client
-  #     #   target: /kashafty/client
-  #     #   type: bind
-  #     - source: .
-  #       target: /kashafty
-  #       type: bind
-  #     - source: ./node_modules
-  #       target: /kashafty/node_modules
-  #       type: bind
-  #     - source: ./client/node_modules
-  #       target: /kashafty/client/node_modules
-  #       type: bind
