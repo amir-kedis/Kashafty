@@ -85,6 +85,7 @@ const authController = {
     req: Request<any, any, LoginRequestBody>,
     res: Response,
   ): Promise<any> => {
+    console.log("I reached this route");
     try {
       const { email, password } = req.body;
 

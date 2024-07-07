@@ -12,9 +12,9 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://localhost:3000",
   "http://localhost:4173",
-  "https://kashafty.vercel.app/",
-  "https://kashafty-amir-kedis-projects.vercel.app/",
-  "https://kashafty-git-main-amir-kedis-projects.vercel.app/",
+  "https://kashafty.vercel.app",
+  "https://kashafty-amir-kedis-projects.vercel.app",
+  "https://kashafty-git-main-amir-kedis-projects.vercel.app",
 ];
 
 const corsOptions = {
