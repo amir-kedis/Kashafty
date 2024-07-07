@@ -39,7 +39,7 @@ app.use("/test", (_, res) => {
 });
 
 app.get("/", (_, res) => {
-  res.send("Kashafty API is working fine");
+  res.send("Kashafty API is working fine ✨");
 });
 
 app.use(notFound);

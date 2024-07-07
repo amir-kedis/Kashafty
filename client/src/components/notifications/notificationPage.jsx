@@ -12,7 +12,7 @@ export default function SendNotificationPage() {
   return (
     <div className="notifications container">
       <PageTitle title="الرسائل الواردة" />
-      <div className="notificationBox test">
+      <div className="notificationBox">
         {isFetchingAlerts
           ? "جاري التحميل"
           : alerts?.body?.length === 0
