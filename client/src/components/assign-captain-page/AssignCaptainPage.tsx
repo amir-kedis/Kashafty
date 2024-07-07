@@ -1,10 +1,11 @@
+import React from "react";
 import PageTitle from "../common/PageTitle";
 import "./AssignCaptainPage.scss";
 import ChangeCaptainType from "./ChangeCaptainType";
 import AssignSector from "./AssignSector";
 import UnitAssignSector from "./UnitAssignSector";
 
-export default function AssignCaptainPage() {
+const AssignCaptainPage: React.FC = () => {
   return (
     <div className="assign-captain-page container">
       <PageTitle title="تعيين قائد" />
@@ -27,4 +28,6 @@ export default function AssignCaptainPage() {
       </div>
     </div>
   );
-}
+};
+
+export default AssignCaptainPage;

@@ -1,3 +1,4 @@
+import React, { FormEvent } from "react";
 import { toast } from "react-toastify";
 import { useGetCaptainsQuery } from "../../redux/slices/captainsApiSlice";
 import Button from "../common/Button";
@@ -8,7 +9,7 @@ import {
   useUpdateSectorUnitCaptainMutation,
 } from "../../redux/slices/sectorApiSlice";
 
-export default function UnitAssignSector() {
+const UnitAssignSector: React.FC = () => {
   const [chosenCaptainId, setChosenCaptainId] = useState("");
   const [chosenSectorFullName, setChosenSectorFullName] = useState("");
 
@@ -19,13 +20,13 @@ export default function UnitAssignSector() {
     data: captains,
     isFetching: isFetchingCaptains,
     isSuccess,
-  } = useGetCaptainsQuery();
+  } = useGetCaptainsQuery({});
 
   let {
     data: sectors,
     isFetching: isFetchingSectors,
     isSuccess: isSuccessSectors,
-  } = useGetSectorsQuery();
+  } = useGetSectorsQuery({});
 
   if (isSuccess) {
     console.log({ captains: captains?.body });
@@ -37,7 +38,7 @@ export default function UnitAssignSector() {
     sectors = sectors?.body;
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     console.log({
@@ -72,11 +73,11 @@ export default function UnitAssignSector() {
           isFetchingSectors
             ? [{ sectorId: "", fullName: "جاري التحميل" }]
             : !sectors
-            ? [{ sectorId: "", fullName: "لا يوجد قطاعات" }]
-            : sectors?.map((sector) => ({
-                ...sector,
-                fullName: sector.baseName + " - " + sector.suffixName,
-              }))
+              ? [{ sectorId: "", fullName: "لا يوجد قطاعات" }]
+              : sectors?.map((sector) => ({
+                  ...sector,
+                  fullName: sector.baseName + " - " + sector.suffixName,
+                }))
         }
         displayMember={"fullName"}
         valueMember={"fullName"}
@@ -93,18 +94,18 @@ export default function UnitAssignSector() {
           isFetchingCaptains
             ? [{ captainId: "", fullName: "جاري التحميل" }]
             : !captains
-            ? [{ captainId: "", fullName: "لا يوجد قادة" }]
-            : captains
-                ?.filter((captain) => captain.type === "unit")
-                ?.map((captain) => ({
-                  ...captain,
-                  fullName:
-                    captain.firstName +
-                    " " +
-                    captain.middleName +
-                    " " +
-                    captain.lastName,
-                }))
+              ? [{ captainId: "", fullName: "لا يوجد قادة" }]
+              : captains
+                  ?.filter((captain) => captain.type === "unit")
+                  ?.map((captain) => ({
+                    ...captain,
+                    fullName:
+                      captain.firstName +
+                      " " +
+                      captain.middleName +
+                      " " +
+                      captain.lastName,
+                  }))
         }
         displayMember={"fullName"}
         valueMember={"captainId"}
@@ -129,4 +130,6 @@ export default function UnitAssignSector() {
       </Button>
     </form>
   );
-}
+};
+
+export default UnitAssignSector;

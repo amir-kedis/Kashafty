@@ -1,3 +1,4 @@
+import React, { FormEvent } from "react";
 import { toast } from "react-toastify";
 import {
   useGetCaptainsQuery,
@@ -7,7 +8,7 @@ import Button from "../common/Button";
 import CustomSelect from "../common/CustomSelect";
 import { useState } from "react";
 
-export default function ChangeCaptainType() {
+const ChangeCaptainType: React.FC = () => {
   const [chosenCaptainId, setChosenCaptainId] = useState("");
   const [type, setType] = useState("regular");
 
@@ -18,14 +19,14 @@ export default function ChangeCaptainType() {
     data: captains,
     isFetching: isFetchingCaptains,
     isSuccess,
-  } = useGetCaptainsQuery();
+  } = useGetCaptainsQuery({});
 
   if (isSuccess) {
     console.log(captains?.body);
     captains = captains?.body;
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     console.log({ captainId: chosenCaptainId, type });
 
@@ -53,16 +54,16 @@ export default function ChangeCaptainType() {
           isFetchingCaptains
             ? [{ captainId: "", fullName: "جاري التحميل" }]
             : !captains
-            ? [{ captainId: "", fullName: "لا يوجد قادة" }]
-            : captains?.map((captain) => ({
-                ...captain,
-                fullName:
-                  captain.firstName +
-                  " " +
-                  captain.middleName +
-                  " " +
-                  captain.lastName,
-              }))
+              ? [{ captainId: "", fullName: "لا يوجد قادة" }]
+              : captains?.map((captain) => ({
+                  ...captain,
+                  fullName:
+                    captain.firstName +
+                    " " +
+                    captain.middleName +
+                    " " +
+                    captain.lastName,
+                }))
         }
         displayMember={"fullName"}
         valueMember={"captainId"}
@@ -114,4 +115,6 @@ export default function ChangeCaptainType() {
       </Button>
     </form>
   );
-}
+};
+
+export default ChangeCaptainType;
