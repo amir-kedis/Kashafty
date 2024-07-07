@@ -13,10 +13,11 @@ import {
   useGetSectorAttendanceQuery,
   useUpsertSectorAttendanceMutation,
 } from "../../redux/slices/attendanceApiSlice";
+import { RootState } from "../../redux/store";
 
 export default function ScoutsAttendance() {
   const [attendance, setAttendance] = useState([]);
-  const [subscription, setSubscription] = useState(0);
+  const [subscription, setSubscription] = useState<number>(0);
   const [chosenWeek, setChosenWeek] = useState("");
 
   let {
@@ -24,9 +25,9 @@ export default function ScoutsAttendance() {
     isLoading: isLoadingWeeks,
     isFetching: isFetchingWeeks,
     isSuccess: isSuccessWeeks,
-  } = useGetAllWeeksQuery();
+  } = useGetAllWeeksQuery({});
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
 
   const [insertSubscription, { isLoading: isLoadingInsertSubscription }] =
     useInsertSubscriptionMutation();
@@ -96,8 +97,8 @@ export default function ScoutsAttendance() {
       attendanceStatus: scout.present
         ? "attended"
         : scout.excused
-        ? "execused"
-        : "absent",
+          ? "execused"
+          : "absent",
       weekNumber: parseInt(chosenWeek),
       termNumber: weeks.find((week) => week.weekNumber === parseInt(chosenWeek))
         ?.termNumber,
@@ -108,7 +109,7 @@ export default function ScoutsAttendance() {
     console.log({ attendanceReqBody });
 
     const subscriptionReqBody = {
-      value: parseInt(subscription),
+      value: subscription,
       weekNumber: parseInt(chosenWeek),
       termNumber: weeks.find((week) => week.weekNumber === parseInt(chosenWeek))
         ?.termNumber,
@@ -122,7 +123,7 @@ export default function ScoutsAttendance() {
       const res = await insertSubscription(subscriptionReqBody).unwrap();
       if (res.status === 400 || res.status === 500)
         throw new Error(
-          "Something went wrong while inserting the subscription"
+          "Something went wrong while inserting the subscription",
         );
       toast.success("تم تسجيل الاشتراك بنجاح");
     } catch (err) {
@@ -217,7 +218,12 @@ export default function ScoutsAttendance() {
           <InfoBox title="العدد الكلي" value={attendance.length} />
           <InfoBox
             title="الحضور"
-            value={attendance && !isFetchingWeeks && !isFetchingScouts  && attendance?.filter((scout) => scout.present)?.length}
+            value={
+              attendance &&
+              !isFetchingWeeks &&
+              !isFetchingScouts &&
+              attendance?.filter((scout) => scout.present)?.length
+            }
           />
           <InfoBox
             title="نسبة الحضور"
@@ -226,7 +232,7 @@ export default function ScoutsAttendance() {
                 ? Math.round(
                     (attendance.filter((scout) => scout.present).length /
                       attendance.length) *
-                      100
+                      100,
                   ) + "%"
                 : "0%"
             }
@@ -241,11 +247,12 @@ export default function ScoutsAttendance() {
         <div className="info-box colorful">
           <h4>تسجيل الاشتراك</h4>
           <TextInput
+            name="subscription"
             label=""
             type="number"
             placeholder="المبلغ المدفوع"
             value={subscription.toString()}
-            onChange={(e) => setSubscription(e.target.value)}
+            onChange={(e) => setSubscription(parseInt(e.target.value))}
             required={true}
           />
           <p>يرجى ادخال إجمالي الاشتراك الفعلي</p>

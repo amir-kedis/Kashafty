@@ -6,6 +6,7 @@ type StatisticTableProps = {
   title: string;
   columnNames: { name: string }[];
   dataRows: { [key: string]: string }[];
+  [key: string]: any;
 };
 
 const StatisticTable: React.FC = ({

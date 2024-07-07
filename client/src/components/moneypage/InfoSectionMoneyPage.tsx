@@ -8,7 +8,8 @@ import {
 import StatisticTable from "../common/StatisticTable";
 import InfoBox from "../common/InfoBox";
 import "../../assets/styles/components/MoneyInfoSection.scss";
-const InfoSectionMoneyPage = () => {
+
+const InfoSectionMoneyPage: React.FC = () => {
   const ItemsColNames = [
     { name: "#" },
     { name: "الوصف" },
@@ -16,11 +17,13 @@ const InfoSectionMoneyPage = () => {
     { name: "النوع" },
   ];
 
-  const { data: budget, isFetching: isFetchingBudget } = useGetBudgetQuery();
-  const { data: income, isFetching: isFetchingIncome } = useGetIncomeQuery();
-  const { data: expense, isFetching: isFetchingExpense } = useGetExpenseQuery();
+  const { data: budget, isFetching: isFetchingBudget } = useGetBudgetQuery({});
+  const { data: income, isFetching: isFetchingIncome } = useGetIncomeQuery({});
+  const { data: expense, isFetching: isFetchingExpense } = useGetExpenseQuery(
+    {},
+  );
   const { data: currentWeekSub, isFetching: isFetchingCurrentWeekSub } =
-    useGetCurrentWeekSubscriptionsQuery();
+    useGetCurrentWeekSubscriptionsQuery({});
   if (budget && !isFetchingBudget) console.log("budget = ", budget);
   let AllItems = [{}];
 
@@ -78,8 +81,8 @@ const InfoSectionMoneyPage = () => {
             isFetchingCurrentWeekSub
               ? "جاري التحميل"
               : currentWeekSub?.body
-              ? currentWeekSub?.body + " جنيه"
-              : "لا يوجد"
+                ? currentWeekSub?.body + " جنيه"
+                : "لا يوجد"
           }
           color="dark"
         />
