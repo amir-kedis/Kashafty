@@ -17,8 +17,8 @@ export default function InsertSector() {
     useInsertSectorMutation();
 
   let unitCaptains = [];
-  
-  const { data, isFetching } = useGetCaptainsQuery();
+
+  const { data, isFetching } = useGetCaptainsQuery({});
 
   if (data && !isFetching) {
     unitCaptains = data.body.filter((captain) => captain.type === "unit");
@@ -65,9 +65,17 @@ export default function InsertSector() {
             type="text"
             name="sectorBaseName"
             value={sectorBaseName}
-            onChange={(e) => {setSectorBaseName(e.target.value); e.target.setCustomValidity('');}}
+            onChange={(e) => {
+              setSectorBaseName(e.target.value);
+              e.target.setCustomValidity("");
+            }}
             pattern="^[\u0621-\u064Aa-zA-Z]+$"
-            onInvalid={(e) => e.target.setCustomValidity('الرجاء إدخال أسم القطاع بطريقة صحيحة (بالعربية او الانجليزية)')}
+            onInvalid={(e) => {
+              const inputE = e.target as HTMLInputElement;
+              inputE.setCustomValidity(
+                "الرجاء إدخال أسم القطاع بطريقة صحيحة (بالعربية او الانجليزية)",
+              );
+            }}
             placeholder="اسم القطاع"
             required
           />
@@ -76,16 +84,28 @@ export default function InsertSector() {
             type="text"
             name="sectorSuffixName"
             value={sectorSuffixName}
-            onChange={(e) => {setSectorSuffixName(e.target.value); e.target.setCustomValidity('');}}
+            onChange={(e) => {
+              setSectorSuffixName(e.target.value);
+              e.target.setCustomValidity("");
+            }}
             pattern="^[\u0621-\u064Aa-zA-Z]+$"
-            onInvalid={(e) => e.target.setCustomValidity('الرجاء إدخال رقم القطاع بطريقة صحيحة')}
+            onInvalid={(e) =>
+              (e.target as HTMLInputElement).setCustomValidity(
+                "الرجاء إدخال رقم القطاع بطريقة صحيحة",
+              )
+            }
             placeholder="مثل: أ, ب, ج"
             required
           />
           <CustomSelect
             data={unitCaptains.map((captain) => ({
               ...captain,
-              text: captain?.firstName + " " + captain?.middleName + " " + captain?.lastName, 
+              text:
+                captain?.firstName +
+                " " +
+                captain?.middleName +
+                " " +
+                captain?.lastName,
             }))}
             label="قائد القطاع"
             name="unitSectorLeader"

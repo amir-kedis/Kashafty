@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import TextInput, { RadioInput } from "../common/Inputs";
 import CustomSelect from "../common/CustomSelect";
 import "../../assets/styles/components/InsertScoutPage.scss";
@@ -8,7 +8,7 @@ import Button from "../common/Button";
 import { toast } from "react-toastify";
 import { useGetSectorsQuery } from "../../redux/slices/sectorApiSlice";
 
-const InsertScoutPage = () => {
+const InsertScoutPage: React.FC = () => {
   const [firstName, setFirstName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -23,7 +23,7 @@ const InsertScoutPage = () => {
 
   let sectors = [];
 
-  const { data, isFetching } = useGetSectorsQuery();
+  const { data, isFetching } = useGetSectorsQuery({});
 
   if (data && !isFetching) {
     sectors = data.body;
@@ -46,7 +46,7 @@ const InsertScoutPage = () => {
     { name: "الثاني الثانوي", value: 11 },
     { name: "الثالث الثانوي", value: 12 },
   ];
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newScout = {
       firstName: firstName,
@@ -90,9 +90,17 @@ const InsertScoutPage = () => {
                   name="firstname"
                   placeholder="جون"
                   value={firstName}
-                  onChange={(e) => {setFirstName(e.target.value); e.target.setCustomValidity('');}}
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                    e.target.setCustomValidity("");
+                  }}
                   pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => e.target.setCustomValidity('الرجاء إدخال الاسم الاول فقط (باللغة العربية او الانجليزية)')}
+                  onInvalid={(e: FormEvent) => {
+                    const inputEl = e.target as HTMLInputElement;
+                    inputEl.setCustomValidity(
+                      "الرجاء إدخال الاسم الاول فقط (باللغة العربية او الانجليزية)",
+                    );
+                  }}
                   required={true}
                 />
               </div>
@@ -103,9 +111,17 @@ const InsertScoutPage = () => {
                   name="middlename"
                   placeholder="دوي"
                   value={middleName}
-                  onChange={(e) => {setMiddleName(e.target.value); e.target.setCustomValidity('');}}
+                  onChange={(e) => {
+                    setMiddleName(e.target.value);
+                    e.target.setCustomValidity("");
+                  }}
                   pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => e.target.setCustomValidity('الرجاء إدخال الاسم الاوسط فقط (باللغة العربية او الانجليزية)')}
+                  onInvalid={(e) => {
+                    const inputE = e.target as HTMLInputElement;
+                    inputE.setCustomValidity(
+                      "الرجاء إدخال الاسم الاوسط فقط (باللغة العربية او الانجليزية)",
+                    );
+                  }}
                   required={true}
                 />
               </div>
@@ -118,9 +134,17 @@ const InsertScoutPage = () => {
                   name="lastname"
                   placeholder="السيد"
                   value={lastName}
-                  onChange={(e) => {setLastName(e.target.value); e.target.setCustomValidity('');}}
+                  onChange={(e) => {
+                    setLastName(e.target.value);
+                    e.target.setCustomValidity("");
+                  }}
                   pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => e.target.setCustomValidity('الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)')}
+                  onInvalid={(e) => {
+                    const inputEl = e.target as HTMLInputElement;
+                    inputEl.setCustomValidity(
+                      "الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)",
+                    );
+                  }}
                   required={true}
                 />
               </div>
