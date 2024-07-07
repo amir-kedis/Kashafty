@@ -1,6 +1,6 @@
-import React from "react";
 import "../../assets/styles/components/activityCard.scss";
 import Button from "./Button";
+
 const ActivityCard = ({ activity }) => {
   const activityTypesList = {
     entertainment: "ترفيه",

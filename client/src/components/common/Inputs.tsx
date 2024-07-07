@@ -1,6 +1,16 @@
 import "./../../assets/styles/components/Inputs.scss";
 
-import PropTypes from "prop-types";
+type TextInputProps = {
+  label?: string;
+  type: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  required?: boolean;
+  pattern?: string;
+  onInvalid?: (e: React.FormEvent<HTMLInputElement>) => void;
+};
 
 function TextInput({
   label,
@@ -12,7 +22,7 @@ function TextInput({
   required,
   pattern,
   onInvalid,
-}) {
+}: TextInputProps) {
   return (
     <label className="input input--text">
       {label}
@@ -29,30 +39,28 @@ function TextInput({
     </label>
   );
 }
-TextInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  type: PropTypes.string,
-  name: PropTypes.string,
-  value: PropTypes.string || PropTypes.number,
-  onChange: PropTypes.func,
-  placeholder: PropTypes.string,
-  required: PropTypes.bool,
+
+type TextAreaProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder: string;
+  required?: boolean;
 };
 
 function TextArea({
   label,
-  type,
   name,
   value,
   onChange,
   placeholder,
   required,
-}) {
+}: TextAreaProps) {
   return (
     <label className="input input--text">
       {label}
       <textarea
-        type={type}
         name={name}
         placeholder={placeholder}
         value={value}
@@ -62,19 +70,22 @@ function TextArea({
     </label>
   );
 }
-TextInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  type: PropTypes.string,
-  name: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  placeholder: PropTypes.string,
-  required: PropTypes.bool,
-  pattern: PropTypes.string,
-  onInvalid: PropTypes.func,
+
+type RadioInputProps = {
+  label: string;
+  name: string;
+  required: boolean;
+  valuesArr: string[];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-function RadioInput({ label, name, required, valuesArr, onChange }) {
+function RadioInput({
+  label,
+  name,
+  required,
+  valuesArr,
+  onChange,
+}: RadioInputProps) {
   return (
     <label className="input input--radio">
       {label}
@@ -95,13 +106,6 @@ function RadioInput({ label, name, required, valuesArr, onChange }) {
     </label>
   );
 }
-RadioInput.propTypes = {
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string,
-  valuesArr: PropTypes.array,
-  onChange: PropTypes.func,
-  required: PropTypes.bool,
-};
 
-export { RadioInput, TextArea };
+export { RadioInput, TextArea, TextInput };
 export default TextInput;

@@ -1,8 +1,7 @@
-import PropTypes from "prop-types";
-
 //----------------------------------------------------------------
 // Usage:
-{/* <CustomSelect
+{
+  /* <CustomSelect
   name={"select"}
   label={"اختر اللغة"}
   data={[
@@ -13,11 +12,24 @@ import PropTypes from "prop-types";
   valueMember={"id"}
   selectedValue={selectedLanguage}
   required={true}
-  onChange={(e) => setSelectedLanguage(e.target.value)} */}
+  onChange={(e) => setSelectedLanguage(e.target.value)} */
+}
 // />
 //----------------------------------------------------------------
 
-export default function CustomSelect(props) {
+type CustomSelectProps = {
+  data: any[];
+  displayMember: string;
+  valueMember: string;
+  defaultValue?: string;
+  selectedValue: any;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  name?: string;
+  label?: string;
+  required?: boolean;
+};
+
+export default function CustomSelect(props: CustomSelectProps) {
   const {
     data,
     displayMember,
@@ -52,15 +64,3 @@ export default function CustomSelect(props) {
     </label>
   );
 }
-
-CustomSelect.propTypes = {
-  data: PropTypes.array.isRequired,
-  displayMember: PropTypes.string.isRequired,
-  valueMember: PropTypes.string.isRequired,
-  defaultValue: PropTypes.string,
-  selectedValue: PropTypes.any,
-  onChange: PropTypes.func,
-  name: PropTypes.string,
-  label: PropTypes.string,
-  required: PropTypes.bool,
-};

@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { TextInput, RadioInput } from "../Inputs";
-import CustomSelect from "../CustomSelect";
 
 const AddScout = () => {
   const [firstName, setFirstName] = useState("");

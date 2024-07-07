@@ -5,22 +5,25 @@ import { useGetCaptainsQuery } from "../../redux/slices/captainsApiSlice";
 import { useGetAbsenceRateQuery } from "../../redux/slices/statsApiSlice";
 import { useGetAllScoutsCountQuery } from "../../redux/slices/scoutApiSlice";
 import { useGetBudgetQuery } from "../../redux/slices/financeApiSlice";
+import { RootState } from "../../redux/store";
 
 export default function InfoSection() {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
   const { type } = userInfo;
 
   const GeneralCaptainInfo = () => {
-    const { data: captains, isFetching } = useGetCaptainsQuery();
+    const { data: captains, isFetching } = useGetCaptainsQuery({});
     const captainCount = captains?.body.length;
 
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetAbsenceRateQuery();
+      useGetAbsenceRateQuery({});
 
     const { data: scouts, isFetching: isFetchingScoutsCount } =
-      useGetAllScoutsCountQuery();
+      useGetAllScoutsCountQuery({});
 
-    const { data: budget, isFetching: isFetchingBudget } = useGetBudgetQuery();
+    const { data: budget, isFetching: isFetchingBudget } = useGetBudgetQuery(
+      {},
+    );
 
     if (budget && !isFetchingBudget) console.log(budget);
     if (absenceRate && !isFetchingAbsence) console.log(absenceRate);
@@ -79,10 +82,10 @@ export default function InfoSection() {
   const RegularCaptainInfo = () => {
     //TODO: ADD UNIT CAPTAIN DATA INSTEAD OF GLOBAL DATA
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetAbsenceRateQuery();
+      useGetAbsenceRateQuery({});
 
     const { data: scouts, isFetching: isFetchingScoutsCount } =
-      useGetAllScoutsCountQuery();
+      useGetAllScoutsCountQuery({});
 
     return (
       <>
@@ -114,14 +117,14 @@ export default function InfoSection() {
 
   const UnitCaptainInfo = () => {
     //TODO: ADD UNIT CAPTAIN DATA INSTEAD OF GLOBAL DATA
-    const { data: captains, isFetching } = useGetCaptainsQuery();
+    const { data: captains, isFetching } = useGetCaptainsQuery({});
     const captainCount = captains?.body.length;
 
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetAbsenceRateQuery();
+      useGetAbsenceRateQuery({});
 
     const { data: scouts, isFetching: isFetchingScoutsCount } =
-      useGetAllScoutsCountQuery();
+      useGetAllScoutsCountQuery({});
 
     return (
       <>
@@ -135,7 +138,7 @@ export default function InfoSection() {
                 : absenceRate?.body?.absenceRate + "%"
           }
           color="dark"
-          className="span-2-cols"
+          spans
         />
         <InfoBox
           title="عدد القادة"

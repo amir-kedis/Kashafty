@@ -7,17 +7,18 @@ import {
 } from "../../redux/slices/termApiSlice";
 import Button from "./Button";
 import InfoBox from "./InfoBox";
+import { RootState } from "../../redux/store";
 
 export default function TermInfoSection() {
-  const { data: termInfo, isFetching: isFetchingTerm } = useGetCurTermQuery();
-  const { data: curWeek, isFetching: isFetchingWeek } = useGetCurWeekQuery();
+  const { data: termInfo, isFetching: isFetchingTerm } = useGetCurTermQuery({});
+  const { data: curWeek, isFetching: isFetchingWeek } = useGetCurWeekQuery({});
   const {
     data: weeksLeft,
     isFetching: isFetchingWeeksLeft,
     isLoading,
-  } = useGetRemainingWeeksQuery();
+  } = useGetRemainingWeeksQuery({});
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
 
   // if (
   //   termInfo &&
@@ -45,8 +46,8 @@ export default function TermInfoSection() {
             isFetchingTerm || isLoading
               ? "جاري التحميل"
               : !termInfo
-              ? "لا يوجد بيانات"
-              : termInfo?.body?.termName
+                ? "لا يوجد بيانات"
+                : termInfo?.body?.termName
           }
         />
         <InfoBox
@@ -56,8 +57,8 @@ export default function TermInfoSection() {
             isFetchingWeek || isLoading
               ? "جاري التحميل"
               : !curWeek
-              ? "0"
-              : curWeek?.body?.weekNumber
+                ? "0"
+                : curWeek?.body?.weekNumber
           }
         />
         <InfoBox
@@ -67,8 +68,8 @@ export default function TermInfoSection() {
             isFetchingWeeksLeft || isLoading
               ? "جاري التحميل"
               : !weeksLeft
-              ? "0"
-              : weeksLeft?.body
+                ? "0"
+                : weeksLeft?.body
           }
         />
       </div>

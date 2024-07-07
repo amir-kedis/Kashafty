@@ -11,6 +11,7 @@ import {
   useGetUnitAttendanceQuery,
   useUpsertUnitAttendanceMutation,
 } from "../../redux/slices/attendanceApiSlice";
+import { RootState } from "../../redux/store";
 
 export default function CaptainsAttendance() {
   const [attendance, setAttendance] = useState([]);
@@ -21,9 +22,9 @@ export default function CaptainsAttendance() {
     isLoading: isLoadingWeeks,
     isFetching: isFetchingWeeks,
     isSuccess: isSuccessWeeks,
-  } = useGetAllWeeksQuery();
+  } = useGetAllWeeksQuery({});
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
 
   const [upsertAttendance, { isLoading: isLoadingUpsertAttendance }] =
     useUpsertUnitAttendanceMutation();
@@ -62,7 +63,7 @@ export default function CaptainsAttendance() {
       unitCaptainId: userInfo.captainId,
       weekNumber: parseInt(chosenWeek),
       termNumber: weeks?.find(
-        (week) => week.weekNumber === parseInt(chosenWeek)
+        (week) => week.weekNumber === parseInt(chosenWeek),
       )?.termNumber,
     });
   }
@@ -103,8 +104,8 @@ export default function CaptainsAttendance() {
       attendanceStatus: scout.present
         ? "attended"
         : scout.excused
-        ? "execused"
-        : "absent",
+          ? "execused"
+          : "absent",
       weekNumber: parseInt(chosenWeek),
       termNumber: weeks.find((week) => week.weekNumber === parseInt(chosenWeek))
         ?.termNumber,
@@ -211,7 +212,7 @@ export default function CaptainsAttendance() {
                 ? Math.round(
                     (attendance.filter((scout) => scout.present).length /
                       attendance.length) *
-                      100
+                      100,
                   ) + "%"
                 : "0%"
             }

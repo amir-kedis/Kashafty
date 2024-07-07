@@ -18,11 +18,12 @@ import {
 import logo from "../../assets/images/logo.svg";
 // styles
 import "../../assets/styles/components/Nav.scss";
+import { RootState } from "../../redux/store";
 
 export default function Nav() {
   const [show, setShow] = useState(false);
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -39,13 +40,14 @@ export default function Nav() {
 
   const handleLogout = async () => {
     try {
-      await logout().unwrap();
+      await logout({}).unwrap();
       toast.dark("تم تسجيل الخروج بنجاح");
       navigate("/");
     } catch (err) {
       toast.dark("حدث خطأ ما");
       toast.error(err?.data?.message || err.error || JSON.stringify(err));
       console.error(err);
+      navigate("/");
     }
     dispatch(clearCredentials());
   };
@@ -61,7 +63,7 @@ export default function Nav() {
         </div>
         {show && (
           <div className="Nav__icons">
-            <Link onClick={handleLogout}>
+            <Link onClick={handleLogout} to="/">
               <ArrowLeftOnRectangleIcon className="Nav__icon" />
             </Link>
             <Link to="/profile">

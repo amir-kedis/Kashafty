@@ -1,4 +1,5 @@
 import "../../assets/styles/components/UserActions.scss";
+import { RootState } from "../../redux/store";
 import Button from "./Button";
 import { useSelector } from "react-redux";
 
@@ -22,7 +23,7 @@ const ActionRoutes = {
 };
 
 export default function UserActions() {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
   const { type } = userInfo;
 
   const GeneralCaptainActions = () => {
