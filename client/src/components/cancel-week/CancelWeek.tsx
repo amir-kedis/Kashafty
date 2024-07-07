@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import PageTitle from "../common/PageTitle";
 import CustomCheckbox from "../common/CustomCheckbox";
 import Button from "../common/Button";
@@ -13,11 +13,11 @@ export default function CancelWeek() {
   const [cancelWeek, { isLoading }] = useCancelWeekMutation();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
-      const res = await cancelWeek().unwrap();
+      const res = await cancelWeek({}).unwrap();
       if (res.status === 400 || res.status === 500)
         throw new Error("Something went wrong while canceling the week");
       toast.success("تم إلغاء الأسبوع بنجاح");
