@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -7,6 +7,7 @@ import TextInput from "../common/Inputs";
 import "./logIn.scss";
 import { useLoginMutation } from "../../redux/slices/usersApiSlice";
 import { setCredentials } from "../../redux/slices/authSlice";
+import { RootState } from "../../redux/store";
 
 export default function LogIn() {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ export default function LogIn() {
 
   const [login, { isLoading }] = useLoginMutation();
 
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     if (userInfo) {
@@ -25,7 +26,7 @@ export default function LogIn() {
     }
   }, [navigate, userInfo]);
 
-  const submitHandler = async (e) => {
+  const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
@@ -49,9 +50,16 @@ export default function LogIn() {
             name="email"
             value={email}
             placeholder="regular@gmail.com"
-            onChange={(e) => {setEmail(e.target.value); e.target.setCustomValidity('');}}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              e.target.setCustomValidity("");
+            }}
             pattern="^[a-zA-Z0-9._%\+\-]+@[a-zA-Z0-9._%\+\-]+\.[a-z]{2,}$"
-            onInvalid={(e) => e.target.setCustomValidity('الرجاء إدخال بريد إليكتروني صحيح')}
+            onInvalid={(e) =>
+              (e.target as HTMLInputElement).setCustomValidity(
+                "الرجاء إدخال بريد إليكتروني صحيح",
+              )
+            }
             required={true}
           />
           <TextInput
