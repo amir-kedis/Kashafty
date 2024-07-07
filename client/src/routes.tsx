@@ -1,5 +1,4 @@
-// routes.jsx is the main router for the application
-// Will have the routes in it
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes as Switch,
@@ -36,44 +35,36 @@ import CancelWeek from "./components/cancel-week/CancelWeek";
 import ActivityPage from "./components/activitypage/ActivityPage";
 import AddActivityPage from "./components/addactivitypage/AddActivityPage";
 import StatsPage from "./components/stats-page/StatsPage";
-function Routes() {
+
+const Routes: React.FC = () => {
   return (
     <Router>
       <Switch>
         <Route element={<PublicLayout />}>
-          <Route exact path="/" element={<LandingPage />} />
-          <Route exact path="/signUp" element={<SignUp />} />
-          <Route exact path="/logIn" element={<LogIn />} />
-          <Route exact path="/dashboard" element={<Dashboard />} />
-          <Route exact path="/profile" element={<CaptainProfile />} />
-          <Route exact path="/start-new-term" element={<InsertTermPage />} />
-          <Route exact path="/edit-term" element={<UpdateTermPage />} />
-          <Route exact path="/add-sector" element={<InsertSector />} />
-          <Route exact path="/assign-captain" element={<AssignCaptainPage />} />
-          <Route exact path="/add-scout" element={<InsertScoutPage />} />
-          <Route exact path="/update-scout" element={<UpdateScoutPage />} />
-          <Route exact path="/cancel-week" element={<CancelWeek />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/signUp" element={<SignUp />} />
+          <Route path="/logIn" element={<LogIn />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<CaptainProfile />} />
+          <Route path="/start-new-term" element={<InsertTermPage />} />
+          <Route path="/edit-term" element={<UpdateTermPage />} />
+          <Route path="/add-sector" element={<InsertSector />} />
+          <Route path="/assign-captain" element={<AssignCaptainPage />} />
+          <Route path="/add-scout" element={<InsertScoutPage />} />
+          <Route path="/update-scout" element={<UpdateScoutPage />} />
+          <Route path="/cancel-week" element={<CancelWeek />} />
+          <Route path="/send-notification" element={<SendNotificationPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/record-scouts-absence" element={<ScoutsAttendance />} />
           <Route
-            exact
-            path="/send-notification"
-            element={<SendNotificationPage />}
-          />
-          <Route exact path="/notifications" element={<NotificationsPage />} />
-          <Route
-            exact
-            path="/record-scouts-absence"
-            element={<ScoutsAttendance />}
-          />
-          <Route
-            exact
             path="/record-captains-absence"
             element={<CaptainsAttendance />}
           />
-          <Route exact path="/finance" element={<MoneyPage />} />
-          <Route exact path="/edit-password" element={<EditPassword />} />
-          <Route exact path="/activities" element={<ActivityPage />} />
-          <Route exact path="/add-activity" element={<AddActivityPage />} />
-          <Route exact path="/stats" element={<StatsPage />} />
+          <Route path="/finance" element={<MoneyPage />} />
+          <Route path="/edit-password" element={<EditPassword />} />
+          <Route path="/activities" element={<ActivityPage />} />
+          <Route path="/add-activity" element={<AddActivityPage />} />
+          <Route path="/stats" element={<StatsPage />} />
         </Route>
 
         {/* Testing Routes */}
@@ -86,6 +77,6 @@ function Routes() {
       </Switch>
     </Router>
   );
-}
+};
 
 export default Routes;
