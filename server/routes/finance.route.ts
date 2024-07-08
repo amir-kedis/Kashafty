@@ -6,7 +6,11 @@ const financeRouter = Router();
 financeRouter.get("/", financeController.getBudget);
 financeRouter.get("/income", financeController.getIncome);
 financeRouter.get("/expense", financeController.getExpense);
-financeRouter.get("/subscription", financeController.getSubscription);
+financeRouter.get(
+  "/subscription",
+  getCurrentWeekMiddleware,
+  financeController.getSubscription,
+);
 financeRouter.get(
   "/subscription/all",
   getCurrentWeekMiddleware,

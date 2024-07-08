@@ -2,9 +2,18 @@ import "../../assets/styles/components/InfoSection.scss";
 import { useSelector } from "react-redux";
 import InfoBox from "./InfoBox";
 import { useGetCaptainsQuery } from "../../redux/slices/captainsApiSlice";
-import { useGetAbsenceRateQuery } from "../../redux/slices/statsApiSlice";
-import { useGetAllScoutsCountQuery } from "../../redux/slices/scoutApiSlice";
-import { useGetBudgetQuery } from "../../redux/slices/financeApiSlice";
+import {
+  useGetAbsenceRateQuery,
+  useGetSectorAbsenceRateQuery,
+} from "../../redux/slices/statsApiSlice";
+import {
+  useGetAllScoutsCountQuery,
+  useGetScoutsInSectorQuery,
+} from "../../redux/slices/scoutApiSlice";
+import {
+  useGetBudgetQuery,
+  useGetSectorSubscriptionQuery,
+} from "../../redux/slices/financeApiSlice";
 import { RootState } from "../../redux/store";
 
 export default function InfoSection() {
@@ -80,26 +89,38 @@ export default function InfoSection() {
   };
 
   const RegularCaptainInfo = () => {
-    //TODO: ADD UNIT CAPTAIN DATA INSTEAD OF GLOBAL DATA
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetAbsenceRateQuery({});
+      useGetSectorAbsenceRateQuery({
+        sectorBaseName: userInfo.rSectorBaseName,
+        sectorSuffixName: userInfo.rSectorSuffixName,
+      });
 
     const { data: scouts, isFetching: isFetchingScoutsCount } =
-      useGetAllScoutsCountQuery({});
+      useGetScoutsInSectorQuery({
+        sectorBaseName: userInfo.rSectorBaseName,
+        sectorSuffixName: userInfo.rSectorSuffixName,
+      });
+
+    const { data: budget, isFetching: isFetchingBudget } =
+      useGetSectorSubscriptionQuery({
+        sectorBaseName: userInfo.rSectorBaseName,
+        sectorSuffixName: userInfo.rSectorSuffixName,
+      });
 
     return (
       <>
         <InfoBox
-          title="متوسط نسبة الغياب"
+          title="نسبة غياب قطاعك"
           value={
             isFetchingAbsence
               ? "جاري التحميل"
               : !absenceRate
                 ? "لا يوجد بيانات"
-                : absenceRate?.body?.absenceRate + "%"
+                : Math.round(absenceRate?.body * 100) + "%"
           }
           color="dark"
         />
+
         <InfoBox
           title="عدد الأفراد"
           value={
@@ -110,6 +131,13 @@ export default function InfoSection() {
                 : scouts?.body?.length
           }
           color="dark"
+        />
+
+        <InfoBox
+          title="اشتراك الاسبوع الحالي"
+          value={isFetchingBudget ? "جاري التحميل" : budget.body}
+          spans
+          color="purple"
         />
       </>
     );

@@ -70,9 +70,6 @@ const statsController = {
     }
   },
 
-  // @desc    Get absence rate for scouts in a unit
-  // @route   GET /api/stats/scout/unit/:unitCaptainId
-  // @access  Private
   getScoutsInUnitAbsenceRate: async (req: StatsRequest, res: Response) => {
     try {
       const { unitCaptainId: unitCaptainIdStr } = req.params;
@@ -139,9 +136,12 @@ const statsController = {
     }
   },
 
-  // @desc    Get absence rate for scouts in a sector
-  // @route   GET /api/stats/scout/:sectorBaseName/:sectorSuffixName
-  // @access  Private
+  /* getSectorsAbsenceRate
+   *
+   * @desc Get attendance rate for all scouts in a certain sector
+   * @route GET /api/stats/scouts/sector
+   * @access private
+   */
   getScoutsInSectorAbsenceRate: async (req: StatsRequest, res: Response) => {
     try {
       const { sectorBaseName, sectorSuffixName } = req.params;
