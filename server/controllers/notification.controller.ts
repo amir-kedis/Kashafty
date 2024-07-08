@@ -99,8 +99,6 @@ const notificationController = {
       const status = statusStr as NotificationStatus;
       const type = typeStr as NotificationType;
 
-      console.log({ captainId, status, type });
-
       const notifications = await prisma.notification.findMany({
         where: {
           captainId: parseInt(captainId as string),
@@ -160,8 +158,6 @@ const notificationController = {
     try {
       const { id: idStr } = req.body;
       const id = parseInt(idStr);
-
-      console.log({ id });
 
       await prisma.notification.delete({
         where: {
