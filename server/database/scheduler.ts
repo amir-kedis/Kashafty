@@ -55,59 +55,59 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
       `Added week ${newWeek.weekNumber} for term ${currentTermNumber}`,
     );
 
-    // Send notification if absence is less than 50%
-    let scouts: Scout[] = await prisma.$queryRaw`WITH AttendanceCounts AS (
-                SELECT
-                    SA."scoutId",
-                    COUNT(*) FILTER (WHERE SA."attendanceStatus" = 'absent') AS absence_count,
-                    COUNT(*) FILTER (WHERE SA."attendanceStatus" = 'attended') AS attendance_count
-                FROM
-                    "ScoutAttendance" AS SA
-                    JOIN "Week" AS W ON SA."weekNumber" = W."weekNumber" AND SA."termNumber" = W."termNumber"
-                    JOIN "Scout" AS SC ON SA."scoutId" = SC."scoutId"
-                WHERE
-                    W."cancelled" = false AND
-                    SA."termNumber" = ${currentTermNumber}
-                GROUP BY
-                    SA."scoutId"
-            )
-            SELECT *
-            FROM
-                "Scout"
-            WHERE
-                "scoutId" IN (
-                    SELECT "scoutId"
-                    FROM AttendanceCounts
-                    WHERE absence_count / (absence_count + attendance_count) < 0.5
-                );`;
-
-    for (const scout of scouts) {
-      const message = `نسبة 50% من الغياب الكلي ${scout.firstName} ${scout.middleName} لقد تخطى الكشاف`;
-
-      const generalCaptains: Captain[] = await prisma.captain.findMany({
-        where: {
-          type: "general",
-        },
-      });
-
-      await prisma.notification.createMany({
-        data: generalCaptains.map((captain: Captain) => ({
-          message,
-          contentType: "attendance",
-          timestamp: currentDate,
-          RecieveNotification: {
-            create: {
-              captainId: captain.captainId,
-              status: "unread",
-            },
-          },
-        })),
-      });
-
-      console.log(
-        `Sent notification for ${scout.firstName} ${scout.middleName}`,
-      );
-    }
+    // // Send notification if absence is less than 50%
+    // let scouts: Scout[] = await prisma.$queryRaw`WITH AttendanceCounts AS (
+    //             SELECT
+    //                 SA."scoutId",
+    //                 COUNT(*) FILTER (WHERE SA."attendanceStatus" = 'absent') AS absence_count,
+    //                 COUNT(*) FILTER (WHERE SA."attendanceStatus" = 'attended') AS attendance_count
+    //             FROM
+    //                 "ScoutAttendance" AS SA
+    //                 JOIN "Week" AS W ON SA."weekNumber" = W."weekNumber" AND SA."termNumber" = W."termNumber"
+    //                 JOIN "Scout" AS SC ON SA."scoutId" = SC."scoutId"
+    //             WHERE
+    //                 W."cancelled" = false AND
+    //                 SA."termNumber" = ${currentTermNumber}
+    //             GROUP BY
+    //                 SA."scoutId"
+    //         )
+    //         SELECT *
+    //         FROM
+    //             "Scout"
+    //         WHERE
+    //             "scoutId" IN (
+    //                 SELECT "scoutId"
+    //                 FROM AttendanceCounts
+    //                 WHERE absence_count / (absence_count + attendance_count) < 0.5
+    //             );`;
+    //
+    // for (const scout of scouts) {
+    //   const message = `نسبة 50% من الغياب الكلي ${scout.firstName} ${scout.middleName} لقد تخطى الكشاف`;
+    //
+    //   const generalCaptains: Captain[] = await prisma.captain.findMany({
+    //     where: {
+    //       type: "general",
+    //     },
+    //   });
+    //
+    //   await prisma.notification.createMany({
+    //     data: generalCaptains.map((captain: Captain) => ({
+    //       message,
+    //       contentType: "attendance",
+    //       timestamp: currentDate,
+    //       RecieveNotification: {
+    //         create: {
+    //           captainId: captain.captainId,
+    //           status: "unread",
+    //         },
+    //       },
+    //     })),
+    //   });
+    //
+    //   console.log(
+    //     `Sent notification for ${scout.firstName} ${scout.middleName}`,
+    //   );
+    // }
   } catch (error) {
     console.log(error);
   }
