@@ -144,7 +144,6 @@ export default function InfoSection() {
   };
 
   const UnitCaptainInfo = () => {
-    //TODO: ADD UNIT CAPTAIN DATA INSTEAD OF GLOBAL DATA
     const { data: captains, isFetching } = useGetCaptainsQuery({});
     const captainCount = captains?.body.length;
 
@@ -163,7 +162,7 @@ export default function InfoSection() {
               ? "جاري التحميل"
               : !absenceRate
                 ? "لا يوجد بيانات"
-                : absenceRate?.body?.absenceRate + "%"
+                : Math.round(absenceRate?.body * 100) + "%"
           }
           color="dark"
           spans

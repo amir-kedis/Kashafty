@@ -28,7 +28,6 @@ statsRouter.get(
 // General stats
 statsRouter.get(
   "/scouts",
-  checkRankMiddleware("general"),
   getCurrentWeekMiddleware,
   statsController.getAllScoutsAbsenceRate,
 );
