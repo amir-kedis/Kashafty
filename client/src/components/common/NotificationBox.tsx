@@ -1,30 +1,53 @@
+import { useSelector } from "react-redux";
 import "../../assets/styles/components/NotificationBox.scss";
-import { useGetAllAlertsQuery } from "../../redux/slices/alertApiSlice";
+import {
+  useGetNotificationsQuery,
+  useUpdateNotificationMutation,
+  useDeleteNotificationMutation,
+} from "../../redux/slices/notificationsApiSlice";
+import { RootState } from "../../redux/store";
 import Alert from "./Alerts";
+import { useNavigate } from "react-router-dom";
 
 export default function NotificationBox() {
-  const { data: alerts, isFetching: isFetchingAlerts } = useGetAllAlertsQuery({
-    status: "unread",
-    contentType: "all",
-  });
+  const user = useSelector((state: RootState) => state.auth.userInfo);
+
+  const { data: notifications, isFetching: isFetchingAlerts } =
+    useGetNotificationsQuery({
+      captainId: user.captainId,
+    });
+
+  const [updateNotification] = useUpdateNotificationMutation();
+
+  const navigate = useNavigate();
+
+  console.log(notifications);
 
   return (
     <div className="notificationBox">
       {isFetchingAlerts
         ? "جاري التحميل"
-        : alerts?.body?.length === 0
+        : notifications?.body?.length === 0
           ? "لا يوجد إشعارات"
-          : alerts?.body?.map((alert) => {
+          : notifications?.body?.map((notification) => {
               return (
                 <Alert
-                  key={alert.notificationId}
-                  title={"إشعار " + alert.notificationId}
-                  info={alert.message}
+                  key={notification.id}
+                  title={notification.title}
+                  info={notification.message}
                   buttontext={"عرض المزيد"}
-                  Onclick={alert.onClick}
+                  OnShowMoreClick={() => {
+                    navigate("/notifications");
+                  }}
+                  OnCloseClick={() => {
+                    updateNotification({
+                      status: "READ",
+                      id: notification.id,
+                    });
+                  }}
                   showRightBox={true}
                   color={
-                    alert.contentType == "attendance" ? "red" : "mint-green"
+                    notification.type == "attendance" ? "red" : "mint-green"
                   }
                 />
               );

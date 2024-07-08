@@ -17,7 +17,7 @@
 
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
-import { NotificationStatus, Prisma } from "@prisma/client";
+import { NotificationStatus, NotificationType, Prisma } from "@prisma/client";
 
 const notificationController = {
   /* sendNotification
@@ -94,12 +94,16 @@ const notificationController = {
    */
   getNotification: async (req: Request, res: Response) => {
     try {
-      const { captainId: captainIdStr, status, type } = req.body;
-      const captainId = parseInt(captainIdStr);
+      const { captainId, status: statusStr, type: typeStr } = req.query;
+
+      const status = statusStr as NotificationStatus;
+      const type = typeStr as NotificationType;
+
+      console.log({ captainId, status, type });
 
       const notifications = await prisma.notification.findMany({
         where: {
-          captainId,
+          captainId: parseInt(captainId as string),
           status: status || NotificationStatus.UNREAD,
           type: type || undefined,
         },
@@ -156,6 +160,8 @@ const notificationController = {
     try {
       const { id: idStr } = req.body;
       const id = parseInt(idStr);
+
+      console.log({ id });
 
       await prisma.notification.delete({
         where: {

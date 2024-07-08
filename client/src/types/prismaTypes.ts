@@ -50,9 +50,9 @@ export enum Gender {
 }
 
 export enum NotificationStatus {
-  read = "read",
-  unread = "unread",
-  archived = "archived",
+  READ = "READ",
+  UNREAD = "UNREAD",
+  DELETED = "DELETED",
 }
 
 export enum NotificationType {
@@ -127,22 +127,20 @@ export interface FinanceItem {
 }
 
 export interface Notification {
-  notificationId: number;
-  timestamp: Date;
+  id: number;
+  type: NotificationType;
+  status: NotificationStatus;
+  title: string;
   message: string;
-  contentType: NotificationType;
+  createdAt: Date;
+  updatedAt: Date;
+  captainId: number;
 }
 
 export interface OtherItem {
   description: string;
   itemId: number;
   generalCaptainId?: number;
-}
-
-export interface RecieveNotification {
-  notificationId: number;
-  captainId: number;
-  status?: string;
 }
 
 export interface Report {
