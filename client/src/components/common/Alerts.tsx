@@ -4,7 +4,7 @@ import { BellAlertIcon } from "@heroicons/react/24/outline";
 type AlertProps = {
   title: string;
   info: string;
-  buttontext: string;
+  buttontext?: string;
   OnShowMoreClick: () => void;
   OnCloseClick: () => void;
   showRightBox: boolean;
@@ -48,9 +48,11 @@ const Alert = ({
         </svg>
       </div>
       <p>{info}</p>
-      <button className={"alert-btn " + color} onClick={OnShowMoreClick}>
-        {buttontext}
-      </button>
+      {buttontext && (
+        <button className={"alert-btn " + color} onClick={OnShowMoreClick}>
+          {buttontext}
+        </button>
+      )}
     </div>
   );
 };

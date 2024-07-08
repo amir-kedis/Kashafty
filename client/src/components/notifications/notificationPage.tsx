@@ -1,37 +1,92 @@
 import PageTitle from "../common/PageTitle";
 import Alert from "../common/Alerts";
 import "./notificationPage.scss";
-// import { useGetAllAlertsQuery } from "../../redux/slices/alertApiSlice";
+import {
+  useDeleteNotificationMutation,
+  useGetNotificationsQuery,
+  useUpdateNotificationMutation,
+} from "../../redux/slices/notificationsApiSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
-export default function SendNotificationPage() {
-  // const { data: alerts, isFetching: isFetchingAlerts } = useGetAllAlertsQuery({
-  //   status: "all",
-  //   contentType: "all",
-  // });
-  // return (
-  //   <div className="notifications container">
-  //     <PageTitle title="الرسائل الواردة" />
-  //     <div className="notificationBox">
-  //       {isFetchingAlerts
-  //         ? "جاري التحميل"
-  //         : alerts?.body?.length === 0
-  //           ? "لا يوجد إشعارات"
-  //           : alerts?.body?.map((alert) => {
-  //               return (
-  //                 <Alert
-  //                   key={alert.notificationId}
-  //                   title={"إشعار " + alert.notificationId}
-  //                   info={alert.message}
-  //                   buttontext={"عرض المزيد"}
-  //                   Onclick={alert.onClick}
-  //                   showRightBox={true}
-  //                   color={
-  //                     alert.contentType == "attendance" ? "red" : "mint-green"
-  //                   }
-  //                 />
-  //               );
-  //             })}
-  //     </div>
-  //   </div>
-  // );
+export default function NotificationPage() {
+  const user = useSelector((state: RootState) => state.auth.userInfo);
+
+  const { data: notifications, isFetching: isFetchingNotifications } =
+    useGetNotificationsQuery({
+      captainId: user.captainId,
+    });
+
+  const { data: ReadNotifications, isFetching: isFetchingReadNotifications } =
+    useGetNotificationsQuery({
+      captainId: user.captainId,
+      status: "READ",
+    });
+
+  const [updateNotification] = useUpdateNotificationMutation();
+  const [deleteNotification] = useDeleteNotificationMutation();
+
+  return (
+    <>
+      <div className="notifications container">
+        <PageTitle title="الرسائل الواردة" />
+        <div className="notificationBox">
+          {isFetchingNotifications
+            ? "جاري التحميل"
+            : notifications?.body?.length === 0
+              ? "لا يوجد إشعارات"
+              : notifications?.body?.map((notification) => {
+                  return (
+                    <Alert
+                      key={notification.id}
+                      title={notification.title}
+                      info={notification.message}
+                      OnShowMoreClick={() => {}}
+                      OnCloseClick={() => {
+                        updateNotification({
+                          status: "READ",
+                          id: notification.id,
+                        });
+                      }}
+                      showRightBox={true}
+                      color={
+                        notification.type == "attendance" ? "red" : "mint-green"
+                      }
+                    />
+                  );
+                })}
+          <PageTitle title="الرسائل المقروءة" />
+          {isFetchingReadNotifications
+            ? "جاري التحميل"
+            : ReadNotifications?.body?.length === 0
+              ? "لا يوجد إشعارات"
+              : ReadNotifications?.body?.map((notification) => {
+                  return (
+                    <Alert
+                      key={notification.id}
+                      title={notification.title}
+                      info={notification.message}
+                      buttontext={"حذف"}
+                      OnShowMoreClick={() => {
+                        deleteNotification({
+                          id: notification.id,
+                        });
+                      }}
+                      OnCloseClick={() => {
+                        updateNotification({
+                          status: "READ",
+                          id: notification.id,
+                        });
+                      }}
+                      showRightBox={true}
+                      color={
+                        notification.type == "attendance" ? "red" : "mint-green"
+                      }
+                    />
+                  );
+                })}
+        </div>
+      </div>
+    </>
+  );
 }
