@@ -18,7 +18,7 @@ const notificationController = {
         return res.status(400).json({ message: "Missing required fields" });
 
       let isToAll = false;
-      if (!sectorBaseName || !sectorSuffixName) isToAll = true;
+      if (!sectorBaseName && !sectorSuffixName) isToAll = true;
 
       let sentNotifications: Prisma.BatchPayload;
 
@@ -63,6 +63,33 @@ const notificationController = {
       res
         .status(200)
         .json({ message: `Notification sent to ${sentNotifications.count}` });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+  /* getNotification
+   *
+   * @desc Get all notifications for a specific user
+   * @endpoint GET /api/notification
+   * @access Private
+   */
+  getNotification: async (req: Request, res: Response) => {
+    try {
+      const { captainId: captainIdStr, status, type } = req.body;
+      const captainId = parseInt(captainIdStr);
+
+      const notifications = await prisma.notification.findMany({
+        where: {
+          captainId,
+          status: status || NotificationStatus.UNREAD,
+          type: type || undefined,
+        },
+      });
+
+      res
+        .status(200)
+        .json({ message: "Notifications fetched", body: notifications });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
