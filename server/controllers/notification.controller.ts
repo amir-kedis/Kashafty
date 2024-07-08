@@ -1,3 +1,20 @@
+/* ============================================================================
+ *
+ *
+ *  ███╗   ██╗ ██████╗ ████████╗    ███████╗██╗   ██╗███████╗
+ *  ████╗  ██║██╔═══██╗╚══██╔══╝    ██╔════╝╚██╗ ██╔╝██╔════╝
+ *  ██╔██╗ ██║██║   ██║   ██║       ███████╗ ╚████╔╝ ███████╗
+ *  ██║╚██╗██║██║   ██║   ██║       ╚════██║  ╚██╔╝  ╚════██║
+ *  ██║ ╚████║╚██████╔╝   ██║██╗    ███████║   ██║   ███████║██╗
+ *  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝╚═╝    ╚══════╝   ╚═╝   ╚══════╝╚═╝
+ *
+ *  Simple notification controller
+ *  This controller is responsible for handling all notification related
+ *
+ *  Author: Amir Kedis
+ *
+ */
+
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
 import { NotificationStatus, Prisma } from "@prisma/client";
@@ -123,6 +140,30 @@ const notificationController = {
       res
         .status(200)
         .json({ message: "Notification updated", body: updatedNotification });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  /* deleteNotification
+   *
+   * @desc Delete a notification
+   * @endpoint DELETE /api/notification
+   * @access Private
+   */
+  deleteNotification: async (req: Request, res: Response) => {
+    try {
+      const { id: idStr } = req.body;
+      const id = parseInt(idStr);
+
+      await prisma.notification.delete({
+        where: {
+          id,
+        },
+      });
+
+      res.status(200).json({ message: "Notification deleted" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
