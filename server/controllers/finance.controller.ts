@@ -244,9 +244,14 @@ const financeController = {
         },
       });
 
+      const subscriptionValue = subscription.reduce(
+        (acc, curr) => acc + curr.FinanceItem.value,
+        0,
+      );
+
       res.status(200).json({
         message: "Get subscription successfully",
-        body: subscription,
+        body: subscriptionValue,
       });
     } catch (error) {
       console.log(error);
