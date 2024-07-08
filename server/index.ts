@@ -1,7 +1,6 @@
 import express, { Application } from "express";
 import cors from "cors";
 import apiRouter from "./routes/api.route";
-import alertRouter from "./routes/alert.route";
 import { notFound, errorHandler } from "./middlewares/error.middleware";
 import cookieParser from "cookie-parser";
 
@@ -32,7 +31,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", apiRouter);
-app.use("/alert", alertRouter);
 
 app.use("/test", (_, res) => {
   res.send("Kashafty API nested endpoints is working fine finally");
