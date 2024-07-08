@@ -68,6 +68,7 @@ const notificationController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+
   /* getNotification
    *
    * @desc Get all notifications for a specific user
@@ -90,6 +91,38 @@ const notificationController = {
       res
         .status(200)
         .json({ message: "Notifications fetched", body: notifications });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  /* updateNotification
+   *
+   * @desc Update the status of a notification
+   * @endpoint PATCH /api/notification
+   * @access Private
+   */
+  updateNotification: async (req: Request, res: Response) => {
+    try {
+      const { id: idStr, status } = req.body;
+      const id = parseInt(idStr);
+
+      if (!status)
+        return res.status(400).json({ message: "Missing required fields" });
+
+      const updatedNotification = await prisma.notification.update({
+        where: {
+          id,
+        },
+        data: {
+          status,
+        },
+      });
+
+      res
+        .status(200)
+        .json({ message: "Notification updated", body: updatedNotification });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });

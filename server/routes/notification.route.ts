@@ -5,6 +5,7 @@ const notificationRouter = Router();
 
 notificationRouter.post("/", notificationController.sendNotification);
 notificationRouter.get("/", notificationController.getNotification);
+notificationRouter.patch("/", notificationController.updateNotification);
 
 // alertRouter.post("/", alertController.createAlert);
 // alertRouter.get("/all", alertController.getAllAlerts);
