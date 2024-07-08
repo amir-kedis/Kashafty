@@ -1,29 +1,24 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import PageTitle from "../common/PageTitle";
-import { TextArea, RadioInput } from "../common/Inputs";
+import TextInput, { TextArea, RadioInput } from "../common/Inputs";
 import CustomSelect from "../common/CustomSelect";
 import Button from "../common/Button";
 import { useGetSectorsQuery } from "../../redux/slices/sectorApiSlice";
-import {
-  useSendAlertMutation,
-  useCreateAlertMutation,
-} from "../../redux/slices/alertApiSlice";
+import { useSendNotificationMutation } from "../../redux/slices/notificationsApiSlice";
 import "./sendNotificationPage.scss";
 import { toast } from "react-toastify";
 
 export default function SendNotificationPage() {
+  const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [toWhom, setToWhom] = useState("");
   const [receiver, setReceiver] = useState("");
 
   const { data: sectorsData, isFetching: isFetchingSectors } =
-    useGetSectorsQuery();
-
-  const [createNotification, { isLoading: isLoadingCreateNotification }] =
-    useCreateAlertMutation();
+    useGetSectorsQuery({});
 
   const [sendNotification, { isLoading: isLoadingSendNotification }] =
-    useSendAlertMutation();
+    useSendNotificationMutation();
 
   let sectors = [];
 
@@ -34,35 +29,23 @@ export default function SendNotificationPage() {
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      let body: any = {
-        message: message,
-        contentType: "other",
-      };
-      let res = await createNotification(body).unwrap();
-      if (res.status === 400 || res.status === 500)
-        throw new Error("Something went wrong while creating notification");
-
-      const notificationId = res?.body?.notificationId;
-
-      if (toWhom === "إرسال إلى الكل") {
-        body = {};
-      } else {
-        body = {
-          sectorBaseName: receiver.split(" ")[0],
-          sectorSuffixName: receiver.split(" ")[1] || "",
-        };
-      }
-      res = await sendNotification(notificationId, body).unwrap();
-      if (res.status === 400 || res.status === 500)
-        throw new Error("Something went wrong while sending notification");
       toast.success("تم إرسال الإشعار بنجاح");
+
+      const response = await sendNotification({
+        type: "other",
+        title,
+        message,
+        sectorBaseName: receiver.split(" ")[0],
+        sectorSuffixName: receiver.split(" ")[1],
+      }).unwrap();
+
+      toast.success(response.message);
     } catch (err) {
       console.log(err);
       toast.error("حدث خطأ أثناءإرسال الإشعار");
-      toast.error(JSON.stringify(err));
     }
   };
 
@@ -70,6 +53,17 @@ export default function SendNotificationPage() {
     <div className="send-notification container">
       <PageTitle title="إرسال إشعار" />
       <form onSubmit={handleSubmit}>
+        <div className="form-element">
+          <TextInput
+            type="text"
+            name="title"
+            placeholder="عنوان الإشعار"
+            label="عنوان الإشعار"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required={true}
+          />
+        </div>
         <div className="form-element">
           <TextArea
             name="message"
@@ -118,7 +112,7 @@ export default function SendNotificationPage() {
         <Button className="send-button Button--medium Button--primary-darker">
           إرسال الإشعار
         </Button>
-        {(isLoadingCreateNotification || isLoadingSendNotification) && (
+        {isLoadingSendNotification && (
           <p
             style={{
               direction: "rtl",
