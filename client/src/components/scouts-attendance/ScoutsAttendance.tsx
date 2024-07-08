@@ -187,6 +187,7 @@ export default function ScoutsAttendance() {
           </thead>
           <tbody>
             {attendance &&
+              chosenWeek != "" &&
               !isFetchingWeeks &&
               !isFetchingScouts &&
               attendance?.map((scout, index) => (

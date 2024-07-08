@@ -108,6 +108,7 @@ const scoutAttendanceController = {
         weekNumber: string | number;
         termNumber: string | number;
       } = req.query;
+
       weekNumber = parseInt(weekNumber);
       termNumber = parseInt(termNumber);
 
@@ -122,7 +123,7 @@ const scoutAttendanceController = {
       });
 
       // Filter ScoutAttendance for the specified weekNumber and termNumber
-      const result = scouts.map((scout) => {
+      const filteredWeeks = scouts.map((scout) => {
         const filteredAttendance = scout.ScoutAttendance.filter(
           (attendance) =>
             attendance.weekNumber === weekNumber &&
@@ -135,7 +136,14 @@ const scoutAttendanceController = {
         };
       });
 
-      console.log(result);
+      const result = filteredWeeks.map((scout) => {
+        return {
+          ...scout,
+          attendanceStatus: scout?.ScoutAttendance
+            ? scout?.ScoutAttendance[0]?.attendanceStatus
+            : null,
+        };
+      });
 
       res.status(200).json({
         message: "Successful retrieval",
