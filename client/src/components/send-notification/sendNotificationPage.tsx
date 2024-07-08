@@ -38,8 +38,10 @@ export default function SendNotificationPage() {
         type: "other",
         title,
         message,
-        sectorBaseName: receiver.split(" ")[0],
-        sectorSuffixName: receiver.split(" ")[1],
+        sectorBaseName:
+          toWhom === "إرسال إلى قطاع" ? receiver.split(" ")[0] : "",
+        sectorSuffixName:
+          toWhom === "إرسال إلى قطاع" ? receiver.split(" ")[1] : "",
       }).unwrap();
 
       toast.success(response.message);
