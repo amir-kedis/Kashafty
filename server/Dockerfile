@@ -1,7 +1,7 @@
 FROM node:22.3.0-alpine3.19
 
 # create working directory
-WORKDIR /kashafty
+WORKDIR /kashafty/server
 
 # copy server package.json
 COPY package*.json ./

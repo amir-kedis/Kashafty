@@ -62,24 +62,24 @@ model Aspect {
 }
 
 model Captain {
-  captainId                                                Int                   @id @default(autoincrement())
-  firstName                                                String                @db.VarChar(255)
-  middleName                                               String                @db.VarChar(255)
-  lastName                                                 String                @db.VarChar(255)
-  phoneNumber                                              String                @unique(map: "captain_phonenumber_unique") @db.VarChar(255)
-  email                                                    String                @unique(map: "captain_email_unique") @db.VarChar(255)
-  password                                                 String                @db.VarChar(255)
-  rSectorBaseName                                          String?               @db.VarChar(255)
-  rSectorSuffixName                                        String?               @db.VarChar(255)
+  captainId                                                Int                 @id @default(autoincrement())
+  firstName                                                String              @db.VarChar(255)
+  middleName                                               String              @db.VarChar(255)
+  lastName                                                 String              @db.VarChar(255)
+  phoneNumber                                              String              @unique(map: "captain_phonenumber_unique") @db.VarChar(255)
+  email                                                    String              @unique(map: "captain_email_unique") @db.VarChar(255)
+  password                                                 String              @db.VarChar(255)
+  rSectorBaseName                                          String?             @db.VarChar(255)
+  rSectorSuffixName                                        String?             @db.VarChar(255)
   gender                                                   Gender
   type                                                     CaptainType
   ActivityGuidance                                         ActivityGuidance[]
-  Sector_Captain_rSectorBaseName_rSectorSuffixNameToSector Sector?               @relation("Captain_rSectorBaseName_rSectorSuffixNameToSector", fields: [rSectorBaseName, rSectorSuffixName], references: [baseName, suffixName], map: "captain_sector_FK")
+  Sector_Captain_rSectorBaseName_rSectorSuffixNameToSector Sector?             @relation("Captain_rSectorBaseName_rSectorSuffixNameToSector", fields: [rSectorBaseName, rSectorSuffixName], references: [baseName, suffixName], map: "captain_sector_FK")
   CaptainAttendance                                        CaptainAttendance[]
+  notifications                                            Notification[]
   OtherItem                                                OtherItem[]
-  RecieveNotification                                      RecieveNotification[]
   Report                                                   Report[]
-  Sector_Sector_unitCaptainIdToCaptain                     Sector[]              @relation("Sector_unitCaptainIdToCaptain")
+  Sector_Sector_unitCaptainIdToCaptain                     Sector[]            @relation("Sector_unitCaptainIdToCaptain")
   Session                                                  Session[]
 }
 
@@ -104,11 +104,15 @@ model FinanceItem {
 }
 
 model Notification {
-  notificationId      Int                   @id @default(autoincrement())
-  timestamp           DateTime              @db.Timestamp(0)
-  message             String                @db.VarChar(255)
-  contentType         NotificationType
-  RecieveNotification RecieveNotification[]
+  id        Int                @id @default(autoincrement())
+  type      NotificationType
+  status    NotificationStatus
+  title     String
+  message   String
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  Captain   Captain?           @relation(fields: [captainId], references: [captainId])
+  captainId Int?
 }
 
 model OtherItem {
@@ -117,16 +121,6 @@ model OtherItem {
   generalCaptainId Int?
   FinanceItem      FinanceItem @relation(fields: [itemId], references: [itemId], onDelete: Cascade, map: "otherItem_financeItem_FK")
   Captain          Captain?    @relation(fields: [generalCaptainId], references: [captainId], onUpdate: Restrict, map: "otherItem_generalCaptain_FK")
-}
-
-model RecieveNotification {
-  notificationId Int
-  captainId      Int
-  status         String?      @db.VarChar(255)
-  Captain        Captain      @relation(fields: [captainId], references: [captainId], onDelete: Cascade, onUpdate: Restrict, map: "recNot_captain_FK")
-  Notification   Notification @relation(fields: [notificationId], references: [notificationId], onDelete: Cascade, onUpdate: Restrict, map: "recNot_notification_FK")
-
-  @@id([notificationId, captainId])
 }
 
 model Report {
@@ -311,9 +305,9 @@ enum Gender {
 }
 
 enum NotificationStatus {
-  read
-  unread
-  archived
+  UNREAD
+  READ
+  DELETED
 }
 
 enum NotificationType {
