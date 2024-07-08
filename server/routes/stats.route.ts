@@ -11,12 +11,14 @@ statsRouter.get(
   getCurrentWeekMiddleware,
   statsController.getAllScoutsAbsenceRateGraph,
 );
+
 statsRouter.get(
   "/scouts/graph/unit/:unitCaptainId",
   checkRankMiddleware("general", "unit"),
   getCurrentWeekMiddleware,
   statsController.getScoutsInUnitAbsenceRateGraph,
 );
+
 statsRouter.get(
   "/scouts/graph/sector",
   getCurrentWeekMiddleware,
@@ -30,17 +32,20 @@ statsRouter.get(
   getCurrentWeekMiddleware,
   statsController.getAllScoutsAbsenceRate,
 );
+
 statsRouter.get(
   "/scouts/unit/:unitCaptainId",
   checkRankMiddleware("general", "unit"),
   getCurrentWeekMiddleware,
   statsController.getScoutsInUnitAbsenceRate,
 );
+
 statsRouter.get(
   "/scouts/sector",
   getCurrentWeekMiddleware,
   statsController.getScoutsInSectorAbsenceRate,
 );
+
 statsRouter.get(
   "/scouts/:scoutId",
   getCurrentWeekMiddleware,

@@ -202,8 +202,13 @@ const financeController = {
   // @access  Private
   getSubscription: async (req: GetSubscriptionRequest, res: Response) => {
     try {
-      const { sectorBaseName, sectorSuffixName, weekNumber, termNumber } =
+      let { sectorBaseName, sectorSuffixName, weekNumber, termNumber }: any =
         req.query;
+
+      if (weekNumber === undefined || termNumber === undefined) {
+        weekNumber = req?.currentWeek?.weekNumber.toString();
+        termNumber = req?.currentWeek?.termNumber.toString();
+      }
 
       const subscription = await prisma.subscription.findFirst({
         where: {
@@ -219,7 +224,7 @@ const financeController = {
 
       res.status(200).json({
         message: "Get subscription successfully",
-        body: subscription,
+        body: subscription?.FinanceItem.value,
       });
     } catch (error) {
       console.log(error);

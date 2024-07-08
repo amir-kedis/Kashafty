@@ -11,6 +11,7 @@ export const statsApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Attendance", "Absence"],
     }),
+
     GetGraphData: builder.query({
       query: () => ({
         url: `${STATS_URL}/scouts/graph`,
@@ -18,7 +19,29 @@ export const statsApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Graph", "Attendance", "Absence"],
     }),
+
+    GetSectorAbsenceRate: builder.query<
+      {
+        message: string;
+        body: number;
+      },
+      {
+        sectorBaseName: string;
+        sectorSuffixName: string;
+      }
+    >({
+      query: ({ sectorBaseName, sectorSuffixName }) => ({
+        url: `${STATS_URL}/scouts/sector`,
+        method: "GET",
+        params: { sectorBaseName, sectorSuffixName },
+      }),
+      providesTags: ["Attendance", "Absence"],
+    }),
   }),
 });
 
-export const { useGetAbsenceRateQuery, useGetGraphDataQuery } = statsApi;
+export const {
+  useGetAbsenceRateQuery,
+  useGetGraphDataQuery,
+  useGetSectorAbsenceRateQuery,
+} = statsApi;
