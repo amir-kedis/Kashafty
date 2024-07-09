@@ -18,6 +18,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../database/db";
 import { computeAttendanceRate } from "../../utils/computeAbsenceRate";
+import { fi } from "@faker-js/faker";
 
 const statAttendanceController = {
   /* getAttendanceRate
@@ -150,6 +151,89 @@ const statAttendanceController = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  /* getAttendanceLineChart
+   *
+   * @desc gets the attendance line chart for all scouts
+   * @endpoint GET /api/stat/attendance/line-chart
+   */
+  getAttendanceLineChart: async (req: Request, res: Response) => {
+    try {
+      const { sectorBaseName, sectorSuffixName, unitCaptainId } = req.query;
+
+      if (req.currentWeek?.termNumber === 0) {
+        return res.status(400).json({
+          error: "Cannot get absence rate before the term starts",
+        });
+      }
+
+      let filters = {};
+
+      if (sectorBaseName && sectorSuffixName)
+        filters = {
+          Scout: {
+            sectorBaseName: sectorBaseName as string,
+            sectorSuffixName: sectorSuffixName as string,
+          },
+        };
+      else if (unitCaptainId)
+        filters = {
+          Scout: {
+            Sector: {
+              unitCaptainId: parseInt(unitCaptainId as string),
+            },
+          },
+        };
+
+      let attendanceRates = [];
+
+      for (let i = 1; i <= (req?.currentWeek?.weekNumber || 0); i++) {
+        const absenceCount = await prisma.scoutAttendance.count({
+          where: {
+            termNumber: req.currentWeek?.termNumber,
+            attendanceStatus: "absent",
+            Week: {
+              weekNumber: i,
+              cancelled: false,
+            },
+            ...filters,
+          },
+        });
+
+        const attendanceCount = await prisma.scoutAttendance.count({
+          where: {
+            termNumber: req.currentWeek?.termNumber,
+            attendanceStatus: "attended",
+            Week: {
+              weekNumber: i,
+              cancelled: false,
+            },
+            ...filters,
+          },
+        });
+
+        const absenceRate = computeAttendanceRate({
+          absence_count: absenceCount,
+          attendance_count: attendanceCount,
+        });
+
+        attendanceRates.push({
+          weekNumber: i,
+          absenceRate: absenceRate ?? 0,
+        });
+      }
+
+      return res.status(200).json({
+        message: "Get absence rate successfully",
+        body: attendanceRates,
+      });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while getting absence rate" });
     }
   },
 };
