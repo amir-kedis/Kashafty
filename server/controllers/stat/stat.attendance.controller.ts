@@ -18,7 +18,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../database/db";
 import { computeAttendanceRate } from "../../utils/computeAbsenceRate";
-import { fi } from "@faker-js/faker";
 
 const statAttendanceController = {
   /* getAttendanceRate
@@ -231,6 +230,91 @@ const statAttendanceController = {
       });
     } catch (error) {
       console.error(error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while getting absence rate" });
+    }
+  },
+
+  /* getAttendanceStackLineChart
+   *
+   * @desc gets line chart data for all sectors seprated
+   * @endpoint GET /api/stat/attendance/stacked-line-chart
+   */
+  getAttendanceStackLineChart: async (req: Request, res: Response) => {
+    try {
+      if (req.currentWeek?.termNumber === 0) {
+        return res.status(400).json({
+          error: "Cannot get absence rate before the term starts",
+        });
+      }
+
+      const sectors = await prisma.sector.findMany();
+
+      let sectorGraphs: {
+        sectorBaseName: string;
+        sectorSuffixName: string;
+        attendanceRates: any;
+      }[] = new Array();
+
+      for (let j = 0; j < sectors.length; ++j) {
+        let attendanceRates = [];
+
+        for (let i = 1; i <= (req?.currentWeek?.weekNumber || 0); i++) {
+          const absenceCount = await prisma.scoutAttendance.count({
+            where: {
+              termNumber: req.currentWeek?.termNumber,
+              attendanceStatus: "absent",
+              Week: {
+                weekNumber: i,
+                cancelled: false,
+              },
+              Scout: {
+                sectorBaseName: sectors[j].baseName,
+                sectorSuffixName: sectors[j].suffixName,
+              },
+            },
+          });
+
+          const attendanceCount = await prisma.scoutAttendance.count({
+            where: {
+              termNumber: req.currentWeek?.termNumber,
+              attendanceStatus: "attended",
+              Week: {
+                weekNumber: i,
+                cancelled: false,
+              },
+              Scout: {
+                sectorBaseName: sectors[j].baseName,
+                sectorSuffixName: sectors[j].suffixName,
+              },
+            },
+          });
+
+          const absenceRate = computeAttendanceRate({
+            absence_count: absenceCount,
+            attendance_count: attendanceCount,
+          });
+          attendanceRates.push({
+            weekNumber: i,
+            absenceRate: absenceRate ?? 0,
+          });
+        }
+
+        sectorGraphs.push({
+          sectorBaseName: sectors[j].baseName,
+          sectorSuffixName: sectors[j].suffixName,
+          attendanceRates,
+        });
+      }
+
+      console.log(sectorGraphs);
+
+      return res.status(200).json({
+        message: `Get stacked attendance graph succfully`,
+        body: sectorGraphs,
+      });
+    } catch (error) {
       return res
         .status(500)
         .json({ error: "An error occurred while getting absence rate" });
