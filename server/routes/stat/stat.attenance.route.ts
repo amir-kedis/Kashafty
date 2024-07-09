@@ -12,7 +12,11 @@ attendanceRouter.get(
   getCurrentWeekMiddleware,
   statAttendanceController.getAttendanceLineChart,
 );
-attendanceRouter.get("/stacked-line-chart", () => {});
+attendanceRouter.get(
+  "/stacked-line-chart",
+  getCurrentWeekMiddleware,
+  statAttendanceController.getAttendanceStackLineChart,
+);
 attendanceRouter.get("/scout", () => {});
 
 export default attendanceRouter;
