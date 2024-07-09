@@ -11,11 +11,14 @@ import sectorRouter from "./sector.route";
 import scoutAttendanceRouter from "./scoutAttendance.route";
 import captainAttendanceRouter from "./captainAttendance.route";
 import activitiesRouter from "./activities.route";
+import statRouter from "./stat/stat.route";
 
 const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/stats", authMiddleware, statsRouter);
+// NOTE: this is the new stat endpoints
+apiRouter.use("/stat", statRouter);
 apiRouter.use("/finance", authMiddleware, financeRouter);
 apiRouter.use("/term", authMiddleware, termRouter);
 apiRouter.use("/captain", authMiddleware, captainRouter);
