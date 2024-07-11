@@ -18,7 +18,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../database/db";
 import { computeAttendanceRate } from "../../utils/computeAbsenceRate";
-import { RequiredExtensionArgs } from "@prisma/client/runtime/library";
 import getScoutByName from "../../utils/getScoutsByName";
 import { Scout } from "@prisma/client";
 
