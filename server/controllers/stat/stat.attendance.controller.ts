@@ -18,6 +18,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../../database/db";
 import { computeAttendanceRate } from "../../utils/computeAbsenceRate";
+import { RequiredExtensionArgs } from "@prisma/client/runtime/library";
+import getScoutByName from "../../utils/getScoutsByName";
+import { Scout } from "@prisma/client";
 
 const statAttendanceController = {
   /* getAttendanceRate
@@ -318,6 +321,76 @@ const statAttendanceController = {
       return res
         .status(500)
         .json({ error: "An error occurred while getting absence rate" });
+    }
+  },
+
+  /* getScoutAttendanceRate
+   *
+   * @desc gets the scout rate of a group of scouts by their names
+   * @endpoint GET /ali/stat/attendance/scout
+   */
+  getScoutAttendanceRate: async (req: Request, res: Response) => {
+    try {
+      const { name } = req.query;
+      if (!name)
+        return res.status(400).json({ message: "no scouts matches this name" });
+
+      let scouts = (await getScoutByName(name as string)) as Scout[] | null;
+
+      if (!scouts)
+        return res.status(400).json({ message: "no scouts matches this name" });
+
+      const result = await Promise.all(
+        scouts.map(async (scout) => {
+          let absenceCount = await prisma.scoutAttendance.count({
+            where: {
+              attendanceStatus: "absent",
+              termNumber: undefined,
+              Week: {
+                cancelled: false,
+              },
+              Scout: {
+                scoutId: scout.scoutId,
+              },
+            },
+          });
+
+          let attendanceCount = await prisma.scoutAttendance.count({
+            where: {
+              attendanceStatus: "attended",
+              termNumber: undefined,
+              Week: {
+                cancelled: false,
+              },
+              Scout: {
+                scoutId: scout.scoutId,
+              },
+            },
+          });
+
+          let attendanceRate = computeAttendanceRate({
+            attendance_count: attendanceCount,
+            absence_count: absenceCount,
+          });
+
+          return {
+            id: scout.scoutId,
+            name:
+              scout.firstName + " " + scout.middleName + " " + scout.lastName,
+            attendanceRate: attendanceRate,
+          };
+        }),
+      );
+
+      return res.status(200).json({
+        message: `Found ${scouts.length} matching this name`,
+        body: result,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        error: "An error occurred while getting scout absence rate",
+      });
     }
   },
 };

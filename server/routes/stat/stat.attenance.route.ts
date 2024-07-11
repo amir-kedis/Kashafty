@@ -17,6 +17,6 @@ attendanceRouter.get(
   getCurrentWeekMiddleware,
   statAttendanceController.getAttendanceStackLineChart,
 );
-attendanceRouter.get("/scout", () => {});
+attendanceRouter.get("/scout", statAttendanceController.getScoutAttendanceRate);
 
 export default attendanceRouter;
