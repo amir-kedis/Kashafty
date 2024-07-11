@@ -48,7 +48,7 @@ const AttendanceLineChart = ({
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading data</p>;
 
-  var gradient = document
+  let gradient = document
     .createElement("canvas")
     .getContext("2d")
     .createLinearGradient(0, 0, 0, 400);

@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import AttendanceRateChip from "../molecules/stat.attendance.rate";
 import { RootState } from "../../redux/store";
 import AttendanceLineChart from "../molecules/stat.attendance.line";
+import AttendanceStackedChart from "../molecules/stat.attendance.stackedchart";
 
 type AttendanceStatSectionProps = {};
 
@@ -11,23 +12,31 @@ const AttendanceStatSection: React.FC = ({}: AttendanceStatSectionProps) => {
   return (
     <div>
       <h4>الغياب</h4>
-      <div className="info-section">
+      <div className="info-section" style={{ gridTemplateRows: "1fr" }}>
         <AttendanceRateChip label="نسبة حضور المجموعة" />
         {userInfo.type == "unit" ? (
           <AttendanceRateChip
             label="نسبة حضور الوحدة"
             unitCaptainId={userInfo.captainId}
           />
-        ) : (
+        ) : userInfo.type == "regular" ? (
           <AttendanceRateChip
             label="نسبة حضور القطاع"
             sectorBaseName={userInfo.rSectorBaseName}
             sectorSuffixName={userInfo.rSectorSuffixName}
           />
+        ) : (
+          ""
         )}
       </div>
       <div>
-        <h6>مخطط نسبة الحضور</h6>
+        <h6
+          style={{
+            marginBottom: "2rem",
+          }}
+        >
+          مخطط نسبة الحضور
+        </h6>
         <AttendanceLineChart
           label="نسبة غياب المجموعة خلال الفترة"
           sectorBaseName={userInfo.rSectorBaseName}
@@ -48,6 +57,9 @@ const AttendanceStatSection: React.FC = ({}: AttendanceStatSectionProps) => {
         ) : (
           ""
         )}
+      </div>
+      <div>
+        <AttendanceStackedChart label="نسبة فياب القطاعات" />
       </div>
     </div>
   );
