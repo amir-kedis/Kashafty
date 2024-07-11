@@ -18,7 +18,7 @@ export const attendanceApi = apiSlice.injectEndpoints({
         method: "POST",
         body: attendance,
       }),
-      invalidatesTags: ["Attendance"],
+      invalidatesTags: ["Attendance", "AttendanceRate"],
     }),
     GetUnitAttendance: builder.query({
       query: (unit) => ({
@@ -34,7 +34,7 @@ export const attendanceApi = apiSlice.injectEndpoints({
         method: "POST",
         body: attendance,
       }),
-      invalidatesTags: ["Attendance"],
+      invalidatesTags: ["Attendance", "AttendanceRate"],
     }),
   }),
 });

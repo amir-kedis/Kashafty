@@ -23,6 +23,7 @@ export const apiSlice = createApi({
     "Sector",
     "Notifications",
     "Activities",
+    "AttendanceRate",
   ],
   endpoints: () => ({}),
 });
