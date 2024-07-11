@@ -73,7 +73,7 @@ export const activitiesApi = apiSlice.injectEndpoints({
       }
     >({
       query: (query) => ({
-        url: `${STAT_ATTENDANCE_URL}/line-chart`,
+        url: `${STAT_ATTENDANCE_URL}/scout`,
         params: query,
       }),
       providesTags: ["AttendanceRate"],

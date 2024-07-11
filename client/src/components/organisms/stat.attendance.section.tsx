@@ -3,6 +3,7 @@ import AttendanceRateChip from "../molecules/stat.attendance.rate";
 import { RootState } from "../../redux/store";
 import AttendanceLineChart from "../molecules/stat.attendance.line";
 import AttendanceStackedChart from "../molecules/stat.attendance.stackedchart";
+import ScoutAttendanceByName from "../molecules/stat.attendance.scouts";
 
 type AttendanceStatSectionProps = {};
 
@@ -60,6 +61,16 @@ const AttendanceStatSection: React.FC = ({}: AttendanceStatSectionProps) => {
       </div>
       <div>
         <AttendanceStackedChart label="نسبة فياب القطاعات" />
+      </div>
+      <div>
+        <h6
+          style={{
+            marginBottom: "2rem",
+          }}
+        >
+          البحص عن غياب كشاف
+        </h6>
+        <ScoutAttendanceByName />
       </div>
     </div>
   );
