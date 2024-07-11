@@ -192,8 +192,8 @@ const scoutController = {
           sectorSuffixName,
           ScoutProfile: {
             update: {
-              birthDate,
-              enrollDate,
+              birthDate: new Date(birthDate),
+              enrollDate: new Date(enrollDate),
               schoolGrade: parseInt(schoolGrade),
               photo,
               birthCertificate,
@@ -231,7 +231,7 @@ const scoutController = {
         birthCertificate,
       } = req.body;
 
-      const scout = prisma.scout.create({
+      const scout = await prisma.scout.create({
         data: {
           firstName,
           middleName,
@@ -241,8 +241,8 @@ const scoutController = {
           sectorSuffixName,
           ScoutProfile: {
             create: {
-              birthDate,
-              enrollDate,
+              birthDate: new Date(birthDate),
+              enrollDate: new Date(enrollDate),
               schoolGrade: parseInt(schoolGrade),
               photo,
               birthCertificate,
@@ -250,10 +250,11 @@ const scoutController = {
           },
         },
       });
+      console.log(scout);
 
       res.status(200).json({
         message: "Successful insertion",
-        body: { scout },
+        body: scout,
       });
     } catch (error) {
       console.log(error);
