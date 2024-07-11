@@ -5,44 +5,6 @@
     margin-block: 2rem;
   }
 
-  .simple-table-for-checkboxes {
-    margin-block: 2rem;
-    border-collapse: collapse;
-    width: 100%;
-
-    thead {
-      border-bottom: 2px solid var(--grey-700, #650da6);
-    }
-
-    th,
-    td {
-      text-align: right;
-    }
-
-    .check-col {
-      text-align: center;
-      width: 3rem;
-
-      > * {
-        margin-inline: auto;
-      }
-    }
-    th {
-      font-size: 1rem;
-      font-weight: 500;
-      padding-block: 0.4rem;
-    }
-    td {
-      font-size: 0.9rem;
-      font-weight: 400;
-      padding-block: 0.2rem;
-    }
-
-    .num-col {
-      width: 1.5rem;
-    }
-  }
-
   .subscription-box {
     h4 {
       font-size: 16px;
@@ -74,5 +36,45 @@
     display: block;
     font-weight: 600;
     margin-inline: auto;
+  }
+}
+
+.simple-table-for-checkboxes {
+  margin-block: 2rem;
+  border-collapse: collapse;
+  width: 100%;
+
+  thead {
+    border-bottom: 2px solid var(--grey-700, #650da6);
+  }
+
+  th,
+  td {
+    text-align: right;
+  }
+
+  .check-col {
+    text-align: center;
+    width: 3rem;
+
+    >* {
+      margin-inline: auto;
+    }
+  }
+
+  th {
+    font-size: 1rem;
+    font-weight: 500;
+    padding-block: 0.4rem;
+  }
+
+  td {
+    font-size: 0.9rem;
+    font-weight: 400;
+    padding-block: 0.2rem;
+  }
+
+  .num-col {
+    width: 1.5rem;
   }
 }
