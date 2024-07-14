@@ -33,41 +33,58 @@ import CancelWeek from "./components/cancel-week/CancelWeek";
 import ActivityPage from "./components/activitypage/ActivityPage";
 import AddActivityPage from "./components/addactivitypage/AddActivityPage";
 import StatsPage from "./components/stats-page/StatsPage";
+import PrivateRoute from "./components/atoms/PrivateRoute";
+import ErrorBoundary from "./components/atoms/ErrorBoundary";
 
 const Routes: React.FC = () => {
   return (
     <Router>
-      <Switch>
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signUp" element={<SignUp />} />
-          <Route path="/logIn" element={<LogIn />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<CaptainProfile />} />
-          <Route path="/start-new-term" element={<InsertTermPage />} />
-          <Route path="/edit-term" element={<UpdateTermPage />} />
-          <Route path="/add-sector" element={<InsertSector />} />
-          <Route path="/assign-captain" element={<AssignCaptainPage />} />
-          <Route path="/add-scout" element={<InsertScoutPage />} />
-          <Route path="/update-scout" element={<UpdateScoutPage />} />
-          <Route path="/cancel-week" element={<CancelWeek />} />
-          <Route path="/send-notification" element={<SendNotificationPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/record-scouts-absence" element={<ScoutsAttendance />} />
-          <Route
-            path="/record-captains-absence"
-            element={<CaptainsAttendance />}
-          />
-          <Route path="/finance" element={<MoneyPage />} />
-          <Route path="/edit-password" element={<EditPassword />} />
-          <Route path="/activities" element={<ActivityPage />} />
-          <Route path="/add-activity" element={<AddActivityPage />} />
-          <Route path="/stats" element={<StatsPage />} />
-        </Route>
+      <ErrorBoundary>
+        <Switch>
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signUp" element={<SignUp />} />
+            <Route path="/logIn" element={<LogIn />} />
 
-        {/* Not Found */}
-        <Route path="*" element={<h1>Not Found</h1>} />
-      </Switch>
+            <Route
+              path="/dashboard"
+              element={<PrivateRoute element={<Dashboard />} />}
+            />
+            <Route
+              path="/profile"
+              element={<PrivateRoute element={<CaptainProfile />} />}
+            />
+
+            <Route path="/start-new-term" element={<InsertTermPage />} />
+            <Route path="/edit-term" element={<UpdateTermPage />} />
+            <Route path="/add-sector" element={<InsertSector />} />
+            <Route path="/assign-captain" element={<AssignCaptainPage />} />
+            <Route path="/add-scout" element={<InsertScoutPage />} />
+            <Route path="/update-scout" element={<UpdateScoutPage />} />
+            <Route path="/cancel-week" element={<CancelWeek />} />
+            <Route
+              path="/send-notification"
+              element={<SendNotificationPage />}
+            />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route
+              path="/record-scouts-absence"
+              element={<ScoutsAttendance />}
+            />
+            <Route
+              path="/record-captains-absence"
+              element={<CaptainsAttendance />}
+            />
+            <Route path="/finance" element={<MoneyPage />} />
+            <Route path="/edit-password" element={<EditPassword />} />
+            <Route path="/activities" element={<ActivityPage />} />
+            <Route path="/add-activity" element={<AddActivityPage />} />
+            <Route path="/stats" element={<StatsPage />} />
+          </Route>
+          {/* Not Found */}
+          <Route path="*" element={<h1>Not Found</h1>} />
+        </Switch>
+      </ErrorBoundary>
     </Router>
   );
 };
