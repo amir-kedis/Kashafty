@@ -31,60 +31,54 @@ export default function NotificationPage() {
       <div className="notifications container">
         <PageTitle title="الرسائل الواردة" />
         <div className="notificationBox">
-          {isFetchingNotifications
-            ? "جاري التحميل"
-            : notifications?.body?.length === 0
-              ? "لا يوجد إشعارات"
-              : notifications?.body?.map((notification) => {
-                  return (
-                    <Alert
-                      key={notification.id}
-                      title={notification.title}
-                      info={notification.message}
-                      OnShowMoreClick={() => {}}
-                      OnCloseClick={() => {
-                        updateNotification({
-                          status: "READ",
-                          id: notification.id,
-                        });
-                      }}
-                      showRightBox={true}
-                      color={
-                        notification.type == "attendance" ? "red" : "mint-green"
-                      }
-                    />
-                  );
-                })}
+          {notifications?.body?.length !== 0 &&
+            notifications?.body?.map((notification) => {
+              return (
+                <Alert
+                  key={notification.id}
+                  title={notification.title}
+                  info={notification.message}
+                  OnShowMoreClick={() => {}}
+                  OnCloseClick={() => {
+                    updateNotification({
+                      status: "READ",
+                      id: notification.id,
+                    });
+                  }}
+                  showRightBox={true}
+                  color={
+                    notification.type == "attendance" ? "red" : "mint-green"
+                  }
+                />
+              );
+            })}
           <PageTitle title="الرسائل المقروءة" />
-          {isFetchingReadNotifications
-            ? "جاري التحميل"
-            : ReadNotifications?.body?.length === 0
-              ? "لا يوجد إشعارات"
-              : ReadNotifications?.body?.map((notification) => {
-                  return (
-                    <Alert
-                      key={notification.id}
-                      title={notification.title}
-                      info={notification.message}
-                      buttontext={"حذف"}
-                      OnShowMoreClick={() => {
-                        deleteNotification({
-                          id: notification.id,
-                        });
-                      }}
-                      OnCloseClick={() => {
-                        updateNotification({
-                          status: "READ",
-                          id: notification.id,
-                        });
-                      }}
-                      showRightBox={true}
-                      color={
-                        notification.type == "attendance" ? "red" : "mint-green"
-                      }
-                    />
-                  );
-                })}
+          {ReadNotifications?.body?.length !== 0 &&
+            ReadNotifications?.body?.map((notification) => {
+              return (
+                <Alert
+                  key={notification.id}
+                  title={notification.title}
+                  info={notification.message}
+                  buttontext={"حذف"}
+                  OnShowMoreClick={() => {
+                    deleteNotification({
+                      id: notification.id,
+                    });
+                  }}
+                  OnCloseClick={() => {
+                    updateNotification({
+                      status: "READ",
+                      id: notification.id,
+                    });
+                  }}
+                  showRightBox={true}
+                  color={
+                    notification.type == "attendance" ? "red" : "mint-green"
+                  }
+                />
+              );
+            })}
         </div>
       </div>
     </>

@@ -1,13 +1,17 @@
 import { useSelector } from "react-redux";
-import "../../assets/styles/components/NotificationBox.scss";
+import { useNavigate } from "react-router-dom";
+
 import {
   useGetNotificationsQuery,
   useUpdateNotificationMutation,
   useDeleteNotificationMutation,
 } from "../../redux/slices/notificationsApiSlice";
+
+import "../../assets/styles/components/NotificationBox.scss";
+
 import { RootState } from "../../redux/store";
 import Alert from "./Alerts";
-import { useNavigate } from "react-router-dom";
+import { NotificationType } from "../../types/prismaTypes";
 
 export default function NotificationBox() {
   const user = useSelector((state: RootState) => state.auth.userInfo);
@@ -20,6 +24,19 @@ export default function NotificationBox() {
   const [updateNotification] = useUpdateNotificationMutation();
 
   const navigate = useNavigate();
+
+  const getColor = (notType: NotificationType) => {
+    switch (notType) {
+      case NotificationType.attendance:
+        return "red";
+      case NotificationType.financeItemCreated:
+        return "mint-green";
+      case NotificationType.report:
+        return "yellow";
+      case NotificationType.other:
+        return "mint-green";
+    }
+  };
 
   console.log(notifications);
 
@@ -46,9 +63,7 @@ export default function NotificationBox() {
                     });
                   }}
                   showRightBox={true}
-                  color={
-                    notification.type == "attendance" ? "red" : "mint-green"
-                  }
+                  color={getColor(notification.type)}
                 />
               );
             })}
