@@ -31,7 +31,8 @@
 
   a {
     cursor: pointer;
-    > * {
+
+    >* {
       cursor: pointer;
     }
   }
@@ -39,5 +40,26 @@
   &__icon {
     width: 24px;
     cursor: pointer;
+  }
+
+  .bell-icon {
+    position: relative;
+    --bell-not-size: 17px;
+
+    span {
+      top: -5px;
+      left: -5px;
+
+      position: absolute;
+      font-size: 10px;
+      font-weight: bold;
+      width: var(--bell-not-size);
+      height: var(--bell-not-size);
+      border-radius: var(--bell-not-size);
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      background: red;
+    }
   }
 }

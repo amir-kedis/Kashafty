@@ -19,11 +19,17 @@ import logo from "../../assets/images/logo.svg";
 // styles
 import "../../assets/styles/components/Nav.scss";
 import { RootState } from "../../redux/store";
+import { useGetNotificationsQuery } from "../../redux/slices/notificationsApiSlice";
 
 export default function Nav() {
   const [show, setShow] = useState(false);
 
   const { userInfo } = useSelector((state: RootState) => state.auth);
+
+  const { data } = useGetNotificationsQuery({
+    captainId: userInfo.captainId,
+    status: "UNREAD",
+  });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -69,8 +75,9 @@ export default function Nav() {
             <Link to="/profile">
               <UserCircleIcon className="Nav__icon" />
             </Link>
-            <Link to="/notifications">
+            <Link className="bell-icon" to="/notifications">
               <BellIcon className="Nav__icon" />
+              <span>{data?.body?.length}</span>
             </Link>
           </div>
         )}
