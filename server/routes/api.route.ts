@@ -12,6 +12,7 @@ import scoutAttendanceRouter from "./scoutAttendance.route";
 import captainAttendanceRouter from "./captainAttendance.route";
 import activitiesRouter from "./activities.route";
 import statRouter from "./stat/stat.route";
+import cronRouter from "./cron.route";
 
 const apiRouter = Router();
 
@@ -28,5 +29,6 @@ apiRouter.use("/sector", authMiddleware, sectorRouter);
 apiRouter.use("/scoutAttendance", authMiddleware, scoutAttendanceRouter);
 apiRouter.use("/captainAttendance", authMiddleware, captainAttendanceRouter);
 apiRouter.use("/activities", activitiesRouter);
+apiRouter.use("/cron", cronRouter);
 
 export default apiRouter;
