@@ -26,10 +26,13 @@ export default function Nav() {
 
   const { userInfo } = useSelector((state: RootState) => state.auth);
 
-  const { data } = useGetNotificationsQuery({
-    captainId: userInfo.captainId,
-    status: "UNREAD",
-  });
+  const { data } = useGetNotificationsQuery(
+    {
+      captainId: userInfo?.captainId,
+      status: "UNREAD",
+    },
+    { skip: !userInfo?.captainId },
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
