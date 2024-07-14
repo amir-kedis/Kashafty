@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
+import { Notification } from "@prisma/client";
 
 interface GetSubscriptionRequest extends Request {
   query: {
@@ -184,6 +185,27 @@ const financeController = {
       });
 
       const subscription = result;
+
+      // Notify general captains
+      const generalCaptains = await prisma.captain.findMany({
+        where: {
+          type: "general",
+        },
+      });
+
+      const notifications = generalCaptains.map((captain) => ({
+        captainId: captain.captainId,
+        type: "financeItemCreated",
+        status: "UNREAD",
+        title: "تحديث اشتراك",
+        message: `تم ${subscr ? "تحديث" : "إنشاء"} اشتراك لقطاع ${sectorBaseName} ${sectorSuffixName} بقيمة ${value}.`,
+      }));
+
+      const sentMsgs = await prisma.notification.createMany({
+        data: notifications as Notification[],
+      });
+
+      console.log(sentMsgs);
 
       res.status(200).json({
         message: "Add subscription successfully",

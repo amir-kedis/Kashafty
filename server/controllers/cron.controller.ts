@@ -18,14 +18,10 @@
 
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
-import {
-  Notification,
-  NotificationStatus,
-  NotificationType,
-} from "@prisma/client";
+import { NotificationStatus, NotificationType } from "@prisma/client";
 
 const cronController = {
-  createMissingWeeks: async (req: Request, res: Response) => {
+  createMissingWeeks: async (_req: Request, res: Response) => {
     try {
       const curTerm = await prisma.term.findFirst({
         orderBy: {
@@ -73,7 +69,7 @@ const cronController = {
     }
   },
 
-  sendScoutsAbsenceNotification: async (req: Request, res: Response) => {
+  sendScoutsAbsenceNotification: async (_req: Request, res: Response) => {
     try {
       const curTerm = await prisma.term.findFirst({
         orderBy: {
@@ -92,11 +88,11 @@ const cronController = {
         return res.status(404).json({ message: "No current term found" });
       }
 
-      const today = new Date();
-      const startDate = new Date(curTerm.startDate);
-      const totalWeeks = Math.ceil(
-        (today.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
-      );
+      // const today = new Date();
+      // const startDate = new Date(curTerm.startDate);
+      // const totalWeeks = Math.ceil(
+      //   (today.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
+      // );
 
       const attendanceRates = await prisma.scout.findMany({
         include: {
@@ -190,7 +186,7 @@ const cronController = {
     }
   },
 
-  sendCaptainsAbsenceNotification: async (req: Request, res: Response) => {
+  sendCaptainsAbsenceNotification: async (_req: Request, res: Response) => {
     try {
       const curTerm = await prisma.term.findFirst({
         orderBy: {
@@ -209,11 +205,11 @@ const cronController = {
         return res.status(404).json({ message: "No current term found" });
       }
 
-      const today = new Date();
-      const startDate = new Date(curTerm.startDate);
-      const totalWeeks = Math.ceil(
-        (today.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
-      );
+      // const today = new Date();
+      // const startDate = new Date(curTerm.startDate);
+      // const totalWeeks = Math.ceil(
+      //   (today.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
+      // );
 
       const attendanceRates = await prisma.captain.findMany({
         include: {

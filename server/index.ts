@@ -3,6 +3,7 @@ import cors from "cors";
 import apiRouter from "./routes/api.route";
 import { notFound, errorHandler } from "./middlewares/error.middleware";
 import cookieParser from "cookie-parser";
+import cronRouter from "./routes/cron.route";
 
 const app: Application = express();
 const PORT: Number = process.env.PORT ? parseInt(process.env.PORT) : 5000;
@@ -16,6 +17,8 @@ const allowedOrigins = [
   "https://kashafty.vercel.app",
   "https://kashafty-amir-kedis-projects.vercel.app",
   "https://kashafty-git-main-amir-kedis-projects.vercel.app",
+  "http://cron-job.org",
+  "https://cron-job.org",
 ];
 
 const corsOptions = {
@@ -35,6 +38,8 @@ app.use("/api", apiRouter);
 app.use("/test", (_, res) => {
   res.send("Kashafty API nested endpoints is working fine finally");
 });
+
+app.use("/cron", cronRouter);
 
 app.get("/", (_, res) => {
   res.send("Kashafty API is working fine ✨");

@@ -1,5 +1,4 @@
 import React, { ReactNode, ErrorInfo } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface ErrorBoundaryProps {

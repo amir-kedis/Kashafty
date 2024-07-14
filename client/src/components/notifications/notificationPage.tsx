@@ -12,16 +12,14 @@ import { RootState } from "../../redux/store";
 export default function NotificationPage() {
   const user = useSelector((state: RootState) => state.auth.userInfo);
 
-  const { data: notifications, isFetching: isFetchingNotifications } =
-    useGetNotificationsQuery({
-      captainId: user.captainId,
-    });
+  const { data: notifications } = useGetNotificationsQuery({
+    captainId: user.captainId,
+  });
 
-  const { data: ReadNotifications, isFetching: isFetchingReadNotifications } =
-    useGetNotificationsQuery({
-      captainId: user.captainId,
-      status: "READ",
-    });
+  const { data: ReadNotifications } = useGetNotificationsQuery({
+    captainId: user.captainId,
+    status: "READ",
+  });
 
   const [updateNotification] = useUpdateNotificationMutation();
   const [deleteNotification] = useDeleteNotificationMutation();

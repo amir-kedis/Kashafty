@@ -105,6 +105,9 @@ const notificationController = {
           status: status || NotificationStatus.UNREAD,
           type: type || undefined,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
 
       res

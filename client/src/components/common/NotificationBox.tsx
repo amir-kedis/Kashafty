@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import {
   useGetNotificationsQuery,
   useUpdateNotificationMutation,
-  useDeleteNotificationMutation,
 } from "../../redux/slices/notificationsApiSlice";
 
 import "../../assets/styles/components/NotificationBox.scss";
@@ -16,10 +15,9 @@ import { NotificationType } from "../../types/prismaTypes";
 export default function NotificationBox() {
   const user = useSelector((state: RootState) => state.auth.userInfo);
 
-  const { data: notifications, isFetching: isFetchingAlerts } =
-    useGetNotificationsQuery({
-      captainId: user.captainId,
-    });
+  const { data: notifications } = useGetNotificationsQuery({
+    captainId: user.captainId,
+  });
 
   const [updateNotification] = useUpdateNotificationMutation();
 
