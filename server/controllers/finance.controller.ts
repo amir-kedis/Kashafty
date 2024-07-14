@@ -293,16 +293,12 @@ const financeController = {
   // @access  Private
   addOtherItem: async (req: Request, res: Response) => {
     try {
-      const { value, type, description } = req.body as {
-        value: number;
-        type: string;
-        description: string;
-      };
+      const { value, type, description } = req.body;
 
       const financeItem = await prisma.financeItem.create({
         data: {
-          value: value,
-          type: type as "income" | "expense",
+          value: parseInt(value),
+          type: type,
           timestamp: new Date(),
         },
       });
