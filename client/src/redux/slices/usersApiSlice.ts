@@ -13,6 +13,7 @@ export const usersApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Auth"],
     }),
+
     logout: builder.mutation({
       query: () => ({
         url: `${USERS_API}/logout`,
@@ -20,6 +21,7 @@ export const usersApi = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+
     signup: builder.mutation({
       query: (data) => ({
         url: `${USERS_API}/signUp`,
@@ -29,6 +31,15 @@ export const usersApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Captains", "Auth"],
     }),
+
+    validToken: builder.query({
+      query: () => ({
+        url: `${USERS_API}/me`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+
     changePassword: builder.mutation({
       query: (data) => ({
         url: `${USERS_API}/newPassword`,
@@ -44,5 +55,6 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useSignupMutation,
+  useValidTokenQuery,
   useChangePasswordMutation,
 } = usersApi;

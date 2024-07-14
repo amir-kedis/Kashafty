@@ -11,15 +11,16 @@ import { RootState } from "../../redux/store";
 
 export default function Dashboard() {
   const { userInfo } = useSelector((state: RootState) => state.auth);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userInfo) {
+    if (!userInfo.gender) {
       navigate("/logIn");
     }
   }, [navigate, userInfo]);
 
-  const titleMsg =
+  let titleMsg =
     userInfo.gender == "male"
       ? `مرحباً يا كابتن ${userInfo?.firstName} ${userInfo?.middleName}`
       : `مرحبا يا شيفتان ${userInfo?.firstName} ${userInfo?.middleName}`;
