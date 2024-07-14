@@ -38,35 +38,30 @@ export default function NotificationBox() {
     }
   };
 
-  console.log(notifications);
-
   return (
     <div className="notificationBox">
-      {isFetchingAlerts
-        ? "جاري التحميل"
-        : notifications?.body?.length === 0
-          ? "لا يوجد إشعارات"
-          : notifications?.body?.map((notification) => {
-              return (
-                <Alert
-                  key={notification.id}
-                  title={notification.title}
-                  info={notification.message}
-                  buttontext={"عرض المزيد"}
-                  OnShowMoreClick={() => {
-                    navigate("/notifications");
-                  }}
-                  OnCloseClick={() => {
-                    updateNotification({
-                      status: "READ",
-                      id: notification.id,
-                    });
-                  }}
-                  showRightBox={true}
-                  color={getColor(notification.type)}
-                />
-              );
-            })}
+      {notifications?.body?.length !== 0 &&
+        notifications?.body?.slice(0, 5).map((notification) => {
+          return (
+            <Alert
+              key={notification.id}
+              title={notification.title}
+              info={notification.message}
+              buttontext={"عرض المزيد"}
+              OnShowMoreClick={() => {
+                navigate("/notifications");
+              }}
+              OnCloseClick={() => {
+                updateNotification({
+                  status: "READ",
+                  id: notification.id,
+                });
+              }}
+              showRightBox={true}
+              color={getColor(notification.type)}
+            />
+          );
+        })}
     </div>
   );
 }
