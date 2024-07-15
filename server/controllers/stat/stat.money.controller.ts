@@ -198,8 +198,6 @@ const statMoneyController = {
             },
           });
 
-          console.log((income._sum.value ?? 0) - (expense._sum.value ?? 0));
-
           return {
             weekNumber: week.weekNumber,
             totalMoney: (income._sum.value ?? 0) - (expense._sum.value ?? 0),
@@ -210,6 +208,76 @@ const statMoneyController = {
       res.status(200).json({
         message: "تم الحصول على البيانات بنجاح",
         weeklyTotals: weeklyTotals,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  /* getIncomeAndExpenseStackedLineChart
+   *
+   * @desc  get the total income and total expense at each week to form a stacked line chart
+   * @endpoint GET /api/stat/money/income-expense-chart
+   */
+  getIncomeExpenseStackedChart: async (_req: Request, res: Response) => {
+    try {
+      const currentTerm = await prisma.term.findFirst({
+        orderBy: {
+          termNumber: "desc",
+        },
+        include: {
+          Week: true,
+        },
+      });
+
+      if (!currentTerm) {
+        return res
+          .status(404)
+          .json({ message: "لم يتم العثور على الفصل الحالي" });
+      }
+
+      const weeklyData = await Promise.all(
+        currentTerm.Week.map(async (week) => {
+          const income = await prisma.financeItem.aggregate({
+            _sum: {
+              value: true,
+            },
+            where: {
+              type: "income",
+              timestamp: {
+                lt: new Date(
+                  week.startDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+                ),
+              },
+            },
+          });
+
+          const expense = await prisma.financeItem.aggregate({
+            _sum: {
+              value: true,
+            },
+            where: {
+              type: "expense",
+              timestamp: {
+                lt: new Date(
+                  week.startDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+                ),
+              },
+            },
+          });
+
+          return {
+            weekNumber: week.weekNumber,
+            totalIncome: income._sum.value ?? 0,
+            totalExpense: expense._sum.value ?? 0,
+          };
+        }),
+      );
+
+      res.status(200).json({
+        message: "تم الحصول على البيانات بنجاح",
+        weeklyData: weeklyData,
       });
     } catch (error) {
       console.error(error);
