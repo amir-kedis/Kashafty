@@ -68,7 +68,7 @@ const AttendanceStatSection: React.FC = ({}: AttendanceStatSectionProps) => {
             marginBottom: "2rem",
           }}
         >
-          البحص عن غياب كشاف
+          البحث عن كشاف
         </h6>
         <ScoutAttendanceByName />
       </div>

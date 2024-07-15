@@ -5,10 +5,16 @@ import CurWeekSubChip from "../molecules/stat.money.curWeekSub";
 import MoneyLineChart from "../molecules/stat.money.line";
 import IncomeExpenseStackedChart from "../molecules/stat.money.stackedchart";
 import SubscriptionLineChart from "../molecules/stat.money.subLine";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 type MoneyStatSectionProps = {};
 
 const MoneyStatSection: React.FC = ({}: MoneyStatSectionProps) => {
+  const { userInfo } = useSelector((state: RootState) => state.auth);
+
+  if (userInfo?.type !== "general") return <></>;
+
   return (
     <div style={{ marginBlock: "2rem" }}>
       <h4>الماليات</h4>

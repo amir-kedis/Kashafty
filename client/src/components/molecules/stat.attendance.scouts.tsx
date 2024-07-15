@@ -20,7 +20,7 @@ const ScoutAttendanceByName: React.FC<ScoutAttendanceByNameProps> = () => {
   return (
     <div>
       <TextInput
-        label="ابحص عن كشاف"
+        label="ابحث عن كشاف"
         type="text"
         name="searchName"
         value={searchName}
