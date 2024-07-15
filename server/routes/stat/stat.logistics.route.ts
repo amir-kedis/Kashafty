@@ -1,13 +1,19 @@
 import { Router } from "express";
+import statLogisticsController from "../../controllers/stat/stat.logistics.controller";
 
 const logisticsRouter = Router();
 
-// TODO: add controller when made
-logisticsRouter.get("/scouts", () => {});
-logisticsRouter.get("/captains", () => {});
-logisticsRouter.get("/sectors", () => {});
-logisticsRouter.get("/scout-gender-distribution", () => {});
-logisticsRouter.get("/captain-gender-distribution", () => {});
-logisticsRouter.get("/sector-counts", () => {});
+logisticsRouter.get("/scouts", statLogisticsController.getTotalScouts);
+logisticsRouter.get("/captains", statLogisticsController.getTotalCaptains);
+logisticsRouter.get("/sectors", statLogisticsController.getTotalSectors);
+logisticsRouter.get(
+  "/scout-gender-distribution",
+  statLogisticsController.getScoutGenderDistribution,
+);
+logisticsRouter.get(
+  "/captain-gender-distribution",
+  statLogisticsController.getCaptainGenderDistribution,
+);
+logisticsRouter.get("/sector-counts", statLogisticsController.getSectorCounts);
 
 export default logisticsRouter;
