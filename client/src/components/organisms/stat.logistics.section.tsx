@@ -3,6 +3,7 @@ import CaptainGenderDistributionChart from "../molecules/stat.logistics.captains
 import TotalScoutsChip from "../molecules/stat.logistics.scoutChip";
 import ScoutGenderDistributionChart from "../molecules/stat.logistics.scoutPie";
 import TotalSectorsChip from "../molecules/stat.logistics.sectorChip";
+import SectorCountsTable from "../molecules/stat.logistics.sectorCountTable";
 
 type LogisticsStatSectionProps = {};
 
@@ -17,6 +18,7 @@ const LogisticsStatSection: React.FC = ({}: LogisticsStatSectionProps) => {
       </div>
       <ScoutGenderDistributionChart label="توزيع الكشافين" />
       <CaptainGenderDistributionChart label="توزيع القادة " />
+      <SectorCountsTable />
     </div>
   );
 };
