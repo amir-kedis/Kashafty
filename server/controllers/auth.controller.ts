@@ -63,12 +63,13 @@ const authController = {
       });
 
       // Generate a JWT token
-      generateToken(res, newCaptain.captainId.toString());
+      const token = generateToken(res, newCaptain.captainId.toString());
 
       // Send the response
       res.status(201).json({
         message: "Captain created successfully",
         body: newCaptain,
+        token: token,
       });
     } catch (error) {
       console.log(error);
@@ -101,6 +102,7 @@ const authController = {
 
       // Check if the password is correct
       const isCorrect = await bcrypt.compare(password, captain.password);
+
       if (!isCorrect) {
         return res.status(400).json({
           error: "Invalid password",
@@ -108,12 +110,13 @@ const authController = {
       }
 
       // Generate a JWT token
-      generateToken(res, captain.captainId.toString());
+      const token = generateToken(res, captain.captainId.toString());
 
       // Send the response
       res.status(200).json({
         message: "Logged in successfully",
         body: captain,
+        token: token,
       });
     } catch (error) {
       console.log(error);
