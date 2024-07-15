@@ -29,6 +29,7 @@ type AttendanceLineChartProps = {
   sectorBaseName?: string;
   sectorSuffixName?: string;
   unitCaptainId?: number;
+  id: string;
 };
 
 const AttendanceLineChart = ({
@@ -36,6 +37,7 @@ const AttendanceLineChart = ({
   sectorBaseName,
   sectorSuffixName,
   unitCaptainId,
+  id,
 }: AttendanceLineChartProps) => {
   const { data, error, isLoading } = useGetAttendaceLineChartQuery({
     sectorBaseName,
@@ -91,7 +93,7 @@ const AttendanceLineChart = ({
     },
   };
 
-  return <Line id="attendanceLineChart" data={chartData} options={options} />;
+  return <Line id={id} data={chartData} options={options} />;
 };
 
 export default AttendanceLineChart;

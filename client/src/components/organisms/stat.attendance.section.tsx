@@ -39,19 +39,20 @@ const AttendanceStatSection: React.FC = ({}: AttendanceStatSectionProps) => {
           مخطط نسبة الحضور
         </h6>
         <AttendanceLineChart
+          id="attendanceLineChartAll"
           label="نسبة غياب المجموعة خلال الفترة"
-          sectorBaseName={userInfo.rSectorBaseName}
-          sectorSuffixName={userInfo.rSectorSuffixName}
         />
 
         {userInfo.type === "regular" ? (
           <AttendanceLineChart
+            id="attendanceLineChartSector"
             label="نسبة حضور القطاع خلال الفترة"
             sectorBaseName={userInfo.rSectorBaseName}
             sectorSuffixName={userInfo.rSectorSuffixName}
           />
         ) : userInfo.type === "unit" ? (
           <AttendanceLineChart
+            id="attendanceLineChartUnit"
             label="نسبة غياب الوحدة خلال الفترة"
             unitCaptainId={userInfo.captainId}
           />
