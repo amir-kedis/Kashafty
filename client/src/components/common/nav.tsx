@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useLogoutMutation } from "../../redux/slices/usersApiSlice";
 import { clearCredentials } from "../../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
+import useSignOut from "react-auth-kit/hooks/useSignOut";
 
 // icons
 import { UserCircleIcon } from "@heroicons/react/24/outline";
@@ -20,6 +21,7 @@ import logo from "../../assets/images/logo.svg";
 import "../../assets/styles/components/Nav.scss";
 import { RootState } from "../../redux/store";
 import { useGetNotificationsQuery } from "../../redux/slices/notificationsApiSlice";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 
 export default function Nav() {
   const [show, setShow] = useState(false);
@@ -38,18 +40,20 @@ export default function Nav() {
   const navigate = useNavigate();
 
   const [logout, { isLoading }] = useLogoutMutation();
+  const signOut = useSignOut();
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (userInfo) {
+    if (isAuthenticated) {
       setShow(true);
     } else {
       setShow(false);
     }
-  }, [userInfo]);
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     try {
-      await logout({}).unwrap();
+      signOut();
       toast.dark("تم تسجيل الخروج بنجاح");
       navigate("/");
     } catch (err) {

@@ -17,7 +17,7 @@ export default function LogIn() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const singIn = useSignIn();
+  const signIn = useSignIn();
   const isAuthenticated = useIsAuthenticated();
 
   const [login, { isLoading }] = useLoginMutation();
@@ -33,18 +33,17 @@ export default function LogIn() {
     try {
       const res = await login({ email, password }).unwrap();
       if (
-        singIn({
+        signIn({
           auth: {
             token: res.token,
             type: "Bearer",
           },
-          refresh: res.token,
           userState: res.body,
         })
       ) {
         dispatch(setCredentials({ ...res?.body }));
         toast.dark("تم تسجيل الدخول بنجاح");
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (err) {
       toast.error(err?.body?.message || err.error);

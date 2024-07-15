@@ -8,6 +8,8 @@ import "./signUp.scss";
 import { useSignupMutation } from "../../redux/slices/usersApiSlice";
 import { setCredentials } from "../../redux/slices/authSlice";
 import { RootState } from "../../redux/store";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -24,13 +26,14 @@ export default function SignUp() {
 
   const [signup, { isLoading }] = useSignupMutation();
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const isAuthenticated = useIsAuthenticated();
+  const signIn = useSignIn();
 
   useEffect(() => {
-    if (userInfo) {
+    if (isAuthenticated) {
       navigate("/dashboard");
     }
-  }, [navigate, userInfo]);
+  }, [navigate, isAuthenticated]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -57,9 +60,20 @@ export default function SignUp() {
         password,
         gender: gender == "ذكر" ? "male" : "female",
       }).unwrap();
-      dispatch(setCredentials({ ...res?.body }));
-      toast.dark(" تم تسجيل الحساب بنجاح");
-      navigate("/");
+
+      if (
+        signIn({
+          auth: {
+            token: res.token,
+            type: "Bearer",
+          },
+          userState: res.body,
+        })
+      ) {
+        dispatch(setCredentials({ ...res?.body }));
+        toast.dark(" تم تسجيل الحساب بنجاح");
+        navigate("/");
+      }
     } catch (err) {
       toast.dark("حدث خطأ ما");
       toast.error(JSON.stringify(err));
