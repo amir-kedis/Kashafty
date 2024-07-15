@@ -36,6 +36,8 @@ import StatsPage from "./components/stats-page/StatsPage";
 import PrivateRoute from "./components/atoms/PrivateRoute";
 import ErrorBoundary from "./components/atoms/ErrorBoundary";
 
+import RequireAuth from "@auth-kit/react-router/RequireAuth";
+
 const Routes: React.FC = () => {
   return (
     <Router>
@@ -48,38 +50,157 @@ const Routes: React.FC = () => {
 
             <Route
               path="/dashboard"
-              element={<PrivateRoute element={<Dashboard />} />}
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <Dashboard />
+                </RequireAuth>
+              }
             />
             <Route
               path="/profile"
-              element={<PrivateRoute element={<CaptainProfile />} />}
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <CaptainProfile />
+                </RequireAuth>
+              }
             />
 
-            <Route path="/start-new-term" element={<InsertTermPage />} />
-            <Route path="/edit-term" element={<UpdateTermPage />} />
-            <Route path="/add-sector" element={<InsertSector />} />
-            <Route path="/assign-captain" element={<AssignCaptainPage />} />
-            <Route path="/add-scout" element={<InsertScoutPage />} />
-            <Route path="/update-scout" element={<UpdateScoutPage />} />
-            <Route path="/cancel-week" element={<CancelWeek />} />
+            <Route
+              path="/start-new-term"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <InsertTermPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/edit-term"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <UpdateTermPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/add-sector"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <InsertSector />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/assign-captain"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <AssignCaptainPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/add-scout"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <InsertScoutPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/update-scout"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <UpdateScoutPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/cancel-week"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <CancelWeek />
+                </RequireAuth>
+              }
+            />
+
             <Route
               path="/send-notification"
-              element={<SendNotificationPage />}
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <SendNotificationPage />
+                </RequireAuth>
+              }
             />
-            <Route path="/notifications" element={<NotificationsPage />} />
+
+            <Route
+              path="/notifications"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <NotificationsPage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/record-scouts-absence"
-              element={<ScoutsAttendance />}
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <ScoutsAttendance />
+                </RequireAuth>
+              }
             />
             <Route
               path="/record-captains-absence"
-              element={<CaptainsAttendance />}
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <CaptainsAttendance />
+                </RequireAuth>
+              }
             />
-            <Route path="/finance" element={<MoneyPage />} />
-            <Route path="/edit-password" element={<EditPassword />} />
-            <Route path="/activities" element={<ActivityPage />} />
-            <Route path="/add-activity" element={<AddActivityPage />} />
-            <Route path="/stats" element={<StatsPage />} />
+            <Route
+              path="/finance"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <MoneyPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/edit-password"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <EditPassword />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/activities"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <ActivityPage />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/add-activity"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <AddActivityPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/stats"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <StatsPage />
+                </RequireAuth>
+              }
+            />
           </Route>
           {/* Not Found */}
           <Route path="*" element={<h1>Not Found</h1>} />
