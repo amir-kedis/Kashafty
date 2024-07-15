@@ -38,3 +38,16 @@ textarea {
   font-weight: 500;
 
 }
+
+.chart {
+  height: 360px; // Default for desktop
+  margin-block: 1rem;
+
+  @media (max-width: 1024px) {
+    height: 300px; // Tablet
+  }
+
+  @media (max-width: 768px) {
+    height: 200px; // Mobile phone
+  }
+}

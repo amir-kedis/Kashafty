@@ -76,10 +76,11 @@ const AttendanceStackedChart = ({ label }: AttendanceLineChartProps) => {
 
   const options: ChartOptions<"line"> = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
-        position: "top",
+        position: "bottom",
       },
       title: {
         display: false,
@@ -98,7 +99,7 @@ const AttendanceStackedChart = ({ label }: AttendanceLineChartProps) => {
   };
 
   return (
-    <div>
+    <div className="chart">
       <canvas ref={chartContainerRef} style={{ display: "none" }}></canvas>
       <Line id="attendanceLineChart" data={chartData} options={options} />
     </div>
