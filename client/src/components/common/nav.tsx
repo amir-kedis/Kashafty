@@ -27,13 +27,14 @@ export default function Nav() {
   const [show, setShow] = useState(false);
 
   const { userInfo } = useSelector((state: RootState) => state.auth);
+  const isAuthenticated = useIsAuthenticated();
 
   const { data } = useGetNotificationsQuery(
     {
       captainId: userInfo?.captainId,
       status: "UNREAD",
     },
-    { skip: !userInfo?.captainId },
+    { skip: !isAuthenticated },
   );
 
   const dispatch = useDispatch();
@@ -41,7 +42,6 @@ export default function Nav() {
 
   const [logout, { isLoading }] = useLogoutMutation();
   const signOut = useSignOut();
-  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
     if (isAuthenticated) {
