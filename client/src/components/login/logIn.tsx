@@ -1,13 +1,14 @@
 import { useState, useEffect, FormEvent } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import { toast } from "react-toastify";
 import Button from "../common/Button";
 import TextInput from "../common/Inputs";
 import "./logIn.scss";
 import { useLoginMutation } from "../../redux/slices/usersApiSlice";
 import { setCredentials } from "../../redux/slices/authSlice";
-import { RootState } from "../../redux/store";
 
 export default function LogIn() {
   const [email, setEmail] = useState("");
@@ -16,23 +17,35 @@ export default function LogIn() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const singIn = useSignIn();
+  const isAuthenticated = useIsAuthenticated();
+
   const [login, { isLoading }] = useLoginMutation();
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
-
   useEffect(() => {
-    if (userInfo) {
+    if (isAuthenticated) {
       navigate("/dashboard");
     }
-  }, [navigate, userInfo]);
+  }, [navigate]);
 
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials({ ...res?.body }));
-      toast.dark("تم تسجيل الدخول بنجاح");
-      navigate("/");
+      if (
+        singIn({
+          auth: {
+            token: res.token,
+            type: "Bearer",
+          },
+          refresh: res.token,
+          userState: res.body,
+        })
+      ) {
+        dispatch(setCredentials({ ...res?.body }));
+        toast.dark("تم تسجيل الدخول بنجاح");
+        navigate("/");
+      }
     } catch (err) {
       toast.error(err?.body?.message || err.error);
       console.error(err);
