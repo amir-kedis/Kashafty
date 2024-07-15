@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 import TotalMoneyChip from "../molecules/stat.money.totalChip";
 import TotalIncomeChip from "../molecules/stat.money.totalIncome";
 import TotalExpenseChip from "../molecules/stat.money.totalExpense";
@@ -11,8 +9,6 @@ import SubscriptionLineChart from "../molecules/stat.money.subLine";
 type MoneyStatSectionProps = {};
 
 const MoneyStatSection: React.FC = ({}: MoneyStatSectionProps) => {
-  const { userInfo } = useSelector((state: RootState) => state.auth);
-
   return (
     <div style={{ marginBlock: "2rem" }}>
       <h4>الماليات</h4>

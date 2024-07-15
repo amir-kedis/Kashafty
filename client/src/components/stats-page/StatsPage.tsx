@@ -1,8 +1,8 @@
 import PageTitle from "../common/PageTitle";
-import GroupInfo from "./GroupInfo";
 import "./StatsPage.scss";
 import AttendanceStatSection from "../organisms/stat.attendance.section";
 import MoneyStatSection from "../organisms/stat.money.section";
+import LogisticsStatSection from "../organisms/stat.logistics.section";
 
 export default function StatsPage() {
   return (
@@ -10,7 +10,7 @@ export default function StatsPage() {
       <PageTitle title="الاحصائيات" />
       <AttendanceStatSection />
       <MoneyStatSection />
-      <GroupInfo />
+      <LogisticsStatSection />
     </div>
   );
 }
