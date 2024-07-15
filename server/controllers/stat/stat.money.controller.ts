@@ -284,6 +284,64 @@ const statMoneyController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+
+  /* getSubscriptionLineChart
+   *
+   * @desc  get the total subscription of each week
+   * @endpoint GET /api/stat/money/subscription-line-chart
+   */
+  getSubscriptionLineChart: async (_req: Request, res: Response) => {
+    try {
+      const currentTerm = await prisma.term.findFirst({
+        orderBy: {
+          termNumber: "desc",
+        },
+        include: {
+          Week: true,
+        },
+      });
+
+      if (!currentTerm) {
+        return res
+          .status(404)
+          .json({ message: "لم يتم العثور على الفصل الحالي" });
+      }
+
+      const weeklyData = await Promise.all(
+        currentTerm.Week.map(async (week) => {
+          const subscriptions = await prisma.subscription.findMany({
+            where: {
+              weekNumber: week.weekNumber,
+              termNumber: week.termNumber,
+            },
+            include: {
+              FinanceItem: true,
+            },
+          });
+
+          const totalSubscription = subscriptions.reduce(
+            (total, subscription) => {
+              return total + (subscription.FinanceItem?.value || 0);
+            },
+            0,
+          );
+
+          return {
+            weekNumber: week.weekNumber,
+            totalSubscription: totalSubscription,
+          };
+        }),
+      );
+
+      res.status(200).json({
+        message: "تم الحصول على البيانات بنجاح",
+        weeklyData: weeklyData,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 };
 
 export default statMoneyController;
