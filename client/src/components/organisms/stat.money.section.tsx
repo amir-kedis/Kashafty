@@ -4,6 +4,9 @@ import TotalMoneyChip from "../molecules/stat.money.totalChip";
 import TotalIncomeChip from "../molecules/stat.money.totalIncome";
 import TotalExpenseChip from "../molecules/stat.money.totalExpense";
 import CurWeekSubChip from "../molecules/stat.money.curWeekSub";
+import MoneyLineChart from "../molecules/stat.money.line";
+import IncomeExpenseStackedChart from "../molecules/stat.money.stackedchart";
+import SubscriptionLineChart from "../molecules/stat.money.subLine";
 
 type MoneyStatSectionProps = {};
 
@@ -19,6 +22,9 @@ const MoneyStatSection: React.FC = ({}: MoneyStatSectionProps) => {
         <TotalIncomeChip label="اجمالي الدخل" />
         <TotalExpenseChip label="اجمالي الخصوم" />
       </div>
+      <MoneyLineChart label="اجمالي الدخل على مدار الفترة" />
+      <IncomeExpenseStackedChart label="الدخل والخصم على مدار الفترة" />
+      <SubscriptionLineChart label="الاشتراك الاسبوع على مدار الفترة" />
     </div>
   );
 };
