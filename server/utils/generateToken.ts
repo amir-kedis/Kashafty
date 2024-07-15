@@ -2,7 +2,7 @@ import { Response } from "express";
 import jwt from "jsonwebtoken";
 import ms from "ms";
 
-const generateToken = (res: Response, id: string): void => {
+const generateToken = (res: Response, id: string): string => {
   // Generate a JWT token containing id
   // Bearer token is the token that we will be send to the client
   const token = jwt.sign(
@@ -23,6 +23,8 @@ const generateToken = (res: Response, id: string): void => {
     sameSite: "none",
     maxAge: maxAge,
   });
+
+  return token;
 };
 
 export default generateToken;
