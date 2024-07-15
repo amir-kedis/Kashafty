@@ -227,10 +227,11 @@ const financeController = {
       let { sectorBaseName, sectorSuffixName, weekNumber, termNumber }: any =
         req.query;
 
-      if (weekNumber === undefined || termNumber === undefined) {
+      if (weekNumber === undefined)
         weekNumber = req?.currentWeek?.weekNumber.toString();
+
+      if (termNumber === undefined)
         termNumber = req?.currentWeek?.termNumber.toString();
-      }
 
       const subscription = await prisma.subscription.findFirst({
         where: {

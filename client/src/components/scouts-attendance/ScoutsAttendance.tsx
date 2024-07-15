@@ -7,7 +7,10 @@ import TextInput from "../common/Inputs";
 import Button from "../common/Button";
 import { useGetAllWeeksQuery } from "../../redux/slices/termApiSlice";
 import { useSelector } from "react-redux";
-import { useInsertSubscriptionMutation } from "../../redux/slices/financeApiSlice";
+import {
+  useInsertSubscriptionMutation,
+  useGetSectorSubscriptionQuery,
+} from "../../redux/slices/financeApiSlice";
 import { toast } from "react-toastify";
 import {
   useGetSectorAttendanceQuery,
@@ -43,8 +46,6 @@ export default function ScoutsAttendance() {
         " - " +
         new Date(week?.startDate).toLocaleDateString(),
     }));
-
-    // console.log(weeks);
   }
 
   let {
@@ -61,6 +62,15 @@ export default function ScoutsAttendance() {
     suffixName: userInfo?.rSectorSuffixName,
   });
 
+  let { data, isSuccess, isError } = useGetSectorSubscriptionQuery(
+    {
+      weekNumber: chosenWeek,
+      sectorBaseName: userInfo?.rSectorBaseName,
+      sectorSuffixName: userInfo?.rSectorSuffixName,
+    },
+    { refetchOnMountOrArgChange: true, skip: !chosenWeek },
+  );
+
   if (isSuccessScouts && !isLoadingScouts && !isFetchingScouts) {
     scouts = scouts?.body;
     scouts = scouts.map((scout) => ({
@@ -70,7 +80,6 @@ export default function ScoutsAttendance() {
       id: scout.scoutId,
       name: scout.firstName + " " + scout.middleName + " " + scout.lastName,
     }));
-    // console.log({ scouts });
   }
 
   useEffect(() => {
@@ -78,6 +87,11 @@ export default function ScoutsAttendance() {
       setAttendance(scouts);
     }
   }, [isSuccessScouts, isLoadingScouts, isFetchingScouts, chosenWeek]);
+
+  useEffect(() => {
+    if (isSuccess && !isError && data?.body) setSubscription(data?.body);
+    else setSubscription(0);
+  }, [data, isSuccess]);
 
   const handleCheckboxChange = (scoutId, checkboxType) => {
     setAttendance((prevState) => {
