@@ -145,6 +145,77 @@ const statMoneyController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+
+  /* getCurrentWeekSubscription
+   *
+   * @desc  get the total money at each week to form a line chart
+   * @endpoint GET /api/stat/money/line-chart
+   */
+  getMoneyLineChart: async (_req: Request, res: Response) => {
+    try {
+      const currentTerm = await prisma.term.findFirst({
+        orderBy: {
+          termNumber: "desc",
+        },
+        include: {
+          Week: true,
+        },
+      });
+
+      if (!currentTerm) {
+        return res
+          .status(404)
+          .json({ message: "لم يتم العثور على الفصل الحالي" });
+      }
+
+      const weeklyTotals = await Promise.all(
+        currentTerm.Week.map(async (week) => {
+          const income = await prisma.financeItem.aggregate({
+            _sum: {
+              value: true,
+            },
+            where: {
+              type: "income",
+              timestamp: {
+                lt: new Date(
+                  week.startDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+                ),
+              },
+            },
+          });
+
+          const expense = await prisma.financeItem.aggregate({
+            _sum: {
+              value: true,
+            },
+            where: {
+              type: "expense",
+              timestamp: {
+                lt: new Date(
+                  week.startDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+                ),
+              },
+            },
+          });
+
+          console.log((income._sum.value ?? 0) - (expense._sum.value ?? 0));
+
+          return {
+            weekNumber: week.weekNumber,
+            totalMoney: (income._sum.value ?? 0) - (expense._sum.value ?? 0),
+          };
+        }),
+      );
+
+      res.status(200).json({
+        message: "تم الحصول على البيانات بنجاح",
+        weeklyTotals: weeklyTotals,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
 };
 
 export default statMoneyController;

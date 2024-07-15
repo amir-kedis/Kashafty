@@ -11,7 +11,7 @@ moneyRouter.get(
   "/current-week-subscription",
   statMoneyController.getCurrentWeekSubscription,
 );
-moneyRouter.get("/line-chart", () => {});
+moneyRouter.get("/line-chart", statMoneyController.getMoneyLineChart);
 moneyRouter.get("/income-expense-chart", () => {});
 moneyRouter.get("/subscription-line-chart", () => {});
 
