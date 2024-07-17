@@ -5,7 +5,6 @@ import "../../assets/styles/components/InsertScoutPage.scss";
 import PageTitle from "../common/PageTitle";
 import {
   useGetScoutsInSectorQuery,
-  useInsertScoutMutation,
   useUpdateScoutMutation,
 } from "../../redux/slices/scoutApiSlice";
 import Button from "../common/Button";
@@ -27,6 +26,23 @@ const UpdateScoutPage = () => {
 
   const [updateScout, { isLoading: isLoadingUpdateScout }] =
     useUpdateScoutMutation();
+
+  const setScoutData = (scoutId) => {
+    const chosenScout = scouts.filter((scout) => scout?.scoutId == scoutId);
+
+    if (!chosenScout) return;
+
+    setFirstName(chosenScout[0].firstName);
+    setMiddleName(chosenScout[0].middleName);
+    setLastName(chosenScout[0].lastName);
+    setGender(chosenScout[0].gender === "male" ? "ذكر" : "أنثى");
+    console.log(
+      chosenScout[0].sectorBaseName + " " + chosenScout[0].sectorSuffixName,
+    );
+    setNewSector(
+      chosenScout[0].sectorBaseName + " " + chosenScout[0].sectorSuffixName,
+    );
+  };
 
   let sectors = [];
   let scouts = [];
@@ -168,7 +184,10 @@ const UpdateScoutPage = () => {
             valueMember={"scoutId"}
             selectedValue={chosenScout}
             required={true}
-            onChange={(e) => setChosenScout(e.target.value)}
+            onChange={(e) => {
+              setChosenScout(e.target.value);
+              setScoutData(e.target.value);
+            }}
           />
 
           <h4>تعديل الكشاف</h4>
