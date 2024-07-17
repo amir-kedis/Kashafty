@@ -1,5 +1,6 @@
 import React, { ReactNode, ErrorInfo } from "react";
 import { toast } from "react-toastify";
+import SignOutButton from "./signoutButton";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -26,12 +27,12 @@ class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // You can also log the error to an error reporting service
     console.log(error, errorInfo);
+    toast.error("حدث خطأ يرجل تسجيل الدخول");
   }
 
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      toast.error("حدث خطأ يرجل تسجيل الدخول");
       return (
         <div
           style={{
@@ -50,9 +51,7 @@ class ErrorBoundary extends React.Component<
           >
             حدث خطأ يرجى العودة للصحفة الرئيسية
           </h1>
-          <a style={{ padding: "1rem", color: "#ef4444" }} href="/">
-            الرجوع
-          </a>
+          <SignOutButton />
         </div>
       );
     }
