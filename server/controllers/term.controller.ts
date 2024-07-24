@@ -52,8 +52,8 @@ const termController = {
         data: {
           termNumber,
           termName,
-          startDate,
-          endDate,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
         },
       });
 
