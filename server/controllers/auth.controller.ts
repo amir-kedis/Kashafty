@@ -15,7 +15,7 @@ interface SignupRequestBody {
 }
 
 interface LoginRequestBody {
-  email: string;
+  emailOrMobile: string;
   password: string;
 }
 
@@ -88,15 +88,25 @@ const authController = {
   ): Promise<any> => {
     console.log("I reached this route");
     try {
-      const { email, password } = req.body;
+      const { emailOrMobile, password } = req.body;
 
-      const captain = await prisma.captain.findUnique({
-        where: { email: email.toLowerCase() },
-      });
+      // Check if the input is an email or a mobile number
+      const isEmail = emailOrMobile.includes("@");
+
+      let captain;
+      if (isEmail) {
+        captain = await prisma.captain.findUnique({
+          where: { email: emailOrMobile.toLowerCase() },
+        });
+      } else {
+        captain = await prisma.captain.findUnique({
+          where: { phoneNumber: emailOrMobile },
+        });
+      }
 
       if (!captain) {
         return res.status(400).json({
-          error: "Invalid email",
+          error: "Invalid email or mobile number",
         });
       }
 

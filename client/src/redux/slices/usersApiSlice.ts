@@ -2,9 +2,32 @@ import { apiSlice } from "./apiSlice";
 
 const USERS_API = "/api/auth";
 
+interface LoginRequestBody {
+  emailOrMobile: string;
+  password: string;
+}
+
+interface LoginResponseBody {
+  message: string;
+  body: {
+    captainId: number;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string;
+    password: string;
+    rSectorBaseName: string;
+    rSectorSuffixName: string;
+    gender: string;
+    type: string;
+  };
+  token: string;
+}
+
 export const usersApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation({
+    login: builder.mutation<LoginResponseBody, LoginRequestBody>({
       query: (credentials) => ({
         url: `${USERS_API}/login`,
         method: "POST",
@@ -20,6 +43,7 @@ export const usersApi = apiSlice.injectEndpoints({
         method: "POST",
         credentials: "include",
       }),
+      invalidatesTags: ["Auth"],
     }),
 
     signup: builder.mutation({
