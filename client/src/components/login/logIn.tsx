@@ -11,7 +11,7 @@ import { useLoginMutation } from "../../redux/slices/usersApiSlice";
 import { setCredentials } from "../../redux/slices/authSlice";
 
 export default function LogIn() {
-  const [email, setEmail] = useState("");
+  const [emailOrMobile, setEmailOrMobile] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -26,12 +26,12 @@ export default function LogIn() {
     if (isAuthenticated) {
       navigate("/dashboard");
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const res = await login({ email, password }).unwrap();
+      const res = await login({ emailOrMobile, password }).unwrap();
       if (
         signIn({
           auth: {
@@ -46,7 +46,7 @@ export default function LogIn() {
         navigate("/dashboard");
       }
     } catch (err) {
-      toast.error(err?.body?.message || err.error);
+      toast.error(err?.data?.error || err.error);
       console.error(err);
     }
   };
@@ -57,19 +57,19 @@ export default function LogIn() {
         <h2>تسجيل الدخول</h2>
         <div className="card">
           <TextInput
-            label="البريد الالكتروني"
-            type="email"
-            name="email"
-            value={email}
-            placeholder="regular@gmail.com"
+            label="البريد الالكتروني أو رقم الهاتف"
+            type="text"
+            name="emailOrMobile"
+            value={emailOrMobile}
+            placeholder="regular@gmail.com or 01001234000"
             onChange={(e) => {
-              setEmail(e.target.value);
+              setEmailOrMobile(e.target.value);
               e.target.setCustomValidity("");
             }}
-            pattern="^[a-zA-Z0-9._%\+\-]+@[a-zA-Z0-9._%\+\-]+\.[a-z]{2,}$"
+            pattern="^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|01[0-9]{9})$"
             onInvalid={(e) =>
               (e.target as HTMLInputElement).setCustomValidity(
-                "الرجاء إدخال بريد إليكتروني صحيح",
+                "الرجاء إدخال بريد إليكتروني صحيح أو رقم هاتف صحيح",
               )
             }
             required={true}
