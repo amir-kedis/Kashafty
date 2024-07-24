@@ -9,7 +9,7 @@ interface SignupRequestBody {
   middleName: string;
   lastName: string;
   phoneNumber: string;
-  email: string;
+  email?: string;
   password: string;
   gender: string;
 }
@@ -38,11 +38,15 @@ const authController = {
         gender,
       } = req.body;
 
-      const captain = await prisma.captain.findUnique({
-        where: { email: email.toLowerCase() },
-      });
-      if (captain) {
-        return res.status(400).json({ error: "Email is taken!!" });
+      if (email) {
+        // Check if the email is taken
+        const existingCaptain = await prisma.captain.findUnique({
+          where: { email: email.toLowerCase() },
+        });
+
+        if (existingCaptain) {
+          return res.status(400).json({ error: "Email is taken!!" });
+        }
       }
 
       // Hash the password
@@ -55,9 +59,9 @@ const authController = {
           middleName,
           lastName,
           phoneNumber,
-          email: email.toLowerCase(),
+          email: email ? email.toLowerCase() : null, // Set to null if no email provided
           password: hashedPassword,
-          gender: gender == "male" ? Gender.male : Gender.female,
+          gender: gender === "male" ? Gender.male : Gender.female,
           type: "regular",
         },
       });
