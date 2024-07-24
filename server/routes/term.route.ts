@@ -19,6 +19,7 @@ termRouter.post(
 termRouter.patch(
   "/",
   checkRankMiddleware("general"),
+  getCurrentTermMiddleware,
   termController.updateTerm,
 );
 

@@ -79,7 +79,8 @@ const termController = {
       const currentDate = new Date();
       const startDateObj = new Date(startDate);
       const endDateObj = new Date(endDate);
-      if (startDateObj >= endDateObj || endDateObj < currentDate) {
+
+      if (startDateObj >= endDateObj) {
         return res.status(400).json({
           error: "Invalid dates",
         });
@@ -115,8 +116,8 @@ const termController = {
         },
         data: {
           termName,
-          startDate,
-          endDate,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
         },
       });
 
