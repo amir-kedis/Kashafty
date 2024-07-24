@@ -73,6 +73,7 @@ export default function LogIn() {
               )
             }
             required={true}
+            dir="ltr"
           />
           <TextInput
             label="الرمز السري"
