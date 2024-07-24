@@ -20,7 +20,7 @@ CREATE TYPE "FinanceItemType" AS ENUM ('income', 'expense');
 CREATE TYPE "Gender" AS ENUM ('male', 'female');
 
 -- CreateEnum
-CREATE TYPE "NotificationStatus" AS ENUM ('read', 'unread', 'archived');
+CREATE TYPE "NotificationStatus" AS ENUM ('UNREAD', 'READ', 'DELETED');
 
 -- CreateEnum
 CREATE TYPE "NotificationType" AS ENUM ('attendance', 'report', 'financeItemCreated', 'other');
@@ -33,6 +33,7 @@ CREATE TABLE "Activity" (
     "termNumber" INTEGER NOT NULL,
     "day" "Days" NOT NULL,
     "type" "ActivityType" NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "Activity_pkey" PRIMARY KEY ("activityId")
 );
@@ -82,7 +83,7 @@ CREATE TABLE "Captain" (
     "middleName" VARCHAR(255) NOT NULL,
     "lastName" VARCHAR(255) NOT NULL,
     "phoneNumber" VARCHAR(255) NOT NULL,
-    "email" VARCHAR(255) NOT NULL,
+    "email" VARCHAR(255),
     "password" VARCHAR(255) NOT NULL,
     "rSectorBaseName" VARCHAR(255),
     "rSectorSuffixName" VARCHAR(255),
@@ -114,12 +115,16 @@ CREATE TABLE "FinanceItem" (
 
 -- CreateTable
 CREATE TABLE "Notification" (
-    "notificationId" SERIAL NOT NULL,
-    "timestamp" TIMESTAMP(0) NOT NULL,
-    "message" VARCHAR(255) NOT NULL,
-    "contentType" "NotificationType" NOT NULL,
+    "id" SERIAL NOT NULL,
+    "type" "NotificationType" NOT NULL,
+    "status" "NotificationStatus" NOT NULL,
+    "title" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "captainId" INTEGER,
 
-    CONSTRAINT "Notification_pkey" PRIMARY KEY ("notificationId")
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -129,15 +134,6 @@ CREATE TABLE "OtherItem" (
     "generalCaptainId" INTEGER,
 
     CONSTRAINT "OtherItem_pkey" PRIMARY KEY ("itemId")
-);
-
--- CreateTable
-CREATE TABLE "RecieveNotification" (
-    "notificationId" INTEGER NOT NULL,
-    "captainId" INTEGER NOT NULL,
-    "status" VARCHAR(255),
-
-    CONSTRAINT "RecieveNotification_pkey" PRIMARY KEY ("notificationId","captainId")
 );
 
 -- CreateTable
@@ -298,16 +294,13 @@ ALTER TABLE "CaptainAttendance" ADD CONSTRAINT "captainAttendance_regularCaptain
 ALTER TABLE "CaptainAttendance" ADD CONSTRAINT "captainAttendance_week_FK" FOREIGN KEY ("weekNumber", "termNumber") REFERENCES "Week"("weekNumber", "termNumber") ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 -- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "Notification_captainId_fkey" FOREIGN KEY ("captainId") REFERENCES "Captain"("captainId") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "OtherItem" ADD CONSTRAINT "otherItem_financeItem_FK" FOREIGN KEY ("itemId") REFERENCES "FinanceItem"("itemId") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OtherItem" ADD CONSTRAINT "otherItem_generalCaptain_FK" FOREIGN KEY ("generalCaptainId") REFERENCES "Captain"("captainId") ON DELETE SET NULL ON UPDATE RESTRICT;
-
--- AddForeignKey
-ALTER TABLE "RecieveNotification" ADD CONSTRAINT "recNot_captain_FK" FOREIGN KEY ("captainId") REFERENCES "Captain"("captainId") ON DELETE CASCADE ON UPDATE RESTRICT;
-
--- AddForeignKey
-ALTER TABLE "RecieveNotification" ADD CONSTRAINT "recNot_notification_FK" FOREIGN KEY ("notificationId") REFERENCES "Notification"("notificationId") ON DELETE CASCADE ON UPDATE RESTRICT;
 
 -- AddForeignKey
 ALTER TABLE "Report" ADD CONSTRAINT "report_captain_FK" FOREIGN KEY ("captainId") REFERENCES "Captain"("captainId") ON DELETE SET NULL ON UPDATE RESTRICT;
@@ -359,4 +352,3 @@ ALTER TABLE "Subscription" ADD CONSTRAINT "subscription_week_FK" FOREIGN KEY ("w
 
 -- AddForeignKey
 ALTER TABLE "Week" ADD CONSTRAINT "week_term_FK" FOREIGN KEY ("termNumber") REFERENCES "Term"("termNumber") ON DELETE CASCADE ON UPDATE CASCADE;
-

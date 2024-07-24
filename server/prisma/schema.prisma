@@ -67,7 +67,7 @@ model Captain {
   middleName                                               String              @db.VarChar(255)
   lastName                                                 String              @db.VarChar(255)
   phoneNumber                                              String              @unique(map: "captain_phonenumber_unique") @db.VarChar(255)
-  email                                                    String              @unique(map: "captain_email_unique") @db.VarChar(255)
+  email                                                    String?             @unique(map: "captain_email_unique") @db.VarChar(255)
   password                                                 String              @db.VarChar(255)
   rSectorBaseName                                          String?             @db.VarChar(255)
   rSectorSuffixName                                        String?             @db.VarChar(255)
@@ -111,8 +111,8 @@ model Notification {
   message   String
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
-  Captain   Captain?           @relation(fields: [captainId], references: [captainId])
   captainId Int?
+  Captain   Captain?           @relation(fields: [captainId], references: [captainId])
 }
 
 model OtherItem {
