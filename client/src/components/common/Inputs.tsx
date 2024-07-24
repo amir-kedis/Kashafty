@@ -10,6 +10,7 @@ type TextInputProps = {
   required?: boolean;
   pattern?: string;
   onInvalid?: (e: React.FormEvent<HTMLInputElement>) => void;
+  dir?: string;
 };
 
 function TextInput({
@@ -22,6 +23,7 @@ function TextInput({
   required,
   pattern,
   onInvalid,
+  dir,
 }: TextInputProps) {
   return (
     <label className="input input--text">
@@ -35,6 +37,7 @@ function TextInput({
         required={required}
         pattern={pattern}
         onInvalid={onInvalid}
+        {...(dir && { style: { direction: dir as "ltr" | "rtl" } })}
       />
     </label>
   );
