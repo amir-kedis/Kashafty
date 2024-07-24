@@ -25,6 +25,34 @@ interface LoginResponseBody {
   token: string;
 }
 
+interface SignupRequestBody {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  phoneNumber: string;
+  email?: string;
+  password: string;
+  gender: "male" | "female";
+}
+
+interface SignupResponseBody {
+  message: string;
+  body: {
+    captainId: number;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    phoneNumber: string;
+    email: string | null;
+    password: string;
+    rSectorBaseName: string | null;
+    rSectorSuffixName: string | null;
+    gender: "male" | "female";
+    type: string;
+  };
+  token: string;
+}
+
 export const usersApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponseBody, LoginRequestBody>({
@@ -46,7 +74,7 @@ export const usersApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Auth"],
     }),
 
-    signup: builder.mutation({
+    signup: builder.mutation<SignupResponseBody, SignupRequestBody>({
       query: (data) => ({
         url: `${USERS_API}/signUp`,
         method: "POST",

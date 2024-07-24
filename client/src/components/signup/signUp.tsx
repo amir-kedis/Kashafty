@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect, FormEvent } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Button from "../common/Button";
@@ -7,7 +7,6 @@ import TextInput, { RadioInput } from "../common/Inputs";
 import "./signUp.scss";
 import { useSignupMutation } from "../../redux/slices/usersApiSlice";
 import { setCredentials } from "../../redux/slices/authSlice";
-import { RootState } from "../../redux/store";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 
@@ -16,7 +15,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [gender, setGender] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // Email is optional
   const [password, setPassword] = useState("");
   const [rePassword, setRePassword] = useState("");
   const [phone, setPhone] = useState("");
@@ -25,7 +24,6 @@ export default function SignUp() {
   const dispatch = useDispatch();
 
   const [signup, { isLoading }] = useSignupMutation();
-
   const isAuthenticated = useIsAuthenticated();
   const signIn = useSignIn();
 
@@ -35,7 +33,7 @@ export default function SignUp() {
     }
   }, [navigate, isAuthenticated]);
 
-  const submitHandler = async (e) => {
+  const submitHandler = async (e: FormEvent) => {
     e.preventDefault();
     if (password !== rePassword) {
       toast.error("الرمز السري غير متطابق");
@@ -47,18 +45,18 @@ export default function SignUp() {
         middleName,
         lastName,
         password,
-        email,
+        email, // Email can be empty
         phoneNumber: phone,
-        gender: gender == "ذكر" ? "male" : "female",
+        gender: gender === "ذكر" ? "male" : "female",
       });
       const res = await signup({
         firstName,
         middleName,
         lastName,
         phoneNumber: phone,
-        email,
+        email: email || undefined, // Send email as undefined if it's empty
         password,
-        gender: gender == "ذكر" ? "male" : "female",
+        gender: gender === "ذكر" ? "male" : "female",
       }).unwrap();
 
       if (
@@ -105,7 +103,7 @@ export default function SignUp() {
                   "الرجاء إدخال الاسم الاول فقط (باللغة العربية او الانجليزية)",
                 )
               }
-              required={true}
+              required
             />
             <TextInput
               label="الاسم المتوسط"
@@ -123,7 +121,7 @@ export default function SignUp() {
                   "الرجاء إدخال الاسم الاوسط فقط (باللغة العربية او الانجليزية)",
                 )
               }
-              required={true}
+              required
             />
             <TextInput
               label="الاسم الأخير"
@@ -141,7 +139,7 @@ export default function SignUp() {
                   "الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)",
                 )
               }
-              required={true}
+              required
             />
           </div>
           <div className="card">
@@ -156,13 +154,12 @@ export default function SignUp() {
                 setEmail(e.target.value);
                 e.target.setCustomValidity("");
               }}
-              pattern="^[a-zA-Z0-9._%\+\-]+@[a-zA-Z0-9._%\+\-]+\.[a-z]{2,}$"
+              pattern="^[a-zA-Z0-9._%\+\-]*@[a-zA-Z0-9._%\+\-]*\.[a-z]*$" // Updated pattern to handle optional email
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
                   "الرجاء إدخال بريد إليكتروني صحيح",
                 )
               }
-              required={true}
             />
             <TextInput
               label="الرمز السري"
@@ -171,7 +168,7 @@ export default function SignUp() {
               value={password}
               placeholder="أكتب الرمز السري"
               onChange={(e) => setPassword(e.target.value)}
-              required={true}
+              required
             />
             <TextInput
               label="أعد إدخال الرمز السري"
@@ -180,7 +177,7 @@ export default function SignUp() {
               value={rePassword}
               placeholder="أعد إدخال الرمز السري"
               onChange={(e) => setRePassword(e.target.value)}
-              required={true}
+              required
             />
           </div>
           <div className="card">
@@ -201,14 +198,14 @@ export default function SignUp() {
                   "الرجاء إدخال رقم هاتف صحيح",
                 )
               }
-              required={true}
+              required
             />
             <RadioInput
               label="النوع"
               name="gender"
               valuesArr={["ذكر", "أنثى"]}
               onChange={(e) => setGender(e.target.value)}
-              required={true}
+              required
             />
           </div>
           {isLoading && <p>جاري التحميل...</p>}
