@@ -9,7 +9,8 @@
     "vercel-build": "prisma generate",
     "start-prod": "nodemon dist/index.js",
     "generate-pisma-types": "prisma generate",
-    "seed": "ts-node ./prisma/seed.ts"
+    "seed": "ts-node ./prisma/seed.ts",
+    "db-import": "ts-node ./prisma/import-scouts.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
