@@ -21,11 +21,11 @@ const MoneyStatSection: React.FC = ({}: MoneyStatSectionProps) => {
       <div className="info-section" style={{ gridTemplateRows: "1fr" }}>
         <TotalMoneyChip label="محتوى الخزنة" color="colorful" />
         <CurWeekSubChip label="اشتراك الاسبوع الحالي" />
-        <TotalIncomeChip label="اجمالي الدخل" />
-        <TotalExpenseChip label="اجمالي الخصوم" />
+        <TotalIncomeChip label="اجمالي الايراد" />
+        <TotalExpenseChip label="اجمالي المصروف" />
       </div>
-      <MoneyLineChart label="اجمالي الدخل على مدار الفترة" />
-      <IncomeExpenseStackedChart label="الدخل والخصم على مدار الفترة" />
+      <MoneyLineChart label="اجمالي الايراد على مدار الفترة" />
+      <IncomeExpenseStackedChart label="الايراد والمصروف على مدار الفترة" />
       <SubscriptionLineChart label="الاشتراك الاسبوع على مدار الفترة" />
     </div>
   );

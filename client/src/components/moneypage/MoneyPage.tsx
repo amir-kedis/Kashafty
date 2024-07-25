@@ -19,7 +19,8 @@ const MoneyPage = () => {
     e.preventDefault();
     const newItem = {
       value: item,
-      type: itemType === "خصم" ? "expense" : itemType === "دخل" ? "income" : "",
+      type:
+        itemType === "مصروف" ? "expense" : itemType === "ايراد" ? "income" : "",
       description: description,
     };
 
@@ -53,7 +54,7 @@ const MoneyPage = () => {
         <RadioInput
           label="النوع"
           name="itemType"
-          valuesArr={["دخل", "خصم"]}
+          valuesArr={["ايراد", "مصروف"]}
           onChange={(e) => setItemType(e.target.value)}
           required={true}
         />
