@@ -145,7 +145,6 @@ const InsertScoutPage: React.FC = () => {
                       "الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)",
                     );
                   }}
-                  required={true}
                 />
               </div>
               <div className="form-card">
@@ -186,7 +185,6 @@ const InsertScoutPage: React.FC = () => {
                 name="birthDate"
                 value={birthDate}
                 onChange={(e) => setBirthDate(e.target.value)}
-                required={true}
               />
             </div>
             <div className="form-card">
@@ -196,7 +194,6 @@ const InsertScoutPage: React.FC = () => {
                 name="enrollDate"
                 value={enrollDate}
                 onChange={(e) => setEnrollDate(e.target.value)}
-                required={true}
               />
             </div>
           </div>
@@ -209,7 +206,6 @@ const InsertScoutPage: React.FC = () => {
             valueMember="value"
             selectedValue={studyYear}
             onChange={(e) => setStudyYear(e.target.value)}
-            required={false}
           />
           <Button className="insert-sector__btn Button--medium Button--primary-darker">
             إضافة
