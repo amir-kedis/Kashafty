@@ -17,7 +17,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend,
+  Legend
 );
 
 type IncomeExpenseStackedChartProps = {
@@ -39,14 +39,14 @@ const IncomeExpenseStackedChart = ({
     labels: data?.weeklyData.map((item) => `Week ${item.weekNumber}`),
     datasets: [
       {
-        label: "دخل",
+        label: "ايراد",
         data: data?.weeklyData.map((item) => item.totalIncome),
         backgroundColor: `rgba(${incomeColor},0.9)`,
         borderColor: `rgba(${incomeColor},1)`,
         borderWidth: 1,
       },
       {
-        label: "خصم",
+        label: "مصروف",
         data: data?.weeklyData.map((item) => item.totalExpense),
         backgroundColor: `rgba(${expenseColor},0.9)`,
         borderColor: `rgba(${expenseColor},1)`,

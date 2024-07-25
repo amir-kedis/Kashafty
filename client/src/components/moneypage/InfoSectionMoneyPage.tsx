@@ -20,7 +20,7 @@ const InfoSectionMoneyPage: React.FC = () => {
   const { data: budget, isFetching: isFetchingBudget } = useGetBudgetQuery({});
   const { data: income, isFetching: isFetchingIncome } = useGetIncomeQuery({});
   const { data: expense, isFetching: isFetchingExpense } = useGetExpenseQuery(
-    {},
+    {}
   );
   const { data: currentWeekSub, isFetching: isFetchingCurrentWeekSub } =
     useGetCurrentWeekSubscriptionsQuery({});
@@ -38,7 +38,7 @@ const InfoSectionMoneyPage: React.FC = () => {
           date: item.timestamp.split("T")[0],
           description: item.description ? item.description : "اشتراك",
           value: item.value,
-          type: "دخل",
+          type: "ايراد",
         },
       ];
     });
@@ -57,7 +57,7 @@ const InfoSectionMoneyPage: React.FC = () => {
           date: item.timestamp.split("T")[0],
           description: item.description,
           value: item.value,
-          type: "خصم",
+          type: "مصروف",
         },
       ];
     });
@@ -81,18 +81,18 @@ const InfoSectionMoneyPage: React.FC = () => {
             isFetchingCurrentWeekSub
               ? "جاري التحميل"
               : currentWeekSub?.body
-                ? currentWeekSub?.body + " جنيه"
-                : "لا يوجد"
+              ? currentWeekSub?.body + " جنيه"
+              : "لا يوجد"
           }
           color="dark"
         />
         <InfoBox
-          title="إجمالي الدخل"
+          title="إجمالي الايراد"
           value={isFetchingIncome ? "جاري التحميل" : TotalIncome + " جنيه"}
           color="dark"
         />
         <InfoBox
-          title="إجمالي الخصوم"
+          title="إجمالي المصروف"
           value={isFetchingExpense ? "جاري التحميل" : TotalExpense + " جنيه"}
           color="dark"
         />
