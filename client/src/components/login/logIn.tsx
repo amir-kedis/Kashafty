@@ -66,12 +66,6 @@ export default function LogIn() {
               setEmailOrMobile(e.target.value);
               e.target.setCustomValidity("");
             }}
-            pattern="^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}|01[0-9]{9})$"
-            onInvalid={(e) =>
-              (e.target as HTMLInputElement).setCustomValidity(
-                "الرجاء إدخال بريد إليكتروني صحيح أو رقم هاتف صحيح",
-              )
-            }
             required={true}
             dir="ltr"
           />
