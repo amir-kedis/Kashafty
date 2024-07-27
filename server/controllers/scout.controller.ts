@@ -141,6 +141,9 @@ const scoutController = {
         where: {
           scoutId: parseInt(scoutId),
         },
+        include: {
+          ScoutProfile: true,
+        },
       });
 
       if (!result) {
