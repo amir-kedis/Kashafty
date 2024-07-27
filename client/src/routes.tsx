@@ -5,6 +5,8 @@ import {
   Route,
 } from "react-router-dom";
 
+import RequireAuth from "@auth-kit/react-router/RequireAuth";
+
 // Import modules/pages under this line
 import LandingPage from "./components/landingpage/LandingPage";
 import SignUp from "./components/signup/signUp";
@@ -13,7 +15,6 @@ import LogIn from "./components/login/logIn";
 // Import layouts under this line
 import PublicLayout from "./components/layout/PublicLayout";
 
-// Import Testing Routes here
 import Dashboard from "./components/dashboard/Dashboard";
 import CaptainProfile from "./components/captain-profile/CaptainProfile";
 import InsertTermPage from "./components/insert-term/InsertTermPage";
@@ -29,14 +30,10 @@ import MoneyPage from "./components/moneypage/MoneyPage";
 import CaptainsAttendance from "./components/captains-attendance/CaptainAttendance";
 import EditPassword from "./components/edit-password/EditPassword";
 import CancelWeek from "./components/cancel-week/CancelWeek";
-
 import ActivityPage from "./components/activitypage/ActivityPage";
 import AddActivityPage from "./components/addactivitypage/AddActivityPage";
 import StatsPage from "./components/stats-page/StatsPage";
-import PrivateRoute from "./components/atoms/PrivateRoute";
 import ErrorBoundary from "./components/atoms/ErrorBoundary";
-
-import RequireAuth from "@auth-kit/react-router/RequireAuth";
 
 const Routes: React.FC = () => {
   return (
