@@ -20,11 +20,15 @@ const RadioButtonGroup = ({
   selectedItem,
 }: IOptionGroup) => {
   return (
-    <fieldset style={{ border: "none", appearance: "none" }}>
+    <fieldset
+      style={{ border: "none", appearance: "none", margin: 0, padding: 0 }}
+    >
       <legend
         style={{
           textAlign: "right",
           direction: "rtl",
+          fontSize: "1rem",
+          marginBottom: "0.5rem",
         }}
       >
         {label}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextInput, { RadioInput } from "../common/Inputs";
 import CustomSelect from "../common/CustomSelect";
 import "../../assets/styles/components/InsertScoutPage.scss";
@@ -10,6 +10,7 @@ import {
 import Button from "../common/Button";
 import { toast } from "react-toastify";
 import { useGetSectorsQuery } from "../../redux/slices/sectorApiSlice";
+import RadioButtonGroup from "../atoms/inputs/RadioButtonGroup";
 
 const UpdateScoutPage = () => {
   const [firstName, setFirstName] = useState("");
@@ -19,7 +20,6 @@ const UpdateScoutPage = () => {
   const [currentChosenSector, setCurrentChosenSector] = useState("");
   const [newSector, setNewSector] = useState("");
   const [chosenScout, setChosenScout] = useState("");
-
   const [studyYear, setStudyYear] = useState("");
   const [enrollDate, setEnrollDate] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -59,8 +59,6 @@ const UpdateScoutPage = () => {
     baseName: currentChosenSector.split(" ")[0],
     suffixName: currentChosenSector.split(" ")[1],
   };
-
-  console.log(sectorToQuery);
 
   const {
     data: scoutsData,
@@ -129,8 +127,6 @@ const UpdateScoutPage = () => {
       enrollDate: enrollDate,
     };
 
-    console.log("newScout = ", newScout);
-
     try {
       const res = await updateScout(newScout).unwrap();
       if (res.status === 400 || res.status === 500)
@@ -141,8 +137,6 @@ const UpdateScoutPage = () => {
       toast.error(JSON.stringify(err));
     }
   };
-
-  console.log("chosenScout = ", chosenScout);
 
   return (
     <div className="add-scout-page">
@@ -255,12 +249,14 @@ const UpdateScoutPage = () => {
               />
             </div>
             <div className="form-card">
-              <RadioInput
-                label="النوع"
-                name="gender"
-                valuesArr={["ذكر", "أنثى"]}
+              <RadioButtonGroup
+                options={[
+                  { label: "ذكر", name: "gender" },
+                  { label: "أنثى", name: "gender" },
+                ]}
+                selectedItem={gender}
                 onChange={(e) => setGender(e.target.value)}
-                required={true}
+                label="النوع"
               />
             </div>
           </div>
