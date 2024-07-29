@@ -1,20 +1,19 @@
 import React from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Routes as Switch,
   Route,
 } from "react-router-dom";
 
 import RequireAuth from "@auth-kit/react-router/RequireAuth";
 
+// Import layouts under this line
+import PublicLayout from "./components/layout/PublicLayout";
+
 // Import modules/pages under this line
 import LandingPage from "./components/landingpage/LandingPage";
 import SignUp from "./components/signup/signUp";
 import LogIn from "./components/login/logIn";
-
-// Import layouts under this line
-import PublicLayout from "./components/layout/PublicLayout";
-
 import Dashboard from "./components/dashboard/Dashboard";
 import CaptainProfile from "./components/captain-profile/CaptainProfile";
 import InsertTermPage from "./components/insert-term/InsertTermPage";
