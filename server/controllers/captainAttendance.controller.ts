@@ -188,46 +188,46 @@ const captainAttendanceController = {
     res: Response,
   ): Promise<any> => {
     try {
-      const { unitCaptainId, weekNumber, termNumber } = req.query;
+      let {
+        unitCaptainId,
+        weekNumber: weekNumberStr,
+        termNumber: termNumberStr,
+      } = req.query;
+      const weekNumber = parseInt(weekNumberStr);
+      const termNumber = parseInt(termNumberStr);
 
-      // NOTE: left as reference remove after testing
-      // const result = await db.query(
-      //   `
-      //   SELECT "Captain".*, "CaptainAttendance".*
-      //   FROM "Captain"
-      //   LEFT JOIN "CaptainAttendance"
-      //   ON "Captain"."captainId" = "CaptainAttendance"."captainId"
-      //   AND "CaptainAttendance"."weekNumber" = $2 AND "CaptainAttendance"."termNumber" = $3
-      //   INNER JOIN "Sector"
-      //   ON "Sector"."baseName" = "Captain"."rSectorBaseName" AND "Sector"."suffixName" = "Captain"."rSectorSuffixName"
-      //   WHERE "Sector"."unitCaptainId" = $1;
-      //   `,
-      //   [unitCaptainId, weekNumber, termNumber],
-      // );
-
-      // TODO: needs testing
-      const result = await prisma.captain.findMany({
+      const captains = await prisma.captain.findMany({
         where: {
-          Sector_Sector_unitCaptainIdToCaptain: {
-            some: {
-              unitCaptainId: parseInt(unitCaptainId),
-            },
-          },
-          CaptainAttendance: {
-            some: {
-              weekNumber: parseInt(weekNumber),
-              termNumber: parseInt(termNumber),
-            },
+          Sector_Captain_rSectorBaseName_rSectorSuffixNameToSector: {
+            unitCaptainId: parseInt(unitCaptainId),
           },
         },
         include: {
-          CaptainAttendance: {
-            where: {
-              weekNumber: parseInt(weekNumber),
-              termNumber: parseInt(termNumber),
-            },
-          },
+          CaptainAttendance: true,
         },
+      });
+
+      // Filter CaptainAttendance for the specified weekNumber and termNumber
+      const filteredCaptains = captains.map((captain) => {
+        const filteredAttendance = captain.CaptainAttendance.filter(
+          (attendance) =>
+            attendance.weekNumber === weekNumber &&
+            attendance.termNumber === termNumber,
+        );
+        return {
+          ...captain,
+          CaptainAttendance:
+            filteredAttendance.length > 0 ? filteredAttendance : null,
+        };
+      });
+
+      const result = filteredCaptains.map((captain) => {
+        return {
+          ...captain,
+          attendanceStatus: captain?.CaptainAttendance
+            ? captain?.CaptainAttendance[0]?.attendanceStatus
+            : null,
+        };
       });
 
       if (!result.length) {
