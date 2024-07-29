@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
+import { AttendanceStatus } from "@prisma/client";
 
 interface UpsertAttendanceRequest extends Request {
   body: {
@@ -44,17 +45,14 @@ const captainAttendanceController = {
   ): Promise<any> => {
     try {
       const { attendanceRecords } = req.body;
-
-      if (attendanceRecords.length === 0) {
+      if (!attendanceRecords || attendanceRecords.length === 0) {
         return res.status(404).json({
           error: "No records were found",
         });
       }
-
       let result = [];
-
       for (let i = 0; i < attendanceRecords.length; i++) {
-        const queryResult = await prisma.captainAttendance.upsert({
+        const attendanceRecord = await prisma.captainAttendance.upsert({
           where: {
             captainId_weekNumber_termNumber: {
               captainId: parseInt(attendanceRecords[i].captainId),
@@ -63,21 +61,21 @@ const captainAttendanceController = {
             },
           },
           update: {
-            attendanceStatus: attendanceRecords[i].attendanceStatus as any,
+            attendanceStatus: attendanceRecords[i]
+              .attendanceStatus as AttendanceStatus,
           },
           create: {
             captainId: parseInt(attendanceRecords[i].captainId),
             weekNumber: attendanceRecords[i].weekNumber,
             termNumber: attendanceRecords[i].termNumber,
-            attendanceStatus: attendanceRecords[i].attendanceStatus as any,
+            attendanceStatus: attendanceRecords[i]
+              .attendanceStatus as AttendanceStatus,
           },
         });
-
-        result.push(queryResult);
+        result.push(attendanceRecord);
       }
-
       res.status(200).json({
-        message: "Successful insertion/update",
+        message: "Successful insertion",
         body: result,
         count: result.length,
       });
@@ -89,7 +87,6 @@ const captainAttendanceController = {
       });
     }
   },
-
   getSectorAttendance: async (
     req: GetSectorAttendanceRequest,
     res: Response,
