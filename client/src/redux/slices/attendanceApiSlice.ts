@@ -1,5 +1,40 @@
 import { apiSlice } from "./apiSlice";
 
+interface Captain {
+  captainId: number;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  phoneNumber: string;
+  email: string;
+  rSectorBaseName: string;
+  rSectorSuffixName: string;
+  gender: "male" | "female";
+  type: "general" | "unit" | "regular";
+  attendanceStatus: "attended" | "execused" | "absent" | null;
+}
+
+interface GetUnitAttendanceResponse {
+  message: string;
+  body: Captain[];
+  count: number;
+}
+
+interface GetUnitAttendanceArgs {
+  unitCaptainId: number;
+  weekNumber: number;
+  termNumber: number;
+}
+
+interface UpsertUnitAttendanceArgs {
+  attendanceRecords: {
+    captainId: number;
+    weekNumber: number;
+    termNumber: number;
+    attendanceStatus: "attended" | "execused" | "absent";
+  }[];
+}
+
 const ATTENDANCE_URL = "/api";
 
 export const attendanceApi = apiSlice.injectEndpoints({
@@ -20,15 +55,17 @@ export const attendanceApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Attendance", "AttendanceRate"],
     }),
-    GetUnitAttendance: builder.query({
-      query: (unit) => ({
+
+    getUnitAttendance: builder.query<Captain[], GetUnitAttendanceArgs>({
+      query: (args) => ({
         url: `${ATTENDANCE_URL}/captainAttendance/unit/all`,
         method: "GET",
-        params: unit,
+        params: args,
       }),
+      transformResponse: (response: GetUnitAttendanceResponse) => response.body,
       providesTags: ["Attendance"],
     }),
-    UpsertUnitAttendance: builder.mutation({
+    upsertUnitAttendance: builder.mutation<void, UpsertUnitAttendanceArgs>({
       query: (attendance) => ({
         url: `${ATTENDANCE_URL}/captainAttendance/`,
         method: "POST",
