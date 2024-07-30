@@ -34,6 +34,7 @@ import ActivityPage from "./components/activitypage/ActivityPage";
 import AddActivityPage from "./components/addactivitypage/AddActivityPage";
 import StatsPage from "./components/stats-page/StatsPage";
 import ErrorBoundary from "./components/atoms/ErrorBoundary";
+import CaptainAttendancePage from "./pages/CaptainAttendancePage";
 
 const Routes: React.FC = () => {
   return (
@@ -152,7 +153,7 @@ const Routes: React.FC = () => {
               path="/record-captains-absence"
               element={
                 <RequireAuth fallbackPath="/logIn">
-                  <CaptainsAttendance />
+                  <CaptainAttendancePage />
                 </RequireAuth>
               }
             />
