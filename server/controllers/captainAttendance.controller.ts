@@ -191,7 +191,14 @@ const captainAttendanceController = {
         termNumber: termNumberStr,
       } = req.query;
       const weekNumber = parseInt(weekNumberStr);
-      const termNumber = parseInt(termNumberStr);
+
+      let termNumber = termNumberStr ? parseInt(termNumberStr) : undefined;
+      if (!termNumber) {
+        const latestTerm = await prisma.term.findFirst({
+          orderBy: { termNumber: "desc" },
+        });
+        termNumber = latestTerm?.termNumber;
+      }
 
       const captains = await prisma.captain.findMany({
         where: {

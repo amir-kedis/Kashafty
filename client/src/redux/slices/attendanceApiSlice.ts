@@ -23,7 +23,7 @@ interface GetUnitAttendanceResponse {
 interface GetUnitAttendanceArgs {
   unitCaptainId: number;
   weekNumber: number;
-  termNumber: number;
+  termNumber?: number;
 }
 
 interface UpsertUnitAttendanceArgs {
