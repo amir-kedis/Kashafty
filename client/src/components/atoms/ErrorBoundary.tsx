@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component<
 > {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -26,9 +26,18 @@ class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // You can also log the error to an error reporting service
+    this.setState({ error, errorInfo });
     console.log(error, errorInfo);
-    toast.error("حدث خطأ يرجل تسجيل الدخول");
+
+    const error_message = error.message;
+    toast.error("حدث خطأ يرجى العودة للصحفة الرئيسية");
+    toast.error(error_message);
+    toast.error(errorInfo?.digest);
   }
+
+  handleRetry = () => {
+    this.setState({ hasError: false });
+  };
 
   render() {
     if (this.state.hasError) {
@@ -47,11 +56,34 @@ class ErrorBoundary extends React.Component<
             style={{
               margin: "0",
               textAlign: "center",
+              lineHeight: "6rem",
             }}
           >
             حدث خطأ يرجى العودة للصحفة الرئيسية
+            <br />
+            اذا استمر الخطأ يرجى التواصل مع الدعم الفني
           </h1>
-          <SignOutButton />
+
+          <p style={{ textAlign: "center", margin: "1rem" }}>
+            {this.state.error?.message}
+            <br />
+            {this.state.errorInfo?.digest}
+            <br />
+          </p>
+          <pre>{this.state.errorInfo?.componentStack}</pre>
+
+          <button
+            style={{
+              margin: "1rem",
+              padding: "1rem",
+              backgroundColor: "#fff",
+              cursor: "pointer",
+              fontSize: "1.5rem",
+            }}
+            onClick={this.handleRetry}
+          >
+            إعادة المحاولة
+          </button>
         </div>
       );
     }

@@ -1,7 +1,6 @@
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 import "../../assets/styles/components/UserActions.scss";
-import { RootState } from "../../redux/store";
 import Button from "./Button";
-import { useSelector } from "react-redux";
 
 const ActionRoutes = {
   "Assign Sector Leader": "/assign-captain",
@@ -23,7 +22,7 @@ const ActionRoutes = {
 };
 
 export default function UserActions() {
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
   const { type } = userInfo;
 
   const GeneralCaptainActions = () => {

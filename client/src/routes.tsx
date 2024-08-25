@@ -37,8 +37,8 @@ import CaptainAttendancePage from "./pages/CaptainAttendancePage";
 
 const Routes: React.FC = () => {
   return (
-    <Router>
-      <ErrorBoundary>
+    <ErrorBoundary>
+      <Router>
         <Switch>
           <Route element={<PublicLayout />}>
             <Route path="/" element={<LandingPage />} />
@@ -199,11 +199,12 @@ const Routes: React.FC = () => {
               }
             />
           </Route>
+
           {/* Not Found */}
           <Route path="*" element={<h1>Not Found</h1>} />
         </Switch>
-      </ErrorBoundary>
-    </Router>
+      </Router>
+    </ErrorBoundary>
   );
 };
 

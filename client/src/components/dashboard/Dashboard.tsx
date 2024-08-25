@@ -1,19 +1,18 @@
 import PageTitle from "../common/PageTitle";
 import "./Dashboard.scss";
-import { useSelector } from "react-redux";
 import NotificationBox from "../common/NotificationBox";
 import TermInfoSection from "../common/TermInfoSection";
 import UserActions from "../common/UserActions";
 import InfoSection from "../common/InfoSection";
-import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function Dashboard() {
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const user = useAuthUser();
 
   let titleMsg =
-    userInfo.gender == "male"
-      ? `مرحباً يا كابتن ${userInfo?.firstName} ${userInfo?.middleName}`
-      : `مرحبا يا شيفتان ${userInfo?.firstName} ${userInfo?.middleName}`;
+    user.gender == "male"
+      ? `مرحباً يا كابتن ${user?.firstName} ${user?.middleName}`
+      : `مرحبا يا شيفتان ${user?.firstName} ${user?.middleName}`;
 
   return (
     <div className="dashboard">

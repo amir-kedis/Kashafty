@@ -6,11 +6,10 @@ import {
   useGetNotificationsQuery,
   useUpdateNotificationMutation,
 } from "../../redux/slices/notificationsApiSlice";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function NotificationPage() {
-  const user = useSelector((state: RootState) => state.auth.userInfo);
+  const user = useAuthUser();
 
   const { data: notifications } = useGetNotificationsQuery({
     captainId: user.captainId,

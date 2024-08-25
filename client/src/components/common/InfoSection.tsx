@@ -1,5 +1,4 @@
 import "../../assets/styles/components/InfoSection.scss";
-import { useSelector } from "react-redux";
 import InfoBox from "./InfoBox";
 import { useGetCaptainsQuery } from "../../redux/slices/captainsApiSlice";
 import {
@@ -14,10 +13,10 @@ import {
   useGetBudgetQuery,
   useGetSectorSubscriptionQuery,
 } from "../../redux/slices/financeApiSlice";
-import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function InfoSection() {
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
   const { type } = userInfo;
 
   const GeneralCaptainInfo = () => {

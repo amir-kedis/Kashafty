@@ -5,13 +5,12 @@ import "../scouts-attendance/ScoutsAttendance.scss";
 import InfoBox from "../common/InfoBox";
 import Button from "../common/Button";
 import { useGetAllWeeksQuery } from "../../redux/slices/termApiSlice";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
   useGetUnitAttendanceQuery,
   useUpsertUnitAttendanceMutation,
 } from "../../redux/slices/attendanceApiSlice";
-import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function CaptainsAttendance() {
   const [attendance, setAttendance] = useState([]);
@@ -24,7 +23,7 @@ export default function CaptainsAttendance() {
     isSuccess: isSuccessWeeks,
   } = useGetAllWeeksQuery({});
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
 
   const [upsertAttendance, { isLoading: isLoadingUpsertAttendance }] =
     useUpsertUnitAttendanceMutation();

@@ -25,7 +25,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   }
   if (isError) {
     console.log("Token is expired");
-    toast.error("يرجلى تسجيل الدخول");
+    toast.error("انتهت صلاحية التوثيق الرجاء تسجيل الدخول مرة أخرى");
     dispatch(clearCredentials());
   }
 

@@ -6,7 +6,6 @@ import InfoBox from "../common/InfoBox";
 import TextInput from "../common/Inputs";
 import Button from "../common/Button";
 import { useGetAllWeeksQuery } from "../../redux/slices/termApiSlice";
-import { useSelector } from "react-redux";
 import {
   useInsertSubscriptionMutation,
   useGetSectorSubscriptionQuery,
@@ -16,7 +15,7 @@ import {
   useGetSectorAttendanceQuery,
   useUpsertSectorAttendanceMutation,
 } from "../../redux/slices/attendanceApiSlice";
-import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function ScoutsAttendance() {
   const [attendance, setAttendance] = useState([]);
@@ -30,7 +29,7 @@ export default function ScoutsAttendance() {
     isSuccess: isSuccessWeeks,
   } = useGetAllWeeksQuery({});
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
 
   const [insertSubscription, { isLoading: isLoadingInsertSubscription }] =
     useInsertSubscriptionMutation();

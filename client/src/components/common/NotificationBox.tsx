@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -8,12 +7,12 @@ import {
 
 import "../../assets/styles/components/NotificationBox.scss";
 
-import { RootState } from "../../redux/store";
 import Alert from "./Alerts";
 import { NotificationType } from "../../types/prismaTypes";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function NotificationBox() {
-  const user = useSelector((state: RootState) => state.auth.userInfo);
+  const user = useAuthUser();
 
   const { data: notifications } = useGetNotificationsQuery({
     captainId: user.captainId,

@@ -1,11 +1,11 @@
-import { useSelector } from "react-redux";
 import Button from "../common/Button";
 import PageTitle from "../common/PageTitle";
 import "./CaptainProfile.scss";
 import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function CaptainProfile() {
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
 
   return (
     <div className="captain-profile">

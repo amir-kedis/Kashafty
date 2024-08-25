@@ -1,14 +1,13 @@
-import { useSelector } from "react-redux";
 import AttendanceRateChip from "../molecules/stat.attendance.rate";
-import { RootState } from "../../redux/store";
 import AttendanceLineChart from "../molecules/stat.attendance.line";
 import AttendanceStackedChart from "../molecules/stat.attendance.stackedchart";
 import ScoutAttendanceByName from "../molecules/stat.attendance.scouts";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 type AttendanceStatSectionProps = {};
 
 const AttendanceStatSection: React.FC = ({}: AttendanceStatSectionProps) => {
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
 
   return (
     <div>

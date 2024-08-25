@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -19,14 +18,14 @@ import {
 import logo from "../../assets/images/logo.svg";
 // styles
 import "../../assets/styles/components/Nav.scss";
-import { RootState } from "../../redux/store";
 import { useGetNotificationsQuery } from "../../redux/slices/notificationsApiSlice";
 import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function Nav() {
   const [show, setShow] = useState(false);
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
   const isAuthenticated = useIsAuthenticated();
 
   const { data } = useGetNotificationsQuery(

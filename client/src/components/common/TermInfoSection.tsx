@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import "../../assets/styles/components/TermInfoSection.scss";
 import {
   useGetCurTermQuery,
@@ -7,7 +6,7 @@ import {
 } from "../../redux/slices/termApiSlice";
 import Button from "./Button";
 import InfoBox from "./InfoBox";
-import { RootState } from "../../redux/store";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 export default function TermInfoSection() {
   const { data: termInfo, isFetching: isFetchingTerm } = useGetCurTermQuery({});
@@ -18,7 +17,7 @@ export default function TermInfoSection() {
     isLoading,
   } = useGetRemainingWeeksQuery({});
 
-  const { userInfo } = useSelector((state: RootState) => state.auth);
+  const userInfo = useAuthUser();
 
   // if (
   //   termInfo &&
