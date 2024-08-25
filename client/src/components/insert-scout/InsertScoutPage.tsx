@@ -26,7 +26,7 @@ const InsertScoutPage: React.FC = () => {
   const { data, isFetching } = useGetSectorsQuery({});
 
   if (data && !isFetching) {
-    sectors = data.body;
+    sectors = data?.body;
     if (sectors.length === 0) {
       sectors = [{ baseName: "لا يوجد قطاع", suffixName: "" }];
     }

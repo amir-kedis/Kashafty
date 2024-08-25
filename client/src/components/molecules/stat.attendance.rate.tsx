@@ -27,7 +27,7 @@ const AttendanceRateChip = ({
           ? "جاري التحميل"
           : isError
             ? "لا يوجد بيانات"
-            : Math.round(data.body * 100) + "%"
+            : Math.round(data?.body * 100) + "%"
       }
       color="dark"
       spans

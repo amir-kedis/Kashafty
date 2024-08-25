@@ -1,5 +1,4 @@
 import { Scout } from "@prisma/client";
-import { log } from "console";
 import csv from "csv-parser";
 import fs from "fs";
 import path from "path";
@@ -17,11 +16,7 @@ const importData = async (fileName: string) => {
     .on("end", async () => {
       let scoutsPrismaCreate: Scout[];
       scoutsPrismaCreate = scouts.map((scout: any) => {
-        const {
-          "الاسم الثلاثي": name,
-          النوع: gender,
-          "تاريخ الميلاد": birthDate,
-        } = scout;
+        const { "الاسم الثلاثي": name, النوع: gender } = scout;
 
         const [firstName, middleName, ...lastNameParts] = name.split(" ");
         const lastName: string = lastNameParts.join(" ");

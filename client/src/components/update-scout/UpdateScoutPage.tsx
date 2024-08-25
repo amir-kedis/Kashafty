@@ -74,7 +74,7 @@ const UpdateScoutPage = () => {
   }
 
   if (!isFetchingScouts && scoutsData) {
-    scouts = scoutsData.body;
+    scouts = scoutsData?.body;
     if (scouts.length === 0) {
       scouts = [
         {

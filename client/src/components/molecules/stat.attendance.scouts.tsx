@@ -38,7 +38,7 @@ const ScoutAttendanceByName: React.FC<ScoutAttendanceByNameProps> = () => {
             </tr>
           </thead>
           <tbody>
-            {data.body.map((scout, index) => (
+            {data?.body.map((scout, index) => (
               <tr key={scout.id}>
                 <td className="num-col">{index + 1}</td>
                 <td>{scout.name}</td>

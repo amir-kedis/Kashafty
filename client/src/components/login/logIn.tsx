@@ -35,10 +35,10 @@ export default function LogIn() {
       if (
         signIn({
           auth: {
-            token: res.token,
+            token: res?.token,
             type: "Bearer",
           },
-          userState: res.body,
+          userState: res?.body,
         })
       ) {
         dispatch(setCredentials({ ...res?.body }));

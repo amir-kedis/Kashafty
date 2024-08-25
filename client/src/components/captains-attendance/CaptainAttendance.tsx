@@ -121,7 +121,7 @@ export default function CaptainsAttendance() {
       if (res.status === 400 || res.status === 500)
         throw new Error("Something went wrong while inserting attendance");
       toast.success("تم تسجيل الغياب بنجاح");
-      console.log(res.body);
+      console.log(res?.body);
     } catch (err) {
       toast.error("حدث خطأ أثناء تسجيل الغياب");
       console.log(JSON.stringify(err));
