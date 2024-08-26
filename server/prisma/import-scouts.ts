@@ -25,7 +25,7 @@ const importData = async (fileName: string) => {
 
         return {
           firstName,
-          middleName,
+          middleName: middleName || "",
           lastName,
           gender: gender === "ذكر" ? "male" : "female",
           sectorBaseName: sectorBaseName,
