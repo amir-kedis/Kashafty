@@ -5,9 +5,18 @@ import TermInfoSection from "../common/TermInfoSection";
 import UserActions from "../common/UserActions";
 import InfoSection from "../common/InfoSection";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
+import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const user = useAuthUser();
+
+  const isAuthenticated = useIsAuthenticated();
+  const navigate = useNavigate();
+
+  if (!isAuthenticated) {
+    navigate("/login");
+  }
 
   let titleMsg =
     user.gender == "male"

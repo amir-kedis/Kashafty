@@ -134,7 +134,7 @@ export default function InfoSection() {
 
         <InfoBox
           title="اشتراك الاسبوع الحالي"
-          value={isFetchingBudget ? "جاري التحميل" : budget.body}
+          value={isFetchingBudget ? "جاري التحميل" : budget?.body}
           spans
           color="purple"
         />

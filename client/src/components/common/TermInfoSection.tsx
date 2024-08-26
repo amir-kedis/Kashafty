@@ -14,6 +14,7 @@ export default function TermInfoSection() {
   const {
     data: weeksLeft,
     isFetching: isFetchingWeeksLeft,
+    isError,
     isLoading,
   } = useGetRemainingWeeksQuery({});
 
@@ -66,7 +67,7 @@ export default function TermInfoSection() {
           value={
             isFetchingWeeksLeft || isLoading
               ? "جاري التحميل"
-              : !weeksLeft
+              : !weeksLeft || isError
                 ? "0"
                 : weeksLeft?.body
           }

@@ -15,7 +15,7 @@ export default function NotificationBox() {
   const user = useAuthUser();
 
   const { data: notifications } = useGetNotificationsQuery({
-    captainId: user.captainId,
+    captainId: user?.captainId,
   });
 
   const [updateNotification] = useUpdateNotificationMutation();
