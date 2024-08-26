@@ -168,6 +168,9 @@ export default function ScoutsAttendance() {
     );
   }
 
+  const numberOfCheckedPresent =
+    attendance.filter((scout) => scout.present)?.length || 0;
+
   return (
     <form onSubmit={handleSubmit} className="scouts-attendance-page container">
       <PageTitle title="تسجيل الغياب" />
@@ -213,6 +216,7 @@ export default function ScoutsAttendance() {
                       checked={scout?.present}
                       onChange={() => handleCheckboxChange(scout.id, "present")}
                       disabled={scout?.excused}
+                      name="present"
                     />
                   </td>
                   <td className="check-col">
@@ -221,6 +225,7 @@ export default function ScoutsAttendance() {
                       checked={scout?.excused}
                       onChange={() => handleCheckboxChange(scout.id, "excused")}
                       disabled={scout?.present}
+                      name="excused"
                     />
                   </td>
                 </tr>
@@ -236,7 +241,7 @@ export default function ScoutsAttendance() {
               attendance &&
               !isFetchingWeeks &&
               !isFetchingScouts &&
-              attendance?.filter((scout) => scout.present)?.length
+              numberOfCheckedPresent
             }
           />
           <InfoBox
@@ -244,16 +249,14 @@ export default function ScoutsAttendance() {
             value={
               attendance.length > 0
                 ? Math.round(
-                    (attendance.filter((scout) => scout.present).length /
-                      attendance.length) *
-                      100,
+                    (numberOfCheckedPresent / attendance.length) * 100,
                   ) + "%"
                 : "0%"
             }
           />
           <InfoBox
             title="الغياب"
-            value={attendance.filter((scout) => !scout.present).length}
+            value={attendance?.length - numberOfCheckedPresent}
           />
         </div>
       </div>
