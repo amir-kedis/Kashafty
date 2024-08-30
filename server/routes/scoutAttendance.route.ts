@@ -15,4 +15,3 @@ scoutAttendanceRouter.get(
 );
 
 export default scoutAttendanceRouter;
-

@@ -17,9 +17,11 @@ declare global {
   }
 }
 
-
-
-async function _getCurrentTermMiddleware_(req: Request, res: Response, next: NextFunction) {
+async function _getCurrentTermMiddleware_(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const currentTerm = await prisma.term.findFirst({
     orderBy: {
       termNumber: "desc",
@@ -35,8 +37,11 @@ async function _getCurrentTermMiddleware_(req: Request, res: Response, next: Nex
   next();
 }
 
-async function _getCurrentWeekMiddleware_(req: Request, res: Response, next: NextFunction) {
-
+async function _getCurrentWeekMiddleware_(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const currentTerm = await prisma.term.findFirst({
     orderBy: {
       termNumber: "desc",
@@ -60,18 +65,7 @@ async function _getCurrentWeekMiddleware_(req: Request, res: Response, next: Nex
   } else req.currentWeek = currentWeek;
 
   next();
-
 }
-
-
-
 
 export const getCurrentTermMiddleware = asyncDec(_getCurrentTermMiddleware_);
 export const getCurrentWeekMiddleware = asyncDec(_getCurrentWeekMiddleware_);
-
-
-
-
-
-
-

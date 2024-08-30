@@ -23,6 +23,7 @@ interface LoginResponseBody {
     type: string;
   };
   token: string;
+  expiresIn: string;
 }
 
 interface SignupRequestBody {
@@ -51,6 +52,7 @@ interface SignupResponseBody {
     type: string;
   };
   token: string;
+  expiresIn: string;
 }
 
 export const usersApi = apiSlice.injectEndpoints({

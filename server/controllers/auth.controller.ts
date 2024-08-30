@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { prisma } from "../database/db";
-import generateToken from "../utils/generateToken";
 import { Gender } from "@prisma/client";
+import { hashPassword, validatePassword } from "../utils/password_utils";
+import generateAccessJWT from "../utils/generateToken";
+import ms from "ms";
 
 interface SignupRequestBody {
   firstName: string;
@@ -50,7 +52,7 @@ const authController = {
       }
 
       // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await hashPassword(password);
 
       // Create a new Captain
       const newCaptain = await prisma.captain.create({
@@ -67,13 +69,25 @@ const authController = {
       });
 
       // Generate a JWT token
-      const token = generateToken(res, newCaptain.captainId.toString());
+      const { token, expiresIn } = generateAccessJWT(
+        newCaptain.captainId.toString(),
+      );
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        domain: process.env.NODE_ENV === "production" ? ".kashafty.app" : "",
+        maxAge: ms(expiresIn),
+      });
 
       // Send the response
       res.status(201).json({
         message: "Captain created successfully",
         body: newCaptain,
         token: token,
+        expiresIn: expiresIn,
       });
     } catch (error) {
       console.log(error);
@@ -90,7 +104,6 @@ const authController = {
     req: Request<any, any, LoginRequestBody>,
     res: Response,
   ): Promise<any> => {
-    console.log("I reached this route");
     try {
       const { emailOrMobile, password } = req.body;
 
@@ -115,7 +128,7 @@ const authController = {
       }
 
       // Check if the password is correct
-      const isCorrect = await bcrypt.compare(password, captain.password);
+      const isCorrect = await validatePassword(password, captain.password);
 
       if (!isCorrect) {
         return res.status(400).json({
@@ -124,13 +137,25 @@ const authController = {
       }
 
       // Generate a JWT token
-      const token = generateToken(res, captain.captainId.toString());
+      const { token, expiresIn } = generateAccessJWT(
+        captain.captainId.toString(),
+      );
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        domain: process.env.NODE_ENV === "production" ? ".kashafty.app" : "",
+        maxAge: ms(expiresIn),
+      });
 
       // Send the response
       res.status(200).json({
         message: "Logged in successfully",
         body: captain,
         token: token,
+        expiresIn: expiresIn,
       });
     } catch (error) {
       console.log(error);

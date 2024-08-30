@@ -1,5 +1,4 @@
 import { Router } from "express";
-import authMiddleware from "../middlewares/auth.middleware";
 import authRouter from "./auth.route";
 import statsRouter from "./stats.route";
 import financeRouter from "./finance.route";
@@ -13,21 +12,58 @@ import captainAttendanceRouter from "./captainAttendance.route";
 import activitiesRouter from "./activities.route";
 import statRouter from "./stat/stat.route";
 import cronRouter from "./cron.route";
+import passport from "passport";
 
 const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
-apiRouter.use("/stats", authMiddleware, statsRouter);
+// TODO: this is the old stat endpoints, delete later
+apiRouter.use("/stats", statsRouter);
 // NOTE: this is the new stat endpoints
 apiRouter.use("/stat", statRouter);
-apiRouter.use("/finance", authMiddleware, financeRouter);
-apiRouter.use("/term", authMiddleware, termRouter);
-apiRouter.use("/captain", authMiddleware, captainRouter);
-apiRouter.use("/notification", authMiddleware, notificationController);
-apiRouter.use("/scout", authMiddleware, scoutRouter);
-apiRouter.use("/sector", authMiddleware, sectorRouter);
-apiRouter.use("/scoutAttendance", authMiddleware, scoutAttendanceRouter);
-apiRouter.use("/captainAttendance", authMiddleware, captainAttendanceRouter);
+apiRouter.use(
+  "/finance",
+  passport.authenticate("jwt", { session: false }),
+  financeRouter,
+);
+apiRouter.use(
+  "/term",
+  passport.authenticate("jwt", { session: false }),
+
+  termRouter,
+);
+apiRouter.use(
+  "/captain",
+  passport.authenticate("jwt", { session: false }),
+  captainRouter,
+);
+apiRouter.use(
+  "/notification",
+  passport.authenticate("jwt", { session: false }),
+  notificationController,
+);
+apiRouter.use(
+  "/scout",
+  passport.authenticate("jwt", { session: false }),
+
+  scoutRouter,
+);
+apiRouter.use(
+  "/sector",
+  passport.authenticate("jwt", { session: false }),
+  sectorRouter,
+);
+apiRouter.use(
+  "/scoutAttendance",
+  passport.authenticate("jwt", { session: false }),
+  scoutAttendanceRouter,
+);
+apiRouter.use(
+  "/captainAttendance",
+  passport.authenticate("jwt", { session: false }),
+
+  captainAttendanceRouter,
+);
 apiRouter.use("/activities", activitiesRouter);
 apiRouter.use("/cron", cronRouter);
 
