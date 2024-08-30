@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const AuthStore = createStore({
   authName: "token",
-  authType: "cookie",
+  authType: "localstorage",
   cookieDomain: window.location.hostname,
   cookieSecure: window.location.protocol === "https:",
 });
