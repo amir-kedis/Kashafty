@@ -14,14 +14,16 @@ declare global {
 }
 
 const checkRankMiddleware = (...ranks: string[]) => {
-
   return asyncDec(checkRankMiddleware);
 
-  function checkRankMiddleware(req: Request, res: Response, next: NextFunction) {
+  function checkRankMiddleware(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const captainRank = req.captain?.type;
 
-    if (!captainRank) 
-      throw new AppError(403, "Forbidden", "ممنوع");
+    if (!captainRank) throw new AppError(403, "Forbidden", "ممنوع");
 
     for (const rank of ranks) {
       if (rank === captainRank) {
@@ -32,7 +34,6 @@ const checkRankMiddleware = (...ranks: string[]) => {
 
     throw new AppError(403, "Forbidden", "ممنوع");
   }
-  
 };
 
 export default checkRankMiddleware;

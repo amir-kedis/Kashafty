@@ -1,9 +1,15 @@
 import express, { Application } from "express";
 import cors from "cors";
+import passport from "passport";
 import apiRouter from "./routes/api.route";
-import { notFoundHandler, errorLogger, errorHandler } from "./middlewares/error.middleware";
+import {
+  notFoundHandler,
+  errorLogger,
+  errorHandler,
+} from "./middlewares/error.middleware";
 import cookieParser from "cookie-parser";
 import cronRouter from "./routes/cron.route";
+import JWTPassportConfig from "./config/passport";
 
 const app: Application = express();
 const PORT: Number = process.env.PORT ? parseInt(process.env.PORT) : 5000;
@@ -27,7 +33,8 @@ const corsOptions = {
   credentials: true,
 };
 
-
+passport.use(JWTPassportConfig);
+app.use(passport.initialize({ userProperty: "captain" }));
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
@@ -42,7 +49,6 @@ app.use("/cron", cronRouter);
 app.get("/", (_, res) => {
   res.send("Kashafty API is working fine ✨");
 });
-
 
 app.use(notFoundHandler);
 app.use(errorLogger, errorHandler);

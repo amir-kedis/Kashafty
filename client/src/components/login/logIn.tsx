@@ -32,11 +32,17 @@ export default function LogIn() {
     e.preventDefault();
     try {
       const res = await login({ emailOrMobile, password }).unwrap();
+
+      // res.expiresIn is '60d'
+      const expiresDate = new Date();
+      expiresDate.setDate(expiresDate.getDate() + parseInt(res?.expiresIn));
+
       if (
         signIn({
           auth: {
             token: res?.token,
             type: "Bearer",
+            expiresAt: expiresDate,
           },
           userState: res?.body,
         })
