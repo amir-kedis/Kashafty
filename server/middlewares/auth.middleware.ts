@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "../database/db";
+import AppError  from "../utils/AppError";
+import asyncDec from "../utils/asyncDec";
+
 
 // Define the Captain type
 interface Captain {
@@ -21,50 +24,34 @@ interface DecodedToken {
   [key: string]: any; // Add other fields as needed
 }
 
-const authMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<any> => {
+
+async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   // Get token from cookie
   const token = req.cookies.token;
 
-  if (!token) {
-    return res
-      .status(401)
-      .json({ error: "No token provided or provided token has expired" });
-  }
+  if (!token) 
+    throw new AppError(401, "No token provided or provided token has expired", "مفيش توكين او التوكين اللي انت داخل بيه انتهى");
 
-  try {
-    // Verify token and get captain's id
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-    ) as DecodedToken;
-    const id = decoded.id;
+  const decoded = jwt.verify(
+    token,
+    process.env.JWT_SECRET as string
+  ) as DecodedToken;
 
-    // Get captain's data
-    const captain = await prisma.captain.findUnique({
-      where: {
-        captainId: parseInt(id),
-      },
-    });
+  const id = decoded.id;
 
-    if (!captain) {
-      return res.status(404).json({ error: "Captain not found" });
-    }
+  const captain = await prisma.captain.findUnique({
+    where: {
+      captainId: parseInt(id),
+    },
+  });
 
-    // Attach captain to the request object
-    req.captain = captain;
+  if (!captain) 
+    throw new AppError(404, "Captain not found", "الكابتن مش موجود");
 
-    next();
-  } catch (err: any) {
-    console.log(err);
-    if (err.name === "TokenExpiredError") {
-      return res.status(401).json({ error: "Provided token has expired" });
-    }
-    res.status(401).json({ error: "Invalid token" });
-  }
-};
+  // Attach captain to the request object
+  req.captain = captain;
 
-export default authMiddleware;
+  next();
+}
+
+export default asyncDec(authMiddleware);
