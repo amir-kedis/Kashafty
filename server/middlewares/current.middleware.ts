@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../database/db";
+import asyncDec from "../utils/asyncDec";
 
 declare global {
   namespace Express {
@@ -16,68 +17,61 @@ declare global {
   }
 }
 
-const getCurrentTermMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const currentTerm = await prisma.term.findFirst({
-      orderBy: {
-        termNumber: "desc",
-      },
-    });
 
-    if (!currentTerm) {
-      req.currentTerm = {
-        termNumber: 0,
-      };
-    } else req.currentTerm = currentTerm;
 
-    next();
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      error: "An error occurred while getting the term",
-    });
-  }
-};
+async function _getCurrentTermMiddleware_(req: Request, res: Response, next: NextFunction) {
+  const currentTerm = await prisma.term.findFirst({
+    orderBy: {
+      termNumber: "desc",
+    },
+  });
 
-const getCurrentWeekMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const currentTerm = await prisma.term.findFirst({
-      orderBy: {
-        termNumber: "desc",
-      },
-    });
+  if (!currentTerm) {
+    req.currentTerm = {
+      termNumber: 0,
+    };
+  } else req.currentTerm = currentTerm;
 
-    const currentWeek = await prisma.week.findFirst({
-      where: {
-        termNumber: currentTerm?.termNumber,
-      },
-      orderBy: {
-        weekNumber: "desc",
-      },
-    });
+  next();
+}
 
-    if (!currentWeek) {
-      req.currentWeek = {
-        termNumber: 0,
-        weekNumber: 0,
-      };
-    } else req.currentWeek = currentWeek;
+async function _getCurrentWeekMiddleware_(req: Request, res: Response, next: NextFunction) {
 
-    next();
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      error: "An error occurred while getting the Week",
-    });
-  }
-};
+  const currentTerm = await prisma.term.findFirst({
+    orderBy: {
+      termNumber: "desc",
+    },
+  });
 
-export { getCurrentTermMiddleware, getCurrentWeekMiddleware };
+  const currentWeek = await prisma.week.findFirst({
+    where: {
+      termNumber: currentTerm?.termNumber,
+    },
+    orderBy: {
+      weekNumber: "desc",
+    },
+  });
+
+  if (!currentWeek) {
+    req.currentWeek = {
+      termNumber: 0,
+      weekNumber: 0,
+    };
+  } else req.currentWeek = currentWeek;
+
+  next();
+
+}
+
+
+
+
+export const getCurrentTermMiddleware = asyncDec(_getCurrentTermMiddleware_);
+export const getCurrentWeekMiddleware = asyncDec(_getCurrentWeekMiddleware_);
+
+
+
+
+
+
+

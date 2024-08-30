@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import AppError from "../utils/AppError";
+import asyncDec from "../utils/asyncDec";
 
 declare global {
   namespace Express {
@@ -12,14 +14,14 @@ declare global {
 }
 
 const checkRankMiddleware = (...ranks: string[]) => {
-  return async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<any> => {
+
+  return asyncDec(checkRankMiddleware);
+
+  function checkRankMiddleware(req: Request, res: Response, next: NextFunction) {
     const captainRank = req.captain?.type;
 
-    if (!captainRank) return res.status(403).json({ message: "Forbidden" });
+    if (!captainRank) 
+      throw new AppError(403, "Forbidden", "ممنوع");
 
     for (const rank of ranks) {
       if (rank === captainRank) {
@@ -27,8 +29,10 @@ const checkRankMiddleware = (...ranks: string[]) => {
         return;
       }
     }
-    return res.status(403).json({ message: "Forbidden" });
-  };
+
+    throw new AppError(403, "Forbidden", "ممنوع");
+  }
+  
 };
 
 export default checkRankMiddleware;
