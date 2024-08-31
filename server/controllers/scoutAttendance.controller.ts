@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
 import { AttendanceStatus } from "@prisma/client";
+import AppError from "../utils/AppError";
+import asyncDec from "../utils/asyncDec";
 
 // =================================================
 // TODO: This module needs reconnecting with frontend
@@ -34,170 +36,106 @@ interface GetScoutAttendanceRequest extends Request {
   };
 }
 
+async function upsertAttendance(req: UpsertAttendanceRequest, res: Response) {
+  const { attendanceRecords } = req.body;
+
+  if (!attendanceRecords || attendanceRecords.length === 0) {
+    throw new AppError(404, "No records were found", "لم يتم العثور على سجلات");
+  }
+
+  let result = [];
+
+  for (let i = 0; i < attendanceRecords.length; i++) {
+    const attendanceRecord = await prisma.scoutAttendance.upsert({
+      where: {
+        scoutId_weekNumber_termNumber: {
+          scoutId: parseInt(attendanceRecords[i].scoutId),
+          weekNumber: attendanceRecords[i].weekNumber,
+          termNumber: attendanceRecords[i].termNumber,
+        },
+      },
+      update: {
+        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+      },
+      create: {
+        scoutId: parseInt(attendanceRecords[i].scoutId),
+        weekNumber: attendanceRecords[i].weekNumber,
+        termNumber: attendanceRecords[i].termNumber,
+        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+      },
+    });
+    result.push(attendanceRecord);
+  }
+
+  res.status(200).json({
+    message: "Successful insertion",
+    body: result,
+    count: result.length,
+  });
+}
+
+async function getSectorAttendance(req: GetSectorAttendanceRequest, res: Response) {
+  let { baseName, suffixName, weekNumber, termNumber } = req.query;
+
+  const scouts = await prisma.scout.findMany({
+    where: {
+      sectorBaseName: baseName,
+      sectorSuffixName: suffixName,
+    },
+    include: {
+      ScoutAttendance: true,
+    },
+  });
+
+  const filteredWeeks = scouts.map((scout) => {
+    const filteredAttendance = scout.ScoutAttendance.filter(
+      (attendance) =>
+        attendance.weekNumber === parseInt(weekNumber) &&
+        attendance.termNumber === parseInt(termNumber),
+    );
+    return {
+      ...scout,
+      ScoutAttendance:
+        filteredAttendance.length > 0 ? filteredAttendance : null,
+    };
+  });
+
+  const result = filteredWeeks.map((scout) => ({
+    ...scout,
+    attendanceStatus: scout?.ScoutAttendance
+      ? scout?.ScoutAttendance[0]?.attendanceStatus
+      : null,
+  }));
+
+  res.status(200).json({
+    message: "Successful retrieval",
+    body: result,
+    count: result.length,
+  });
+}
+
+async function getScoutAttendance(req: GetScoutAttendanceRequest, res: Response) {
+  let { scoutId, weekNumber, termNumber } = req.params;
+  
+  const result = await prisma.scoutAttendance.findMany({
+    where: {
+      scoutId: parseInt(scoutId),
+      weekNumber: parseInt(weekNumber),
+      termNumber: parseInt(termNumber),
+    },
+  });
+
+  res.status(200).json({
+    message: "Successful retrieval",
+    body: result,
+    count: result.length,
+  });
+}
+
 const scoutAttendanceController = {
-  // @desc    Insert a new attendance record for a scout in a certain sector
-  // @route   POST /api/sectorAttendance/
-  // @access  Private
-  upsertAttendance: async (req: UpsertAttendanceRequest, res: Response) => {
-    try {
-      const { attendanceRecords } = req.body;
-
-      if (!attendanceRecords || attendanceRecords.length === 0) {
-        return res.status(404).json({
-          error: "No records were found",
-        });
-      }
-
-      let result = [];
-
-      for (let i = 0; i < attendanceRecords.length; i++) {
-        const attendanceRecord = await prisma.scoutAttendance.upsert({
-          where: {
-            scoutId_weekNumber_termNumber: {
-              scoutId: parseInt(attendanceRecords[i].scoutId),
-              weekNumber: attendanceRecords[i].weekNumber,
-              termNumber: attendanceRecords[i].termNumber,
-            },
-          },
-          update: {
-            attendanceStatus: attendanceRecords[i]
-              .attendanceStatus as AttendanceStatus,
-          },
-          create: {
-            scoutId: parseInt(attendanceRecords[i].scoutId),
-            weekNumber: attendanceRecords[i].weekNumber,
-            termNumber: attendanceRecords[i].termNumber,
-            attendanceStatus: attendanceRecords[i]
-              .attendanceStatus as AttendanceStatus,
-          },
-        });
-        result.push(attendanceRecord);
-      }
-
-      res.status(200).json({
-        message: "Successful insertion",
-        body: result,
-        count: result.length,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        error: "An error occurred while inserting a new attendance",
-        body: error,
-      });
-    }
-  },
-
-  // @desc    Get all attendance records for all the scouts in a certain sector in a certain week & term
-  // @route   GET /api/sectorAttendance/sector/all
-  // @access  Private
-  // TODO: needs reconnecting with frontend
-  getSectorAttendance: async (
-    req: GetSectorAttendanceRequest,
-    res: Response,
-  ) => {
-    try {
-      let {
-        baseName,
-        suffixName,
-        weekNumber,
-        termNumber,
-      }: {
-        baseName: string;
-        suffixName: string;
-        weekNumber: string | number;
-        termNumber: string | number;
-      } = req.query;
-
-      weekNumber = parseInt(weekNumber);
-      termNumber = parseInt(termNumber);
-
-      const scouts = await prisma.scout.findMany({
-        where: {
-          sectorBaseName: baseName,
-          sectorSuffixName: suffixName,
-        },
-        include: {
-          ScoutAttendance: true,
-        },
-      });
-
-      // Filter ScoutAttendance for the specified weekNumber and termNumber
-      const filteredWeeks = scouts.map((scout) => {
-        const filteredAttendance = scout.ScoutAttendance.filter(
-          (attendance) =>
-            attendance.weekNumber === weekNumber &&
-            attendance.termNumber === termNumber,
-        );
-        return {
-          ...scout,
-          ScoutAttendance:
-            filteredAttendance.length > 0 ? filteredAttendance : null,
-        };
-      });
-
-      const result = filteredWeeks.map((scout) => {
-        return {
-          ...scout,
-          attendanceStatus: scout?.ScoutAttendance
-            ? scout?.ScoutAttendance[0]?.attendanceStatus
-            : null,
-        };
-      });
-
-      res.status(200).json({
-        message: "Successful retrieval",
-        body: result,
-        count: result.length,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        error: "An error occurred while retrieving sector attendance",
-        body: error,
-      });
-    }
-  },
-
-  // @desc    Get attendance records for a certain scout in a certain week & term
-  // @route   GET /api/sectorAttendance/:scoutId/:weekNumber/:termNumber
-  // @access  Private
-  getScoutAttendance: async (req: GetScoutAttendanceRequest, res: Response) => {
-    try {
-      let {
-        scoutId,
-        weekNumber,
-        termNumber,
-      }: {
-        scoutId: string | number;
-        weekNumber: string | number;
-        termNumber: string | number;
-      } = req.params;
-      scoutId = parseInt(scoutId);
-      weekNumber = parseInt(weekNumber);
-      termNumber = parseInt(termNumber);
-
-      const result = await prisma.scoutAttendance.findMany({
-        where: {
-          scoutId: scoutId,
-          weekNumber: weekNumber,
-          termNumber: termNumber,
-        },
-      });
-
-      res.status(200).json({
-        message: "Successful retrieval",
-        body: result,
-        count: result.length,
-      });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        error: "An error occurred while retrieving sector attendance",
-        body: error,
-      });
-    }
-  },
+  upsertAttendance: asyncDec(upsertAttendance),
+  getSectorAttendance: asyncDec(getSectorAttendance),
+  getScoutAttendance: asyncDec(getScoutAttendance),
 };
 
 export default scoutAttendanceController;
