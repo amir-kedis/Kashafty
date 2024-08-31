@@ -1,90 +1,87 @@
-/* ============================================================================
- *
- *
- *  ███╗   ██╗ ██████╗ ████████╗    ███████╗██╗   ██╗███████╗
- *  ████╗  ██║██╔═══██╗╚══██╔══╝    ██╔════╝╚██╗ ██╔╝██╔════╝
- *  ██╔██╗ ██║██║   ██║   ██║       ███████╗ ╚████╔╝ ███████╗
- *  ██║╚██╗██║██║   ██║   ██║       ╚════██║  ╚██╔╝  ╚════██║
- *  ██║ ╚████║╚██████╔╝   ██║██╗    ███████║   ██║   ███████║██╗
- *  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝╚═╝    ╚══════╝   ╚═╝   ╚══════╝╚═╝
- *
- *  Simple notification controller
- *  This controller is responsible for handling all notification related
- *
- *  Author: Amir Kedis
- *
- *===============================================================================*/
-
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
 import { NotificationStatus, NotificationType, Prisma } from "@prisma/client";
+import asyncDec from "../utils/asyncDec";
+import AppError from "../utils/AppError";
+
 
 const notificationController = {
+  /* ============================================================================
+   *
+   *  ███╗   ██╗ ██████╗ ████████╗    ███████╗██╗   ██╗███████╗
+   *  ████╗  ██║██╔═══██╗╚══██╔══╝    ██╔════╝╚██╗ ██╔╝██╔════╝
+   *  ██╔██╗ ██║██║   ██║   ██║       ███████╗ ╚████╔╝ ███████╗
+   *  ██║╚██╗██║██║   ██║   ██║       ╚════██║  ╚██╔╝  ╚════██║
+   *  ██║ ╚████║╚██████╔╝   ██║██╗    ███████║   ██║   ███████║██╗
+   *  ╚═╝  ╚═══╝ ╚═════╝    ╚═╝╚═╝    ╚══════╝   ╚═╝   ╚══════╝╚═╝
+   *
+   *  Simple notification controller
+   *  This controller is responsible for handling all notification-related
+   *
+   *  Author: Amir Kedis
+   *
+   * ============================================================================ */
+
   /* sendNotification
    *
    * @desc Send a notification to a group of users, or all users
    * @endpoint POST /api/notification
    * @access Private
    */
-  sendNotification: async (req: Request, res: Response) => {
-    try {
-      const { type, title, message, sectorBaseName, sectorSuffixName } =
-        req.body;
+  sendNotification: asyncDec(async (req: Request, res: Response) => {
+    const { type, title, message, sectorBaseName, sectorSuffixName } = req.body;
 
-      if (!type || !title || !message)
-        return res.status(400).json({ message: "Missing required fields" });
-
-      let isToAll = false;
-      if (!sectorBaseName && !sectorSuffixName) isToAll = true;
-
-      let sentNotifications: Prisma.BatchPayload;
-
-      if (isToAll) {
-        const userIds = await prisma.captain.findMany({
-          select: {
-            captainId: true,
-          },
-        });
-
-        sentNotifications = await prisma.notification.createMany({
-          data: userIds.map((user) => ({
-            captainId: user.captainId,
-            title,
-            message,
-            type,
-            status: NotificationStatus.UNREAD,
-          })),
-        });
-      } else {
-        const userIds = await prisma.captain.findMany({
-          select: {
-            captainId: true,
-          },
-          where: {
-            rSectorBaseName: sectorBaseName,
-            rSectorSuffixName: sectorSuffixName,
-          },
-        });
-
-        sentNotifications = await prisma.notification.createMany({
-          data: userIds.map((user) => ({
-            captainId: user.captainId,
-            title,
-            message,
-            type,
-            status: NotificationStatus.UNREAD,
-          })),
-        });
-      }
-
-      res
-        .status(200)
-        .json({ message: `Notification sent to ${sentNotifications.count}` });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!type || !title || !message) {
+      throw new AppError(400, "Missing required fields", "حقل مطلوب مفقود");
     }
-  },
+
+    let isToAll = false;
+    if (!sectorBaseName && !sectorSuffixName) isToAll = true;
+
+    let sentNotifications: Prisma.BatchPayload;
+
+    if (isToAll) {
+      const userIds = await prisma.captain.findMany({
+        select: {
+          captainId: true,
+        },
+      });
+
+      sentNotifications = await prisma.notification.createMany({
+        data: userIds.map((user) => ({
+          captainId: user.captainId,
+          title,
+          message,
+          type,
+          status: NotificationStatus.UNREAD,
+        })),
+      });
+    } else {
+      const userIds = await prisma.captain.findMany({
+        select: {
+          captainId: true,
+        },
+        where: {
+          rSectorBaseName: sectorBaseName,
+          rSectorSuffixName: sectorSuffixName,
+        },
+      });
+
+      sentNotifications = await prisma.notification.createMany({
+        data: userIds.map((user) => ({
+          captainId: user.captainId,
+          title,
+          message,
+          type,
+          status: NotificationStatus.UNREAD,
+        })),
+      });
+    }
+
+    res
+      .status(200)
+      .json({ message: `Notification sent to ${sentNotifications.count}` });
+  }),
 
   /* getNotification
    *
@@ -92,32 +89,27 @@ const notificationController = {
    * @endpoint GET /api/notification
    * @access Private
    */
-  getNotification: async (req: Request, res: Response) => {
-    try {
-      const { captainId, status: statusStr, type: typeStr } = req.query;
+  getNotification: asyncDec(async (req: Request, res: Response) => {
+    const { captainId, status: statusStr, type: typeStr } = req.query;
 
-      const status = statusStr as NotificationStatus;
-      const type = typeStr as NotificationType;
+    const status = statusStr as NotificationStatus;
+    const type = typeStr as NotificationType;
 
-      const notifications = await prisma.notification.findMany({
-        where: {
-          captainId: parseInt(captainId as string),
-          status: status || NotificationStatus.UNREAD,
-          type: type || undefined,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+    const notifications = await prisma.notification.findMany({
+      where: {
+        captainId: parseInt(captainId as string),
+        status: status || NotificationStatus.UNREAD,
+        type: type || undefined,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-      res
-        .status(200)
-        .json({ message: "Notifications fetched", body: notifications });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  },
+    res
+      .status(200)
+      .json({ message: "Notifications fetched", body: notifications });
+  }),
 
   /* updateNotification
    *
@@ -125,31 +117,27 @@ const notificationController = {
    * @endpoint PATCH /api/notification
    * @access Private
    */
-  updateNotification: async (req: Request, res: Response) => {
-    try {
-      const { id: idStr, status } = req.body;
-      const id = parseInt(idStr);
+  updateNotification: asyncDec(async (req: Request, res: Response) => {
+    const { id: idStr, status } = req.body;
+    const id = parseInt(idStr);
 
-      if (!status)
-        return res.status(400).json({ message: "Missing required fields" });
-
-      const updatedNotification = await prisma.notification.update({
-        where: {
-          id,
-        },
-        data: {
-          status,
-        },
-      });
-
-      res
-        .status(200)
-        .json({ message: "Notification updated", body: updatedNotification });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!status) {
+      throw new AppError(400, "Missing required fields", "حقل مطلوب مفقود");
     }
-  },
+
+    const updatedNotification = await prisma.notification.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: "Notification updated", body: updatedNotification });
+  }),
 
   /* deleteNotification
    *
@@ -157,23 +145,18 @@ const notificationController = {
    * @endpoint DELETE /api/notification
    * @access Private
    */
-  deleteNotification: async (req: Request, res: Response) => {
-    try {
-      const { id: idStr } = req.body;
-      const id = parseInt(idStr);
+  deleteNotification: asyncDec(async (req: Request, res: Response) => {
+    const { id: idStr } = req.body;
+    const id = parseInt(idStr);
 
-      await prisma.notification.delete({
-        where: {
-          id,
-        },
-      });
+    await prisma.notification.delete({
+      where: {
+        id,
+      },
+    });
 
-      res.status(200).json({ message: "Notification deleted" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  },
+    res.status(200).json({ message: "Notification deleted" });
+  }),
 };
 
 export default notificationController;
