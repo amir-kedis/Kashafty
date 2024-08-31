@@ -14,384 +14,294 @@
  *    Author: Amir Kedis
  *
  *==================================================================================================*/
-
 import { Request, Response } from "express";
 import { prisma } from "../../database/db";
 import { computeAttendanceRate } from "../../utils/computeAbsenceRate";
 import getScoutByName from "../../utils/getScoutsByName";
 import { Scout } from "@prisma/client";
+import AppError from "../../utils/AppError";
+import asyncDec from "../../utils/asyncDec";
 
-const statAttendanceController = {
-  /* getAttendanceRate
-   *
-   * @desc gets the attendance rate for a sector, unit, or all
-   * @endpoint GET /api/stat/attendance/rate
-   */
-  getAttendanceRate: async (req: Request, res: Response) => {
-    try {
-      const { sectorBaseName, sectorSuffixName, unitCaptainId } = req.query;
+async function getAttendanceRate(req: Request, res: Response) {
+  const { sectorBaseName, sectorSuffixName, unitCaptainId } = req.query;
 
-      if (!req.currentTerm) {
-        return res.status(400).json({ message: "Can't get the current term" });
-      }
+  if (!req.currentTerm) {
+    throw new AppError(400, "Can't get the current term", "لا يمكن الحصول على الفصل الحالي");
+  }
 
-      let requestType: "all" | "sector" | "unit";
+  let requestType: "all" | "sector" | "unit";
 
-      if (sectorBaseName && sectorSuffixName) requestType = "sector";
-      else if (unitCaptainId) requestType = "unit";
-      else requestType = "all";
+  if (sectorBaseName && sectorSuffixName) requestType = "sector";
+  else if (unitCaptainId) requestType = "unit";
+  else requestType = "all";
 
-      let attendanceRate: number | null;
-      let absenceCount: number | null;
-      let attendanceCount: number | null;
+  let absenceCount: number;
+  let attendanceCount: number;
 
-      switch (requestType) {
-        case "all":
-          absenceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "absent",
-              Week: {
-                cancelled: false,
-              },
-            },
-          });
+  const baseWhereClause = {
+    termNumber: req.currentWeek?.termNumber,
+    Week: { cancelled: false },
+  };
 
-          attendanceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "attended",
-              Week: {
-                cancelled: false,
-              },
-            },
-          });
-
-          attendanceRate = computeAttendanceRate({
-            attendance_count: attendanceCount,
-            absence_count: absenceCount,
-          });
-
-          break;
-        case "sector":
-          absenceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "absent",
-              Week: {
-                cancelled: false,
-              },
-              Scout: {
-                sectorBaseName: (sectorBaseName as string) || undefined,
-                sectorSuffixName: (sectorSuffixName as string) || undefined,
-              },
-            },
-          });
-
-          attendanceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "attended",
-              Week: {
-                cancelled: false,
-              },
-              Scout: {
-                sectorBaseName: (sectorBaseName as string) || undefined,
-                sectorSuffixName: (sectorSuffixName as string) || undefined,
-              },
-            },
-          });
-
-          attendanceRate = computeAttendanceRate({
-            attendance_count: attendanceCount,
-            absence_count: absenceCount,
-          });
-          break;
-        case "unit":
-          absenceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "absent",
-              Week: {
-                cancelled: false,
-              },
-              Scout: {
-                Sector: {
-                  unitCaptainId: parseInt(unitCaptainId as string),
-                },
-              },
-            },
-          });
-
-          attendanceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "attended",
-              Week: {
-                cancelled: false,
-              },
-              Scout: {
-                Sector: {
-                  unitCaptainId: parseInt(unitCaptainId as string),
-                },
-              },
-            },
-          });
-
-          attendanceRate = computeAttendanceRate({
-            attendance_count: attendanceCount,
-            absence_count: absenceCount,
-          });
-          break;
-      }
-
-      return res.status(200).json({
-        message: `Get attendance rate for ${requestType} successfully`,
-        body: attendanceRate,
+  switch (requestType) {
+    case "all":
+      absenceCount = await prisma.scoutAttendance.count({
+        where: { ...baseWhereClause, attendanceStatus: "absent" },
       });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  },
-
-  /* getAttendanceLineChart
-   *
-   * @desc gets the attendance line chart for all scouts
-   * @endpoint GET /api/stat/attendance/line-chart
-   */
-  getAttendanceLineChart: async (req: Request, res: Response) => {
-    try {
-      const { sectorBaseName, sectorSuffixName, unitCaptainId } = req.query;
-
-      if (req.currentWeek?.termNumber === 0) {
-        return res.status(400).json({
-          error: "Cannot get absence rate before the term starts",
-        });
-      }
-
-      let filters = {};
-
-      if (sectorBaseName && sectorSuffixName)
-        filters = {
+      attendanceCount = await prisma.scoutAttendance.count({
+        where: { ...baseWhereClause, attendanceStatus: "attended" },
+      });
+      break;
+    case "sector":
+      absenceCount = await prisma.scoutAttendance.count({
+        where: {
+          ...baseWhereClause,
+          attendanceStatus: "absent",
           Scout: {
             sectorBaseName: sectorBaseName as string,
             sectorSuffixName: sectorSuffixName as string,
           },
-        };
-      else if (unitCaptainId)
-        filters = {
+        },
+      });
+      attendanceCount = await prisma.scoutAttendance.count({
+        where: {
+          ...baseWhereClause,
+          attendanceStatus: "attended",
           Scout: {
-            Sector: {
-              unitCaptainId: parseInt(unitCaptainId as string),
-            },
+            sectorBaseName: sectorBaseName as string,
+            sectorSuffixName: sectorSuffixName as string,
           },
-        };
-
-      let attendanceRates = [];
-
-      for (let i = 1; i <= (req?.currentWeek?.weekNumber || 0); i++) {
-        const absenceCount = await prisma.scoutAttendance.count({
-          where: {
-            termNumber: req.currentWeek?.termNumber,
-            attendanceStatus: "absent",
-            Week: {
-              weekNumber: i,
-              cancelled: false,
-            },
-            ...filters,
+        },
+      });
+      break;
+    case "unit":
+      absenceCount = await prisma.scoutAttendance.count({
+        where: {
+          ...baseWhereClause,
+          attendanceStatus: "absent",
+          Scout: {
+            Sector: { unitCaptainId: parseInt(unitCaptainId as string) },
           },
-        });
-
-        const attendanceCount = await prisma.scoutAttendance.count({
-          where: {
-            termNumber: req.currentWeek?.termNumber,
-            attendanceStatus: "attended",
-            Week: {
-              weekNumber: i,
-              cancelled: false,
-            },
-            ...filters,
+        },
+      });
+      attendanceCount = await prisma.scoutAttendance.count({
+        where: {
+          ...baseWhereClause,
+          attendanceStatus: "attended",
+          Scout: {
+            Sector: { unitCaptainId: parseInt(unitCaptainId as string) },
           },
-        });
+        },
+      });
+      break;
+  }
 
-        const absenceRate = computeAttendanceRate({
-          absence_count: absenceCount,
-          attendance_count: attendanceCount,
-        });
+  const attendanceRate = computeAttendanceRate({
+    attendance_count: attendanceCount,
+    absence_count: absenceCount,
+  });
 
-        attendanceRates.push({
+  return res.status(200).json({
+    message: `Get attendance rate for ${requestType} successfully`,
+    body: attendanceRate,
+  });
+}
+
+async function getAttendanceLineChart(req: Request, res: Response) {
+  const { sectorBaseName, sectorSuffixName, unitCaptainId } = req.query;
+
+  if (req.currentWeek?.termNumber === 0) {
+    throw new AppError(400, "Cannot get absence rate before the term starts", "لا يمكن الحصول على معدل الغياب قبل بدء الفصل الدراسي");
+  }
+
+  let filters = {};
+
+  if (sectorBaseName && sectorSuffixName)
+    filters = {
+      Scout: {
+        sectorBaseName: sectorBaseName as string,
+        sectorSuffixName: sectorSuffixName as string,
+      },
+    };
+  else if (unitCaptainId)
+    filters = {
+      Scout: {
+        Sector: {
+          unitCaptainId: parseInt(unitCaptainId as string),
+        },
+      },
+    };
+
+  let attendanceRates = [];
+
+  for (let i = 1; i <= (req?.currentWeek?.weekNumber || 0); i++) {
+    const absenceCount = await prisma.scoutAttendance.count({
+      where: {
+        termNumber: req.currentWeek?.termNumber,
+        attendanceStatus: "absent",
+        Week: {
           weekNumber: i,
-          absenceRate: absenceRate ?? 0,
-        });
-      }
+          cancelled: false,
+        },
+        ...filters,
+      },
+    });
 
-      return res.status(200).json({
-        message: "Get absence rate successfully",
-        body: attendanceRates,
-      });
-    } catch (error) {
-      console.error(error);
-      return res
-        .status(500)
-        .json({ error: "An error occurred while getting absence rate" });
-    }
-  },
+    const attendanceCount = await prisma.scoutAttendance.count({
+      where: {
+        termNumber: req.currentWeek?.termNumber,
+        attendanceStatus: "attended",
+        Week: {
+          weekNumber: i,
+          cancelled: false,
+        },
+        ...filters,
+      },
+    });
 
-  /* getAttendanceStackLineChart
-   *
-   * @desc gets line chart data for all sectors seprated
-   * @endpoint GET /api/stat/attendance/stacked-line-chart
-   */
-  getAttendanceStackLineChart: async (req: Request, res: Response) => {
-    try {
-      if (req.currentWeek?.termNumber === 0) {
-        return res.status(400).json({
-          error: "Cannot get absence rate before the term starts",
-        });
-      }
+    const absenceRate = computeAttendanceRate({
+      absence_count: absenceCount,
+      attendance_count: attendanceCount,
+    });
 
-      const sectors = await prisma.sector.findMany();
+    attendanceRates.push({
+      weekNumber: i,
+      absenceRate: absenceRate ?? 0,
+    });
+  }
 
-      let sectorGraphs: {
-        sectorBaseName: string;
-        sectorSuffixName: string;
-        attendanceRates: any;
-      }[] = new Array();
+  return res.status(200).json({
+    message: "Get absence rate successfully",
+    body: attendanceRates,
+  });
+}
 
-      for (let j = 0; j < sectors.length; ++j) {
-        let attendanceRates = [];
+async function getAttendanceStackLineChart(req: Request, res: Response) {
+  if (req.currentWeek?.termNumber === 0) {
+    throw new AppError(400, "Cannot get absence rate before the term starts", "لا يمكن الحصول على معدل الغياب قبل بدء الفصل الدراسي");
+  }
 
-        for (let i = 1; i <= (req?.currentWeek?.weekNumber || 0); i++) {
-          const absenceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "absent",
-              Week: {
-                weekNumber: i,
-                cancelled: false,
-              },
-              Scout: {
-                sectorBaseName: sectors[j].baseName,
-                sectorSuffixName: sectors[j].suffixName,
-              },
-            },
-          });
+  const sectors = await prisma.sector.findMany();
 
-          const attendanceCount = await prisma.scoutAttendance.count({
-            where: {
-              termNumber: req.currentWeek?.termNumber,
-              attendanceStatus: "attended",
-              Week: {
-                weekNumber: i,
-                cancelled: false,
-              },
-              Scout: {
-                sectorBaseName: sectors[j].baseName,
-                sectorSuffixName: sectors[j].suffixName,
-              },
-            },
-          });
+  let sectorGraphs = await Promise.all(sectors.map(async (sector) => {
+    let attendanceRates = [];
 
-          const absenceRate = computeAttendanceRate({
-            absence_count: absenceCount,
-            attendance_count: attendanceCount,
-          });
-          attendanceRates.push({
+    for (let i = 1; i <= (req?.currentWeek?.weekNumber || 0); i++) {
+      const absenceCount = await prisma.scoutAttendance.count({
+        where: {
+          termNumber: req.currentWeek?.termNumber,
+          attendanceStatus: "absent",
+          Week: {
             weekNumber: i,
-            absenceRate: absenceRate ?? 0,
-          });
-        }
-
-        sectorGraphs.push({
-          sectorBaseName: sectors[j].baseName,
-          sectorSuffixName: sectors[j].suffixName,
-          attendanceRates,
-        });
-      }
-
-      console.log(sectorGraphs);
-
-      return res.status(200).json({
-        message: `Get stacked attendance graph succfully`,
-        body: sectorGraphs,
+            cancelled: false,
+          },
+          Scout: {
+            sectorBaseName: sector.baseName,
+            sectorSuffixName: sector.suffixName,
+          },
+        },
       });
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ error: "An error occurred while getting absence rate" });
-    }
-  },
 
-  /* getScoutAttendanceRate
-   *
-   * @desc gets the scout rate of a group of scouts by their names
-   * @endpoint GET /ali/stat/attendance/scout
-   */
-  getScoutAttendanceRate: async (req: Request, res: Response) => {
-    try {
-      const { name } = req.query;
-      if (!name)
-        return res.status(400).json({ message: "no scouts matches this name" });
-
-      let scouts = (await getScoutByName(name as string)) as Scout[] | null;
-
-      if (!scouts)
-        return res.status(400).json({ message: "no scouts matches this name" });
-
-      const result = await Promise.all(
-        scouts.map(async (scout) => {
-          let absenceCount = await prisma.scoutAttendance.count({
-            where: {
-              attendanceStatus: "absent",
-              termNumber: undefined,
-              Week: {
-                cancelled: false,
-              },
-              Scout: {
-                scoutId: scout.scoutId,
-              },
-            },
-          });
-
-          let attendanceCount = await prisma.scoutAttendance.count({
-            where: {
-              attendanceStatus: "attended",
-              termNumber: undefined,
-              Week: {
-                cancelled: false,
-              },
-              Scout: {
-                scoutId: scout.scoutId,
-              },
-            },
-          });
-
-          let attendanceRate = computeAttendanceRate({
-            attendance_count: attendanceCount,
-            absence_count: absenceCount,
-          });
-
-          return {
-            id: scout.scoutId,
-            name:
-              scout.firstName + " " + scout.middleName + " " + scout.lastName,
-            attendanceRate: attendanceRate,
-          };
-        }),
-      );
-
-      return res.status(200).json({
-        message: `Found ${scouts.length} matching this name`,
-        body: result,
+      const attendanceCount = await prisma.scoutAttendance.count({
+        where: {
+          termNumber: req.currentWeek?.termNumber,
+          attendanceStatus: "attended",
+          Week: {
+            weekNumber: i,
+            cancelled: false,
+          },
+          Scout: {
+            sectorBaseName: sector.baseName,
+            sectorSuffixName: sector.suffixName,
+          },
+        },
       });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        error: "An error occurred while getting scout absence rate",
+
+      const absenceRate = computeAttendanceRate({
+        absence_count: absenceCount,
+        attendance_count: attendanceCount,
+      });
+      attendanceRates.push({
+        weekNumber: i,
+        absenceRate: absenceRate ?? 0,
       });
     }
-  },
+
+    return {
+      sectorBaseName: sector.baseName,
+      sectorSuffixName: sector.suffixName,
+      attendanceRates,
+    };
+  }));
+
+  return res.status(200).json({
+    message: `Get stacked attendance graph successfully`,
+    body: sectorGraphs,
+  });
+}
+
+async function getScoutAttendanceRate(req: Request, res: Response) {
+  const { name } = req.query;
+  if (!name)
+    throw new AppError(400, "No scouts match this name", "لا يوجد كشافة بهذا الاسم");
+
+  let scouts = (await getScoutByName(name as string)) as Scout[] | null;
+
+  if (!scouts)
+    throw new AppError(400, "No scouts match this name", "لا يوجد كشافة بهذا الاسم");
+
+  const result = await Promise.all(
+    scouts.map(async (scout) => {
+      let absenceCount = await prisma.scoutAttendance.count({
+        where: {
+          attendanceStatus: "absent",
+          termNumber: undefined,
+          Week: {
+            cancelled: false,
+          },
+          Scout: {
+            scoutId: scout.scoutId,
+          },
+        },
+      });
+
+      let attendanceCount = await prisma.scoutAttendance.count({
+        where: {
+          attendanceStatus: "attended",
+          termNumber: undefined,
+          Week: {
+            cancelled: false,
+          },
+          Scout: {
+            scoutId: scout.scoutId,
+          },
+        },
+      });
+
+      let attendanceRate = computeAttendanceRate({
+        attendance_count: attendanceCount,
+        absence_count: absenceCount,
+      });
+
+      return {
+        id: scout.scoutId,
+        name: `${scout.firstName} ${scout.middleName} ${scout.lastName}`,
+        attendanceRate: attendanceRate,
+      };
+    })
+  );
+
+  return res.status(200).json({
+    message: `Found ${scouts.length} matching this name`,
+    body: result,
+  });
+}
+
+const statAttendanceController = {
+  getAttendanceRate: asyncDec(getAttendanceRate),
+  getAttendanceLineChart: asyncDec(getAttendanceLineChart),
+  getAttendanceStackLineChart: asyncDec(getAttendanceStackLineChart),
+  getScoutAttendanceRate: asyncDec(getScoutAttendanceRate),
 };
 
 export default statAttendanceController;
