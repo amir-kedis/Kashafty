@@ -303,14 +303,13 @@ async function addOtherItem(req: Request, res: Response){
 
 
 const financeController = {
-
   getBudget : asyncDec(getBudget),
   getIncome : asyncDec(getIncome),
   getExpense : asyncDec(getExpense),
   addSubscription : asyncDec(addSubscription),
   getAllSubscriptionsOfCurrentWeek : asyncDec(getAllSubscriptionsOfCurrentWeek),
   getSubscription : asyncDec(getSubscription),
-  addOtherItem : asyncDec(addOtherItem),
+  addOtherItem : asyncDec(addOtherItem)
 };
 
 export default financeController;
