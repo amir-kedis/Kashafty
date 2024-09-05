@@ -43,11 +43,11 @@ export default function SendNotificationPage() {
         sectorSuffixName:
           toWhom === "إرسال إلى قطاع" ? receiver.split(" ")[1] : "",
       }).unwrap();
-
       toast.success(response.message);
     } catch (err) {
-      console.log(err);
       toast.error("حدث خطأ أثناءإرسال الإشعار");
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 

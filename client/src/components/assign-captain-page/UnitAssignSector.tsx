@@ -59,8 +59,8 @@ const UnitAssignSector: React.FC = () => {
       toast.success("تم تعيين القائد بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء تعيين القائد");
-      console.log(JSON.stringify(err));
-      toast.error(JSON.stringify(err));
+      console.log(err?.data?.message);
+      toast.error(err?.data?.arabicMessage);
     }
   };
 
@@ -68,7 +68,7 @@ const UnitAssignSector: React.FC = () => {
     <form onSubmit={handleSubmit} className="assign-sector-to-captain">
       <CustomSelect
         name={"choose-sector"}
-        label={"أختر القطاع"}
+        label={"اختر القطاع"}
         data={
           isFetchingSectors
             ? [{ sectorId: "", fullName: "جاري التحميل" }]
@@ -89,7 +89,7 @@ const UnitAssignSector: React.FC = () => {
       />
       <CustomSelect
         name={"choose-captain-for-sector"}
-        label={"أختر قائد"}
+        label={"اختر قائد"}
         data={
           isFetchingCaptains
             ? [{ captainId: "", fullName: "جاري التحميل" }]

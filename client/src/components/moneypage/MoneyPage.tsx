@@ -32,7 +32,8 @@ const MoneyPage = () => {
     } catch (err) {
       console.log();
       toast.error("حدث خطأ أثناء إضافة بند");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 

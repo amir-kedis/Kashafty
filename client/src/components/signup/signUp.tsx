@@ -74,9 +74,8 @@ export default function SignUp() {
       }
     } catch (err) {
       toast.dark("حدث خطأ ما");
-      toast.error(JSON.stringify(err));
-      toast.error(err?.data?.message || err.error);
-      console.log(err?.data?.message || err.error);
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 

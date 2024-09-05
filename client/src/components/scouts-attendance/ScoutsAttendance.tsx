@@ -141,8 +141,8 @@ export default function ScoutsAttendance() {
       toast.success("تم تسجيل الاشتراك بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء تسجيل الاشتراك");
-      console.log(JSON.stringify(err));
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
     try {
       const res = await upsertAttendance({
@@ -154,8 +154,8 @@ export default function ScoutsAttendance() {
       console.log(res.body);
     } catch (err) {
       toast.error("حدث خطأ أثناء تسجيل الغياب");
-      console.log(JSON.stringify(err));
-      toast.error(JSON.stringify(err));
+      console.log(err?.data?.message);
+      toast.error(err?.data?.arabicMessage);
     }
   };
 
@@ -272,7 +272,7 @@ export default function ScoutsAttendance() {
             onChange={(e) => setSubscription(parseInt(e.target.value))}
             required={true}
           />
-          <p>يرجى ادخال إجمالي الاشتراك الفعلي</p>
+          <p>يرجى إدخال إجمالي الاشتراك الفعلي</p>
         </div>
       </div>
       <Button className="Button--medium Button--success-light" type="submit">

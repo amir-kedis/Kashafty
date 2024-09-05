@@ -49,7 +49,8 @@ export default function UpdateTermPage() {
     } catch (err) {
       console.log(err);
       toast.error("حدث خطأ أثناء تعديل الفترة");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 
@@ -94,8 +95,8 @@ export default function UpdateTermPage() {
           required
         />
         <p className="insert-term__note">
-          **إنشاء فترة هو إجراء لا رجعة به يجب مراعاة انه بعد إنشاء الفترة
-          ستتحول كل الصفحات الاخرى الى احدث فترة تم إنشاءها
+          **إنشاء فترة هو إجراء لا رجعة به يجب مراعاة أنه بعد إنشاء الفترة
+          ستتحول كل الصفحات الأخرى إلى أحدث فترة تم إنشاؤها
         </p>
         <CustomCheckbox
           labels={["لقد فهمت"]}

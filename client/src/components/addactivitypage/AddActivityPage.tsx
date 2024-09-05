@@ -73,7 +73,8 @@ const AddActivityPage: React.FC = () => {
     } catch (err) {
       console.log();
       toast.error("حدث خطأ أثناء إنشاء النشاط");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 
@@ -93,7 +94,7 @@ const AddActivityPage: React.FC = () => {
         />
 
         <CustomSelect
-          label="اختار النوع"
+          label="اختر النوع"
           name="activityType"
           data={activityTypesList}
           displayMember="name"
@@ -114,7 +115,7 @@ const AddActivityPage: React.FC = () => {
         />
 
         <CustomSelect
-          label="اختار اليوم"
+          label="اختر اليوم"
           name="activityDay"
           data={days}
           displayMember="name"
@@ -124,7 +125,7 @@ const AddActivityPage: React.FC = () => {
           required={true}
         />
         <CustomSelect
-          label="اختار الأسبوع"
+          label="اختر الأسبوع"
           name="activityWeek"
           data={isFetchingWeeks ? [] : weeksList}
           displayMember="allWeekInfo"

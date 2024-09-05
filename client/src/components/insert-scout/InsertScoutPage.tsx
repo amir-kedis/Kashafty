@@ -69,15 +69,15 @@ const InsertScoutPage: React.FC = () => {
         throw new Error("Something went wrong while inserting the scout");
       toast.success("تم إنشاء الكشاف بنجاح");
     } catch (err) {
-      console.log();
       toast.error("حدث خطأ أثناء إنشاء الكشاف");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 
   return (
     <div className="add-scout-page">
-      <PageTitle title="إضافة و تعيين كشافيين" />
+      <PageTitle title="إضافة وتعيين كشافيين" />
       <section className="add-new-scout">
         <h4>إضافة كشاف جديد</h4>
         <form className="add-scout-form" onSubmit={handleSubmit}>
@@ -98,7 +98,7 @@ const InsertScoutPage: React.FC = () => {
                   onInvalid={(e: FormEvent) => {
                     const inputEl = e.target as HTMLInputElement;
                     inputEl.setCustomValidity(
-                      "الرجاء إدخال الاسم الاول فقط (باللغة العربية او الانجليزية)",
+                      "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)"
                     );
                   }}
                   required={true}
@@ -119,7 +119,7 @@ const InsertScoutPage: React.FC = () => {
                   onInvalid={(e) => {
                     const inputE = e.target as HTMLInputElement;
                     inputE.setCustomValidity(
-                      "الرجاء إدخال الاسم الاوسط فقط (باللغة العربية او الانجليزية)",
+                      "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)"
                     );
                   }}
                   required={true}
@@ -142,7 +142,7 @@ const InsertScoutPage: React.FC = () => {
                   onInvalid={(e) => {
                     const inputEl = e.target as HTMLInputElement;
                     inputEl.setCustomValidity(
-                      "الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)",
+                      "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)"
                     );
                   }}
                 />

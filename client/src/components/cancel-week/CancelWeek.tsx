@@ -23,9 +23,9 @@ export default function CancelWeek() {
       toast.success("تم إلغاء الأسبوع بنجاح");
       navigate("/dashboard");
     } catch (err) {
-      console.log(err);
       toast.error("حدث خطأ أثناء إلغاء الأسبوع");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 

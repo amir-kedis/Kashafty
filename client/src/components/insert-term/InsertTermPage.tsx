@@ -35,9 +35,9 @@ export default function InsertTermPage() {
         throw new Error("Something went wrong while inserting the term");
       toast.success("تم إنشاء الفترة بنجاح");
     } catch (err) {
-      console.log(err);
       toast.error("حدث خطأ أثناء إنشاء الفترة");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 

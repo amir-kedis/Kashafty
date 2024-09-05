@@ -52,8 +52,8 @@ export default function LogIn() {
         navigate("/dashboard");
       }
     } catch (err) {
-      toast.error(err?.data?.error || err.error);
-      console.error(err);
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 

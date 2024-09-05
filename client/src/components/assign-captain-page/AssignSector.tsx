@@ -59,8 +59,8 @@ const AssignSector: React.FC = () => {
       toast.success("تم تعيين القائد بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء تعيين القائد");
-      console.log(JSON.stringify(err));
-      toast.error(JSON.stringify(err));
+      console.log(err?.data?.message);
+      toast.error(err?.data?.arabicMessage);
     }
   };
 
@@ -68,16 +68,16 @@ const AssignSector: React.FC = () => {
     <form onSubmit={handleSubmit} className="assign-sector-to-captain">
       <CustomSelect
         name={"choose-sector"}
-        label={"أختر القطاع"}
+        label={"اختر القطاع"}
         data={
           isFetchingSectors
             ? [{ sectorId: "", fullName: "جاري التحميل" }]
             : !sectors
-              ? [{ sectorId: "", fullName: "لا يوجد قطاعات" }]
-              : sectors?.map((sector) => ({
-                  ...sector,
-                  fullName: sector.baseName + " - " + sector.suffixName,
-                }))
+            ? [{ sectorId: "", fullName: "لا يوجد قطاعات" }]
+            : sectors?.map((sector) => ({
+                ...sector,
+                fullName: sector.baseName + " - " + sector.suffixName,
+              }))
         }
         displayMember={"fullName"}
         valueMember={"fullName"}
@@ -89,23 +89,23 @@ const AssignSector: React.FC = () => {
       />
       <CustomSelect
         name={"choose-captain-for-sector"}
-        label={"أختر قائد"}
+        label={"اختر قائد"}
         data={
           isFetchingCaptains
             ? [{ captainId: "", fullName: "جاري التحميل" }]
             : !captains
-              ? [{ captainId: "", fullName: "لا يوجد قادة" }]
-              : captains
-                  ?.filter((captain) => captain.type === "regular")
-                  ?.map((captain) => ({
-                    ...captain,
-                    fullName:
-                      captain.firstName +
-                      " " +
-                      captain.middleName +
-                      " " +
-                      captain.lastName,
-                  }))
+            ? [{ captainId: "", fullName: "لا يوجد قادة" }]
+            : captains
+                ?.filter((captain) => captain.type === "regular")
+                ?.map((captain) => ({
+                  ...captain,
+                  fullName:
+                    captain.firstName +
+                    " " +
+                    captain.middleName +
+                    " " +
+                    captain.lastName,
+                }))
         }
         displayMember={"fullName"}
         valueMember={"captainId"}

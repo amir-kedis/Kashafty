@@ -23,7 +23,8 @@ export default function EditPassword() {
       toast.success("تم تغيير كلمة السر بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء تغيير كلمة السر");
-      toast.error(err.data.error);
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message)
       console.info(err);
     }
   };

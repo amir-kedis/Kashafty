@@ -124,8 +124,8 @@ export default function CaptainsAttendance() {
       console.log(res?.body);
     } catch (err) {
       toast.error("حدث خطأ أثناء تسجيل الغياب");
-      console.log(JSON.stringify(err));
-      toast.error(JSON.stringify(err));
+      console.log(err?.data?.message);
+      toast.error(err?.data?.arabicMessage);
     }
   };
 
