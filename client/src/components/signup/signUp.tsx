@@ -41,18 +41,18 @@ export default function SignUp() {
     }
     try {
       console.log({
-        firstName,
-        middleName,
-        lastName,
+        firstName: firstName.trim(),
+        middleName: middleName.trim(),
+        lastName: lastName.trim(),
         password,
         email, // Email can be empty
         phoneNumber: phone,
         gender: gender === "ذكر" ? "male" : "female",
       });
       const res = await signup({
-        firstName,
-        middleName,
-        lastName,
+        firstName: firstName.trim(),
+        middleName: middleName.trim(),
+        lastName: lastName.trim(),
         phoneNumber: phone,
         email: email || undefined, // Send email as undefined if it's empty
         password,
@@ -92,15 +92,15 @@ export default function SignUp() {
               type="text"
               name="firstName"
               value={firstName}
-              placeholder="أكتب أسمك الاول"
+              placeholder="اكتب اسمك الأول"
               onChange={(e) => {
                 setFirstName(e.target.value);
                 e.target.setCustomValidity("");
               }}
-              pattern="^[\u0621-\u064Aa-zA-Z]+$"
+              pattern="^\s*[\u0621-\u064Aa-zA-Z]+(?:\s+[\u0621-\u064Aa-zA-Z]+)*\s*$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال الاسم الاول فقط (باللغة العربية او الانجليزية)",
+                  "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)"
                 )
               }
               required
@@ -110,15 +110,15 @@ export default function SignUp() {
               type="text"
               name="middleName"
               value={middleName}
-              placeholder="أكتب أسمك المتوسط"
+              placeholder="اكتب اسمك المتوسط"
               onChange={(e) => {
                 setMiddleName(e.target.value);
                 e.target.setCustomValidity("");
               }}
-              pattern="^[\u0621-\u064Aa-zA-Z]+$"
+              pattern="^\s*[\u0621-\u064Aa-zA-Z]+(?:\s+[\u0621-\u064Aa-zA-Z]+)*\s*$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال الاسم الاوسط فقط (باللغة العربية او الانجليزية)",
+                  "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)"
                 )
               }
               required
@@ -128,15 +128,15 @@ export default function SignUp() {
               type="text"
               name="lastName"
               value={lastName}
-              placeholder="أكتب أسمك الأخير"
+              placeholder="اكتب اسمك الأخير"
               onChange={(e) => {
                 setLastName(e.target.value);
                 e.target.setCustomValidity("");
               }}
-              pattern="^[\u0621-\u064Aa-zA-Z]+$"
+              pattern="^\s*[\u0621-\u064Aa-zA-Z]+(?:\s+[\u0621-\u064Aa-zA-Z]+)*\s*$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)",
+                  "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)"
                 )
               }
               required
@@ -145,7 +145,7 @@ export default function SignUp() {
           <div className="card">
             <h6>معلومات الحساب</h6>
             <TextInput
-              label="البريد الالكتروني"
+              label="البريد الإلكتروني"
               type="email"
               name="email"
               value={email}
@@ -157,7 +157,7 @@ export default function SignUp() {
               pattern="^[a-zA-Z0-9._%\+\-]*@[a-zA-Z0-9._%\+\-]*\.[a-z]*$" // Updated pattern to handle optional email
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال بريد إليكتروني صحيح",
+                  "الرجاء إدخال بريد إليكتروني صحيح"
                 )
               }
             />
@@ -166,7 +166,7 @@ export default function SignUp() {
               type="password"
               name="password"
               value={password}
-              placeholder="أكتب الرمز السري"
+              placeholder="اكتب الرمز السري"
               onChange={(e) => setPassword(e.target.value)}
               required
             />
@@ -187,7 +187,7 @@ export default function SignUp() {
               type="text"
               name="phone"
               value={phone}
-              placeholder="أكتب رقم هاتفك"
+              placeholder="اكتب رقم هاتفك"
               onChange={(e) => {
                 setPhone(e.target.value);
                 e.target.setCustomValidity("");
@@ -195,7 +195,7 @@ export default function SignUp() {
               pattern="^01[0-9]{9}$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال رقم هاتف صحيح",
+                  "الرجاء إدخال رقم هاتف صحيح"
                 )
               }
               required
