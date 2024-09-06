@@ -57,8 +57,8 @@ export default function Nav() {
       navigate("/");
     } catch (err) {
       toast.dark("حدث خطأ ما");
-      toast.error(err?.data?.message || err.error || JSON.stringify(err));
-      console.error(err);
+      toast.error(err?.data?.arabicMessage || err.error || JSON.stringify(err));
+      console.error(err?.data?.message);
       navigate("/");
     }
     dispatch(clearCredentials());

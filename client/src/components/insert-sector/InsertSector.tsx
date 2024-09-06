@@ -50,7 +50,8 @@ export default function InsertSector() {
       toast.success("تم إنشاء القطاع بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء إنشاء القطاع");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 
@@ -73,7 +74,7 @@ export default function InsertSector() {
             onInvalid={(e) => {
               const inputE = e.target as HTMLInputElement;
               inputE.setCustomValidity(
-                "الرجاء إدخال أسم القطاع بطريقة صحيحة (بالعربية او الانجليزية)",
+                "الرجاء إدخال أسم القطاع بطريقة صحيحة (بالعربية او الانجليزية)"
               );
             }}
             placeholder="اسم القطاع"
@@ -91,7 +92,7 @@ export default function InsertSector() {
             pattern="^[\u0621-\u064Aa-zA-Z]+$"
             onInvalid={(e) =>
               (e.target as HTMLInputElement).setCustomValidity(
-                "الرجاء إدخال رقم القطاع بطريقة صحيحة",
+                "الرجاء إدخال رقم القطاع بطريقة صحيحة"
               )
             }
             placeholder="مثل: أ, ب, ج"

@@ -134,7 +134,8 @@ const UpdateScoutPage = () => {
       toast.success("تم تعديل الكشاف بنجاح");
     } catch (err) {
       toast.error("حدث خطأ أثناء تعديل الكشاف");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
+      console.log(err?.data?.message);
     }
   };
 
@@ -200,7 +201,7 @@ const UpdateScoutPage = () => {
                 pattern="^[\u0621-\u064Aa-zA-Z]+$"
                 onInvalid={(e) =>
                   (e.target as HTMLInputElement).setCustomValidity(
-                    "الرجاء إدخال الاسم الاول فقط (باللغة العربية او الانجليزية)",
+                    "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)",
                   )
                 }
                 required={true}
@@ -220,7 +221,7 @@ const UpdateScoutPage = () => {
                 pattern="^[\u0621-\u064Aa-zA-Z]+$"
                 onInvalid={(e) =>
                   (e.target as HTMLInputElement).setCustomValidity(
-                    "الرجاء إدخال الاسم الاوسط فقط (باللغة العربية او الانجليزية)",
+                    "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)",
                   )
                 }
                 required={true}
@@ -242,7 +243,7 @@ const UpdateScoutPage = () => {
                 pattern="^[\u0621-\u064Aa-zA-Z]+$"
                 onInvalid={(e) =>
                   (e.target as HTMLInputElement).setCustomValidity(
-                    "الرجاء إدخال الاسم الأخير فقط (باللغة العربية او الانجليزية)",
+                    "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)",
                   )
                 }
                 required={true}

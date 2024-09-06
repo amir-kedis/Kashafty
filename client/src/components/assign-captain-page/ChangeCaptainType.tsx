@@ -39,9 +39,9 @@ const ChangeCaptainType: React.FC = () => {
         throw new Error("Something went wrong while updating the captain type");
       toast.success("تم تعديل الرتبة بنجاح");
     } catch (err) {
-      console.log(err);
+      console.log(err?.data?.message);
       toast.error("حدث خطأ أثناء تعديل الرتبة");
-      toast.error(JSON.stringify(err));
+      toast.error(err?.data?.arabicMessage);
     }
   };
 
@@ -49,7 +49,7 @@ const ChangeCaptainType: React.FC = () => {
     <form onSubmit={handleSubmit} className="change-captain-role">
       <CustomSelect
         name={"choose-captain"}
-        label={"أختار القائد"}
+        label={"اختر القائد"}
         data={
           isFetchingCaptains
             ? [{ captainId: "", fullName: "جاري التحميل" }]
@@ -85,11 +85,11 @@ const ChangeCaptainType: React.FC = () => {
 
       <CustomSelect
         name={"choose-type"}
-        label={"أختار الرتبة"}
+        label={"اختر الرتبة"}
         data={[
           { name: "قائد عادي", value: "regular" },
           { name: "قائد وحدة", value: "unit" },
-          { name: "قائد عام او نائب قائد عام", value: "general" },
+          { name: "قائد عام أو نائب قائد عام", value: "general" },
         ]}
         displayMember={"name"}
         valueMember={"value"}
