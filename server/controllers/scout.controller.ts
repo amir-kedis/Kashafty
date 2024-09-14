@@ -70,15 +70,7 @@ async function getAllScouts(req: Request, res: Response) {
 // Get scouts in a specific sector
 
 async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
-  console.log('//////////////////////////////////////////////////////////////////');
-  console.log(req.query);
-  console.log('//////////////////////////////////////////////////////////////////');
-
   const { sectorBaseName, sectorSuffixName } = req.query;
-
-  console.log('//////////////////////////////////////////////////////////////////');
-  console.log(sectorBaseName, sectorSuffixName);
-  console.log('//////////////////////////////////////////////////////////////////');
 
   const result = await prisma.scout.findMany({
     where: {
