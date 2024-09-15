@@ -26,33 +26,27 @@ params: {
   scoutId: string;
 };
 body: {
-  firstName: string;
-  middleName: string;
-  lastName: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
   gender: string;
   sectorBaseName: string;
   sectorSuffixName: string;
   birthDate: string;
   enrollDate: string;
-  schoolGrade: string;
-  photo: string;
-  birthCertificate: string;
 };
 }
 
 interface InsertScoutRequest extends Request {
 body: {
-  firstName: string;
-  middleName: string;
-  lastName: string;
+  name: string;
+  address: string;
+  phoneNumber: string;
   gender: string;
   sectorBaseName: string;
   sectorSuffixName: string;
   birthDate: string;
   enrollDate: string;
-  schoolGrade: string;
-  photo: string;
-  birthCertificate: string;
 };
 }
 
@@ -121,9 +115,6 @@ async function getScout(req: Request, res: Response) {
     where: {
       scoutId: parseInt(scoutId),
     },
-    include: {
-      ScoutProfile: true,
-    },
   });
 
   if (!result) {
@@ -143,17 +134,14 @@ async function getScout(req: Request, res: Response) {
 async function updateScout (req: UpdateScoutRequest, res: Response){
   const { scoutId } = req.params; 
   const {
-    firstName,
-    middleName,
-    lastName,
+    name,
+    address,
+    phoneNumber,
     gender,
     sectorBaseName,
     sectorSuffixName,
     birthDate,
     enrollDate,
-    schoolGrade,
-    photo,
-    birthCertificate,
   } = req.body;
 
   const scout = await prisma.scout.update({
@@ -161,21 +149,15 @@ async function updateScout (req: UpdateScoutRequest, res: Response){
       scoutId: parseInt(scoutId),
     },
     data: {
-      firstName,
-      middleName,
-      lastName,
+      name,
+      address,
+      phoneNumber,
       gender: gender === "male" ? Gender.male : Gender.female,
       sectorBaseName,
       sectorSuffixName,
-      ScoutProfile: {
-        update: {
-          birthDate: new Date(birthDate),
-          enrollDate: new Date(enrollDate),
-          schoolGrade: parseInt(schoolGrade),
-          photo,
-          birthCertificate,
-        },
-      },
+      enrollDate: new Date(enrollDate),
+      birthDate: new Date(birthDate),
+      updatedAt: new Date(),
     },
   });
 
@@ -188,36 +170,26 @@ async function updateScout (req: UpdateScoutRequest, res: Response){
 // Insert a new scout
 async function insertScout (req: InsertScoutRequest, res: Response) {
     const {
-      firstName,
-      middleName,
-      lastName,
+      name,
+      address,
+      phoneNumber,
       gender,
       sectorBaseName,
       sectorSuffixName,
       birthDate,
       enrollDate,
-      schoolGrade,
-      photo,
-      birthCertificate,
     } = req.body;
 
     const scout = await prisma.scout.create({
       data: {
-        firstName,
-        middleName,
-        lastName,
+        name,
+        address,
+        phoneNumber,
         gender: gender === "male" ? Gender.male : Gender.female,
         sectorBaseName,
         sectorSuffixName,
-        ScoutProfile: {
-          create: {
-            birthDate: new Date(birthDate),
-            enrollDate: new Date(enrollDate),
-            schoolGrade: parseInt(schoolGrade),
-            photo,
-            birthCertificate,
-          },
-        },
+        birthDate: new Date(birthDate),
+        enrollDate: new Date(enrollDate),
       },
     });
 

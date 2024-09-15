@@ -285,7 +285,7 @@ async function getScoutAttendanceRate(req: Request, res: Response) {
 
       return {
         id: scout.scoutId,
-        name: `${scout.firstName} ${scout.middleName} ${scout.lastName}`,
+        name: scout.name,
         attendanceRate: attendanceRate,
       };
     })
