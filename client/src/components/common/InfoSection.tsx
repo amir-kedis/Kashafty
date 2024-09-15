@@ -2,9 +2,8 @@ import "../../assets/styles/components/InfoSection.scss";
 import InfoBox from "./InfoBox";
 import { useGetCaptainsQuery } from "../../redux/slices/captainsApiSlice";
 import {
-  useGetAbsenceRateQuery,
-  useGetSectorAbsenceRateQuery,
-} from "../../redux/slices/statsApiSlice";
+  useGetAttendaceRateQuery,
+} from "../../redux/slices/stat/stat.attendance.slice";
 import {
   useGetAllScoutsCountQuery,
   useGetScoutsInSectorQuery,
@@ -24,7 +23,7 @@ export default function InfoSection() {
     const captainCount = captains?.body.length;
 
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetAbsenceRateQuery({});
+      useGetAttendaceRateQuery({});
 
     const { data: scouts, isFetching: isFetchingScoutsCount } =
       useGetAllScoutsCountQuery({});
@@ -89,7 +88,7 @@ export default function InfoSection() {
 
   const RegularCaptainInfo = () => {
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetSectorAbsenceRateQuery({
+      useGetAttendaceRateQuery({
         sectorBaseName: userInfo.rSectorBaseName,
         sectorSuffixName: userInfo.rSectorSuffixName,
       });
@@ -109,7 +108,7 @@ export default function InfoSection() {
     return (
       <>
         <InfoBox
-          title="نسبة غياب قطاعك"
+          title="نسبة حضور قطاعك"
           value={
             isFetchingAbsence
               ? "جاري التحميل"
@@ -147,7 +146,7 @@ export default function InfoSection() {
     const captainCount = captains?.body.length;
 
     const { data: absenceRate, isFetching: isFetchingAbsence } =
-      useGetAbsenceRateQuery({});
+      useGetAttendaceRateQuery({});
 
     const { data: scouts, isFetching: isFetchingScoutsCount } =
       useGetAllScoutsCountQuery({});
@@ -155,7 +154,7 @@ export default function InfoSection() {
     return (
       <>
         <InfoBox
-          title="متوسط نسبة الغياب"
+          title="متوسط نسبة الحضور"
           value={
             isFetchingAbsence
               ? "جاري التحميل"
