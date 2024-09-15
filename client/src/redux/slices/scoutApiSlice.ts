@@ -11,6 +11,13 @@ export const scoutsApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Scouts"],
     }),
+    GetScoutsInUnit: builder.query({
+      query: (unitCaptain) => ({
+        url: `${SCOUT_URL}/unit/${unitCaptain.captainId}`,
+        method: "GET",
+      }),
+      providesTags: ["Scouts"],
+    }),
     InsertScout: builder.mutation({
       query: (scout) => ({
         url: `${SCOUT_URL}/`,
@@ -41,6 +48,7 @@ export const scoutsApi = apiSlice.injectEndpoints({
 
 export const {
   useGetAllScoutsCountQuery,
+  useGetScoutsInUnitQuery,
   useInsertScoutMutation,
   useGetScoutsInSectorQuery,
   useUpdateScoutMutation,

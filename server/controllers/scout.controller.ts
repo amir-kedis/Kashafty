@@ -91,7 +91,6 @@ async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
 
 
 // Get scouts in a specific unit
-
 async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
   const { unitCaptainId } = req.params;
 
