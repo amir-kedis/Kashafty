@@ -27,26 +27,26 @@ params: {
 };
 body: {
   name: string;
-  address: string;
-  phoneNumber: string;
-  gender: string;
+  address?: string;
+  phoneNumber?: string;
+  gender?: string;
   sectorBaseName: string;
   sectorSuffixName: string;
-  birthDate: string;
-  enrollDate: string;
+  birthDate?: string;
+  enrollDate?: string;
 };
 }
 
 interface InsertScoutRequest extends Request {
 body: {
   name: string;
-  address: string;
-  phoneNumber: string;
-  gender: string;
+  address?: string;
+  phoneNumber?: string;
+  gender?: string;
   sectorBaseName: string;
   sectorSuffixName: string;
-  birthDate: string;
-  enrollDate: string;
+  birthDate?: string;
+  enrollDate?: string;
 };
 }
 
@@ -144,6 +144,9 @@ async function updateScout (req: UpdateScoutRequest, res: Response){
     enrollDate,
   } = req.body;
 
+  const enrollDateParsed = enrollDate ? new Date(enrollDate) : null;
+  const birthDateParsed = birthDate ? new Date(birthDate) : null;
+
   const scout = await prisma.scout.update({
     where: {
       scoutId: parseInt(scoutId),
@@ -155,8 +158,8 @@ async function updateScout (req: UpdateScoutRequest, res: Response){
       gender: gender === "male" ? Gender.male : Gender.female,
       sectorBaseName,
       sectorSuffixName,
-      enrollDate: new Date(enrollDate),
-      birthDate: new Date(birthDate),
+      enrollDate: enrollDateParsed,
+      birthDate: birthDateParsed,
       updatedAt: new Date(),
     },
   });
@@ -180,6 +183,10 @@ async function insertScout (req: InsertScoutRequest, res: Response) {
       enrollDate,
     } = req.body;
 
+
+    const enrollDateParsed = enrollDate ? new Date(enrollDate) : undefined;
+    const birthDateParsed = birthDate ? new Date(birthDate) : undefined;
+
     const scout = await prisma.scout.create({
       data: {
         name,
@@ -188,8 +195,8 @@ async function insertScout (req: InsertScoutRequest, res: Response) {
         gender: gender === "male" ? Gender.male : Gender.female,
         sectorBaseName,
         sectorSuffixName,
-        birthDate: new Date(birthDate),
-        enrollDate: new Date(enrollDate),
+        enrollDate: enrollDateParsed,
+        birthDate: birthDateParsed,
       },
     });
 
@@ -199,6 +206,32 @@ async function insertScout (req: InsertScoutRequest, res: Response) {
     });
 };
 
+// Delete a specific scout by ID (expel)
+async function deleteScout(req: Request, res: Response) {
+  const { scoutId } = req.params;
+
+  const scout = await prisma.scout.update({
+    where: {
+      scoutId: parseInt(scoutId),
+    },
+    data: {
+      expelled: true,
+      expelDate: new Date(),
+    },
+  });
+
+  if (!scout) {
+    throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
+  }
+
+  res.status(204).json({
+    message: "Successful Removal",
+    body: null,
+  });
+}
+
+
+
 // Controller with asyncDec decorator applied and error handling
 const scoutController = {
   getAllScouts: asyncDec(getAllScouts),
@@ -207,6 +240,7 @@ const scoutController = {
   getScout: asyncDec(getScout),
   updateScout: asyncDec(updateScout),
   insertScout: asyncDec(insertScout),
+  deleteScout: asyncDec(deleteScout),
 };
 
 export default scoutController;

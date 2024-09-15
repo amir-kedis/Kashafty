@@ -6,6 +6,7 @@ const scoutRouter = Router();
 scoutRouter.post("/", scoutController.insertScout);
 scoutRouter.get("/:scoutId", scoutController.getScout);
 scoutRouter.put("/:scoutId", scoutController.updateScout);
+scoutRouter.delete("/:scoutId", scoutController.deleteScout);
 scoutRouter.get("/", scoutController.getAllScouts);
 scoutRouter.get("/unit/:unitCaptainId", scoutController.getScoutsInUnit);
 scoutRouter.get("/sector/all", scoutController.getScoutsInSector);

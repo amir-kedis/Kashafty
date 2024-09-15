@@ -4,8 +4,7 @@ import { Captain } from "@prisma/client";
 
 interface Scout {
   scoutId: number;
-  firstName: string;
-  middleName: string;
+  name: string;
   [key: string]: any; // Add other fields as needed
 }
 
@@ -67,7 +66,8 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
     //                 JOIN "Scout" AS SC ON SA."scoutId" = SC."scoutId"
     //             WHERE
     //                 W."cancelled" = false AND
-    //                 SA."termNumber" = ${currentTermNumber}
+    //                 SA."termNumber" = ${currentTermNumber} AND
+    //                 SC."expelled" = false
     //             GROUP BY
     //                 SA."scoutId"
     //         )
@@ -82,7 +82,7 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
     //             );`;
     //
     // for (const scout of scouts) {
-    //   const message = `نسبة 50% من الغياب الكلي ${scout.firstName} ${scout.middleName} لقد تخطى الكشاف`;
+    //   const message = `نسبة 50% من الغياب الكلي ${scout.name} لقد تخطى الكشاف`;
     //
     //   const generalCaptains: Captain[] = await prisma.captain.findMany({
     //     where: {
@@ -105,7 +105,7 @@ const newWeekScheduler = cron.schedule("0 0 * * 0", async () => {
     //   });
     //
     //   console.log(
-    //     `Sent notification for ${scout.firstName} ${scout.middleName}`,
+    //     `Sent notification for ${scout.name}`,
     //   );
     // }
   } catch (error) {
