@@ -77,24 +77,14 @@ async function getTotalExpense(req: Request, res: Response) {
 }
 
 async function getCurrentWeekSubscription(req: Request, res: Response) {
-  const today = new Date();
-
-  const currentWeek = await prisma.week.findFirst({
-    where: {
-      startDate: {
-        gte: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000),
-      },
-    },
-  });
-
-  if (!currentWeek) {
+  if (!req.currentWeek) {
     throw new AppError(404, "Current week not found", "الأسبوع الحالي غير موجود");
   }
 
   const subscriptions = await prisma.subscription.findMany({
     where: {
-      weekNumber: currentWeek.weekNumber,
-      termNumber: currentWeek.termNumber,
+      weekNumber: req.currentWeek?.weekNumber,
+      termNumber: req.currentWeek?.termNumber,
     },
     include: {
       FinanceItem: true,

@@ -9,51 +9,51 @@ import asyncDec from "../utils/asyncDec";
 // =================================================
 
 interface GetScoutsInSectorRequest extends Request {
-query: {
-  baseName: string;
-  suffixName: string;
-};
+  query: {
+    sectorBaseName: string;
+    sectorSuffixName: string;
+  };
 }
 
 interface GetScoutsInUnitRequest extends Request {
-params: {
-  unitCaptainId: string;
-};
+  params: {
+    unitCaptainId: string;
+  };
 }
 
 interface UpdateScoutRequest extends Request {
-params: {
-  scoutId: string;
-};
-body: {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  gender: string;
-  sectorBaseName: string;
-  sectorSuffixName: string;
-  birthDate: string;
-  enrollDate: string;
-  schoolGrade: string;
-  photo: string;
-  birthCertificate: string;
-};
+  params: {
+    scoutId: string;
+  };
+  body: {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    gender: string;
+    sectorBaseName: string;
+    sectorSuffixName: string;
+    birthDate: string;
+    enrollDate: string;
+    schoolGrade: string;
+    photo: string;
+    birthCertificate: string;
+  };
 }
 
 interface InsertScoutRequest extends Request {
-body: {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  gender: string;
-  sectorBaseName: string;
-  sectorSuffixName: string;
-  birthDate: string;
-  enrollDate: string;
-  schoolGrade: string;
-  photo: string;
-  birthCertificate: string;
-};
+  body: {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    gender: string;
+    sectorBaseName: string;
+    sectorSuffixName: string;
+    birthDate: string;
+    enrollDate: string;
+    schoolGrade: string;
+    photo: string;
+    birthCertificate: string;
+  };
 }
 
 // Get all scouts
@@ -70,12 +70,12 @@ async function getAllScouts(req: Request, res: Response) {
 // Get scouts in a specific sector
 
 async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
-  const { baseName, suffixName } = req.query;
+  const { sectorBaseName, sectorSuffixName } = req.query;
 
   const result = await prisma.scout.findMany({
     where: {
-      sectorBaseName: baseName,
-      sectorSuffixName: suffixName,
+      sectorBaseName: sectorBaseName,
+      sectorSuffixName: sectorSuffixName,
     },
   });
 
@@ -91,7 +91,6 @@ async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
 
 
 // Get scouts in a specific unit
-
 async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
   const { unitCaptainId } = req.params;
 
@@ -140,8 +139,8 @@ async function getScout(req: Request, res: Response) {
 
 
 // Update a specific scout by ID
-async function updateScout (req: UpdateScoutRequest, res: Response){
-  const { scoutId } = req.params; 
+async function updateScout(req: UpdateScoutRequest, res: Response) {
+  const { scoutId } = req.params;
   const {
     firstName,
     middleName,
@@ -186,45 +185,45 @@ async function updateScout (req: UpdateScoutRequest, res: Response){
 };
 
 // Insert a new scout
-async function insertScout (req: InsertScoutRequest, res: Response) {
-    const {
+async function insertScout(req: InsertScoutRequest, res: Response) {
+  const {
+    firstName,
+    middleName,
+    lastName,
+    gender,
+    sectorBaseName,
+    sectorSuffixName,
+    birthDate,
+    enrollDate,
+    schoolGrade,
+    photo,
+    birthCertificate,
+  } = req.body;
+
+  const scout = await prisma.scout.create({
+    data: {
       firstName,
       middleName,
       lastName,
-      gender,
+      gender: gender === "male" ? Gender.male : Gender.female,
       sectorBaseName,
       sectorSuffixName,
-      birthDate,
-      enrollDate,
-      schoolGrade,
-      photo,
-      birthCertificate,
-    } = req.body;
-
-    const scout = await prisma.scout.create({
-      data: {
-        firstName,
-        middleName,
-        lastName,
-        gender: gender === "male" ? Gender.male : Gender.female,
-        sectorBaseName,
-        sectorSuffixName,
-        ScoutProfile: {
-          create: {
-            birthDate: new Date(birthDate),
-            enrollDate: new Date(enrollDate),
-            schoolGrade: parseInt(schoolGrade),
-            photo,
-            birthCertificate,
-          },
+      ScoutProfile: {
+        create: {
+          birthDate: new Date(birthDate),
+          enrollDate: new Date(enrollDate),
+          schoolGrade: parseInt(schoolGrade),
+          photo,
+          birthCertificate,
         },
       },
-    });
+    },
+  });
 
-    res.status(200).json({
-      message: "Successful insertion",
-      body: scout,
-    });
+  res.status(200).json({
+    message: "Successful insertion",
+    body: scout,
+  });
 };
 
 // Controller with asyncDec decorator applied and error handling

@@ -47,7 +47,7 @@ async function getAllCaptains(req: GetAllCaptainsRequest, res: Response) {
   });
 }
 
-async function getCaptainsInSector(req: GetCaptainsInSectorRequest, res: Response){
+async function getCaptainsInSector(req: GetCaptainsInSectorRequest, res: Response) {
   const { baseName, suffixName } = req.query;
 
   const result = await prisma.captain.findMany({
@@ -69,16 +69,12 @@ async function getCaptainsInUnit(req: GetCaptainsInUnitRequest, res: Response) {
 
   const result = await prisma.captain.findMany({
     where: {
-      Sector_Sector_unitCaptainIdToCaptain: {
-        some: {
-          unitCaptainId: parseInt(unitCaptainId),
-        },
-      },
-    },
-    include: {
-      Sector_Sector_unitCaptainIdToCaptain: true,
-    },
-  });
+      type: "regular",
+      Sector_Captain_rSectorBaseName_rSectorSuffixNameToSector: {
+        unitCaptainId: parseInt(unitCaptainId)
+      }
+    }
+  })
 
   return res.status(200).json({
     message: "Successful retrieval",
