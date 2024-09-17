@@ -11,6 +11,13 @@ export const captainsApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Captains"],
     }),
+    GetCaptainsInUnit: builder.query({
+      query: (unitCaptain) => ({
+        url: `${CAPTAINS_URL}/unit/${unitCaptain.captainId}`,
+        method: "GET",
+      }),
+      providesTags: ["Captains"],
+    }),
     GetUnitCaptains: builder.query({
       query: () => ({
         url: `${CAPTAINS_URL}/`,
@@ -31,6 +38,7 @@ export const captainsApi = apiSlice.injectEndpoints({
 
 export const {
   useGetCaptainsQuery,
+  useGetCaptainsInUnitQuery,
   useGetUnitCaptainsQuery,
   useUpdateCaptainTypeMutation,
 } = captainsApi;

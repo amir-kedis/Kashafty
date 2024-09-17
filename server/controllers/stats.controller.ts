@@ -13,6 +13,10 @@ interface StatsRequest extends Request {
   currentTerm?: {
     termNumber: number;
   };
+  query: {
+    sectorBaseName?: string;
+    sectorSuffixName?: string;
+  }
 }
 
 async function getAllScoutsAbsenceRate(req: StatsRequest, res: Response) {
@@ -113,7 +117,7 @@ async function getScoutsInUnitAbsenceRate(req: StatsRequest, res: Response) {
 }
 
 async function getScoutsInSectorAbsenceRate(req: StatsRequest, res: Response) {
-  const { sectorBaseName, sectorSuffixName } = req.params;
+  const { sectorBaseName, sectorSuffixName } = req.query;
 
   if (req.currentWeek?.termNumber === 0) {
     throw new AppError(400, "Cannot get absence rate before the term starts", "لا يمكن الحصول على معدل الغياب قبل بدء الفصل الدراسي");
@@ -134,7 +138,7 @@ async function getScoutsInSectorAbsenceRate(req: StatsRequest, res: Response) {
       },
     },
   });
-
+  //////in top everything is right.
   const attendanceCount = await prisma.scoutAttendance.count({
     where: {
       termNumber: req.currentWeek?.termNumber,

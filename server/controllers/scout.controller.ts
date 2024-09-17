@@ -9,16 +9,16 @@ import asyncDec from "../utils/asyncDec";
 // =================================================
 
 interface GetScoutsInSectorRequest extends Request {
-query: {
-  baseName: string;
-  suffixName: string;
-};
+  query: {
+    sectorBaseName: string;
+    sectorSuffixName: string;
+  };
 }
 
 interface GetScoutsInUnitRequest extends Request {
-params: {
-  unitCaptainId: string;
-};
+  params: {
+    unitCaptainId: string;
+  };
 }
 
 interface UpdateScoutRequest extends Request {
@@ -64,12 +64,12 @@ async function getAllScouts(req: Request, res: Response) {
 // Get scouts in a specific sector
 
 async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
-  const { baseName, suffixName } = req.query;
+  const { sectorBaseName, sectorSuffixName } = req.query;
 
   const result = await prisma.scout.findMany({
     where: {
-      sectorBaseName: baseName,
-      sectorSuffixName: suffixName,
+      sectorBaseName: sectorBaseName,
+      sectorSuffixName: sectorSuffixName,
     },
   });
 
@@ -85,7 +85,6 @@ async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
 
 
 // Get scouts in a specific unit
-
 async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
   const { unitCaptainId } = req.params;
 
@@ -131,8 +130,8 @@ async function getScout(req: Request, res: Response) {
 
 
 // Update a specific scout by ID
-async function updateScout (req: UpdateScoutRequest, res: Response){
-  const { scoutId } = req.params; 
+async function updateScout(req: UpdateScoutRequest, res: Response) {
+  const { scoutId } = req.params;
   const {
     name,
     address,
@@ -198,12 +197,13 @@ async function insertScout (req: InsertScoutRequest, res: Response) {
         enrollDate: enrollDateParsed,
         birthDate: birthDateParsed,
       },
-    });
+    },
+  });
 
-    res.status(200).json({
-      message: "Successful insertion",
-      body: scout,
-    });
+  res.status(200).json({
+    message: "Successful insertion",
+    body: scout,
+  });
 };
 
 // Delete a specific scout by ID (expel)
