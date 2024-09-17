@@ -213,7 +213,7 @@ async function addSubscription(req: Request, res: Response) {
 // @route   GET /api/finance/subscription/all
 // @access  Private
 
-async function getAllSubscriptionsOfCurrentWeek(req: any, res: Response){
+async function getAllSubscriptionsOfCurrentWeek(req: any, res: Response) {
 
   const subscription = await prisma.subscription.findMany({
     where: {
@@ -244,7 +244,7 @@ async function getAllSubscriptionsOfCurrentWeek(req: any, res: Response){
 async function getSubscription(req: GetSubscriptionRequest, res: Response) {
 
   let { sectorBaseName, sectorSuffixName, weekNumber, termNumber }: any =
-  req.query;
+    req.query;
 
   if (weekNumber === undefined)
     weekNumber = req?.currentWeek?.weekNumber.toString();
@@ -264,9 +264,11 @@ async function getSubscription(req: GetSubscriptionRequest, res: Response) {
     },
   });
 
+  const subscriptionValue = subscription?.FinanceItem.value || 0;
+
   res.status(200).json({
     message: "Get subscription successfully",
-    body: subscription?.FinanceItem.value,
+    body: subscriptionValue,
   });
 
 }
@@ -276,7 +278,7 @@ async function getSubscription(req: GetSubscriptionRequest, res: Response) {
 // @route   POST /api/finance/otherItem
 // @access  Private
 
-async function addOtherItem(req: Request, res: Response){
+async function addOtherItem(req: Request, res: Response) {
 
   const { value, type, description } = req.body;
 
@@ -303,13 +305,13 @@ async function addOtherItem(req: Request, res: Response){
 
 
 const financeController = {
-  getBudget : asyncDec(getBudget),
-  getIncome : asyncDec(getIncome),
-  getExpense : asyncDec(getExpense),
-  addSubscription : asyncDec(addSubscription),
-  getAllSubscriptionsOfCurrentWeek : asyncDec(getAllSubscriptionsOfCurrentWeek),
-  getSubscription : asyncDec(getSubscription),
-  addOtherItem : asyncDec(addOtherItem)
+  getBudget: asyncDec(getBudget),
+  getIncome: asyncDec(getIncome),
+  getExpense: asyncDec(getExpense),
+  addSubscription: asyncDec(addSubscription),
+  getAllSubscriptionsOfCurrentWeek: asyncDec(getAllSubscriptionsOfCurrentWeek),
+  getSubscription: asyncDec(getSubscription),
+  addOtherItem: asyncDec(addOtherItem)
 };
 
 export default financeController;

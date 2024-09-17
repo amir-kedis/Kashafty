@@ -80,11 +80,11 @@ export const financeApi = apiSlice.injectEndpoints({
 });
 
 export const {
-  useGetSectorSubscriptionQuery,
   useGetBudgetQuery,
   useInsertSubscriptionMutation,
   useGetIncomeQuery,
   useGetExpenseQuery,
   useInsertOtherItemMutation,
   useGetCurrentWeekSubscriptionsQuery,
+  useGetSectorSubscriptionQuery,
 } = financeApi;
