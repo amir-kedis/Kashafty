@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
@@ -6,7 +7,7 @@ import {
   useUpsertUnitAttendanceMutation,
 } from "../redux/slices/attendanceApiSlice";
 
-export const useCaptainAttendance = (chosenWeek) => {
+export const useCaptainAttendance = (chosenWeek, termNumber) => {
   const [attendance, setAttendance] = useState([]);
   const user: { captainId: number } = useAuthUser();
 
@@ -25,10 +26,10 @@ export const useCaptainAttendance = (chosenWeek) => {
     {
       refetchOnMountOrArgChange: true,
       skip: !chosenWeek,
-    },
+    }
   );
 
-  const [upsertAttendance, { isLoading: isLoadingUpsertAttendance }] =
+  const [upsertUnitAttendance, { isLoading: isLoadingUpsertAttendance }] =
     useUpsertUnitAttendanceMutation();
 
   useEffect(() => {
@@ -43,6 +44,28 @@ export const useCaptainAttendance = (chosenWeek) => {
       setAttendance(formattedCaptains);
     }
   }, [isSuccess, isLoading, isFetching, chosenWeek, captains]);
+
+  async function upsertAttendance() {
+    const attendanceReqBody = attendance.map((captain) => ({
+      ...captain,
+      attendanceStatus: captain?.attendanceStatus ?? "absent",
+      weekNumber: parseInt(chosenWeek),
+      termNumber,
+    }));
+
+    console.log(attendanceReqBody);
+    try {
+      const res = await upsertUnitAttendance({
+        attendanceRecords: attendanceReqBody,
+      });
+      console.log(res?.data);
+      toast.success("تم تسجيل الغياب بنجاح");
+    } catch (err) {
+      console.log(err?.data?.message);
+      toast.error("حدث خطأ أثناء تسجيل الغياب");
+      toast.error(err?.data?.arabicMessage);
+    }
+  }
 
   return {
     attendance,

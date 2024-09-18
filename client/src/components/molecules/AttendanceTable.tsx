@@ -27,9 +27,9 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
           <td className="check-col">
             <input
               type="checkbox"
-              checked={captain?.attendanceStatus === "present"}
+              checked={captain?.attendanceStatus === "attended"}
               onChange={() =>
-                handleCheckboxChange(captain.captainId, "present")
+                handleCheckboxChange(captain.captainId, "attended")
               }
               disabled={captain?.attendanceStatus === AttendanceStatus.execused}
             />
@@ -41,10 +41,10 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
               onChange={() =>
                 handleCheckboxChange(
                   captain.captainId,
-                  AttendanceStatus.execused,
+                  AttendanceStatus.execused
                 )
               }
-              disabled={captain?.attendanceStatus === "present"}
+              disabled={captain?.attendanceStatus === AttendanceStatus.attended}
             />
           </td>
         </tr>
