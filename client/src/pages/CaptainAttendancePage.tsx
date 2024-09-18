@@ -6,9 +6,9 @@ import PageTitle from "../components/common/PageTitle";
 import TermWeeksDropdown from "../components/molecules/TermWeeksDropdown";
 import UnitCaptainsTable from "../components/molecules/UnitCaptainsTable";
 import Button from "../components/common/Button";
-import CaptainAttendanceInfo from "../components/molecules/CaptainAttendanceInfo";
 
 import { useCaptainAttendance } from "../hooks/useCaptainAttendance";
+import CaptainAttendanceInfo from "../components/molecules/CaptainAttendanceInfo";
 
 type Props = {};
 
