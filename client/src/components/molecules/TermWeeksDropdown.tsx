@@ -38,7 +38,6 @@ const TermWeeksDropdown = ({ setWeek, setTermNumber, style }: Props) => {
         valueMember="weekNumber"
         selectedValue={chosenWeek}
         onChange={(e) => {
-          console.log(e.target.value);
           setChosenWeek(e.target.value);
           setTermNumber(
             weeks?.body.find(

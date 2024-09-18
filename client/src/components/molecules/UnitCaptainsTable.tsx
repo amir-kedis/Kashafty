@@ -13,8 +13,6 @@ function UnitCaptainsTable({
   isLoading,
   isError,
 }: Props) {
-  // console.log(attendance);
-
   const handleCheckboxChange = (captainId, checkboxType) => {
     setAttendance((prevState) =>
       prevState.map((captain) =>
@@ -25,9 +23,17 @@ function UnitCaptainsTable({
                 captain?.attendanceStatus === checkboxType
                   ? "absent"
                   : checkboxType,
+              present:
+                checkboxType === "attended"
+                  ? !captain.present
+                  : captain.present,
+              excused:
+                checkboxType === "execused"
+                  ? !captain.excused
+                  : captain.excused,
             }
-          : captain,
-      ),
+          : captain
+      )
     );
   };
 

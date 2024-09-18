@@ -5,8 +5,10 @@ import "./CaptainAttendancePage.scss";
 import PageTitle from "../components/common/PageTitle";
 import TermWeeksDropdown from "../components/molecules/TermWeeksDropdown";
 import UnitCaptainsTable from "../components/molecules/UnitCaptainsTable";
-import { useCaptainAttendance } from "../hooks/useCaptainAttendance";
 import Button from "../components/common/Button";
+import CaptainAttendanceInfo from "../components/molecules/CaptainAttendanceInfo";
+
+import { useCaptainAttendance } from "../hooks/useCaptainAttendance";
 
 type Props = {};
 
@@ -43,6 +45,8 @@ const CaptainAttendancePage = (props: Props) => {
           isError={isError}
           isLoading={isLoading}
         />
+        <CaptainAttendanceInfo attendance={attendance} />
+
         <Button
           disabled={isLoadingUpsertAttendance}
           className="Button--medium Button--success-light"

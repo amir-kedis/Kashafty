@@ -49,8 +49,6 @@ export const useCaptainAttendance = (chosenWeek, termNumber) => {
     const attendanceReqBody = attendance.map((captain) => ({
       ...captain,
       attendanceStatus: captain?.attendanceStatus ?? "absent",
-      present: captain?.attendanceStatus === "attended",
-      excused: captain?.attendanceStatus === "execused",
       weekNumber: parseInt(chosenWeek),
       termNumber,
     }));
