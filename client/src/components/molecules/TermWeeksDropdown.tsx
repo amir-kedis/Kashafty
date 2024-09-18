@@ -3,11 +3,12 @@ import { useGetAllWeeksQuery } from "../../redux/slices/termApiSlice";
 import CustomSelect from "../common/CustomSelect";
 
 type Props = {
+  setTermNumber: any;
   setWeek: any;
   style: any;
 };
 
-const TermWeeksDropdown = ({ setWeek, style }: Props) => {
+const TermWeeksDropdown = ({ setWeek, setTermNumber, style }: Props) => {
   const {
     data: weeks,
     isLoading,
@@ -22,7 +23,9 @@ const TermWeeksDropdown = ({ setWeek, style }: Props) => {
     isSuccess && !isLoading && !isFetching && !isError
       ? weeks?.body.map((week: any) => ({
           ...week,
-          display: `${week.weekNumber} - ${new Date(week.startDate).toLocaleDateString()}`,
+          display: `${week.weekNumber} - ${new Date(
+            week.startDate
+          ).toLocaleDateString()}`,
         }))
       : [];
 
@@ -35,7 +38,13 @@ const TermWeeksDropdown = ({ setWeek, style }: Props) => {
         valueMember="weekNumber"
         selectedValue={chosenWeek}
         onChange={(e) => {
+          console.log(e.target.value);
           setChosenWeek(e.target.value);
+          setTermNumber(
+            weeks?.body.find(
+              (week) => week?.weekNumber === parseInt(e.target.value)
+            )?.termNumber
+          );
           setWeek(e.target.value);
         }}
         required={true}

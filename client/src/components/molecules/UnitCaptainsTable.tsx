@@ -13,7 +13,7 @@ function UnitCaptainsTable({
   isLoading,
   isError,
 }: Props) {
-  console.log(attendance);
+  // console.log(attendance);
 
   const handleCheckboxChange = (captainId, checkboxType) => {
     setAttendance((prevState) =>
