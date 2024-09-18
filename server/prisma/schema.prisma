@@ -135,7 +135,7 @@ model Report {
 
 model Scout {
   scoutId            Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(255)
+  name               String               @db.VarChar(255) @unique
   createdAt          DateTime             @db.Date @default(now())
   updatedAt          DateTime?            @db.Date
   birthDate          DateTime?            @db.Date

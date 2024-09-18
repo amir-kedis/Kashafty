@@ -3,6 +3,7 @@ import { prisma } from "../database/db";
 import { Gender } from "@prisma/client";
 import AppError from "../utils/AppError";
 import asyncDec from "../utils/asyncDec";
+import getScoutByName from "../utils/getScoutsByName";
 
 // =================================================
 // TODO: This module needs testing
@@ -22,42 +23,54 @@ interface GetScoutsInUnitRequest extends Request {
 }
 
 interface UpdateScoutRequest extends Request {
-params: {
-  scoutId: string;
-};
-body: {
-  name: string;
-  address?: string;
-  phoneNumber?: string;
-  gender?: string;
-  sectorBaseName: string;
-  sectorSuffixName: string;
-  birthDate?: string;
-  enrollDate?: string;
-};
+  params: {
+    scoutId: string;
+  };
+  body: {
+    name: string;
+    address?: string;
+    phoneNumber?: string;
+    gender?: string;
+    sectorBaseName: string;
+    sectorSuffixName: string;
+    birthDate?: string;
+    enrollDate?: string;
+  };
 }
 
 interface InsertScoutRequest extends Request {
-body: {
-  name: string;
-  address?: string;
-  phoneNumber?: string;
-  gender?: string;
-  sectorBaseName: string;
-  sectorSuffixName: string;
-  birthDate?: string;
-  enrollDate?: string;
-};
+  body: {
+    name: string;
+    address?: string;
+    phoneNumber?: string;
+    gender?: string;
+    sectorBaseName: string;
+    sectorSuffixName: string;
+    birthDate?: string;
+    enrollDate?: string;
+  };
 }
 
 // Get all scouts
 
 async function getAllScouts(req: Request, res: Response) {
-  const scouts = await prisma.scout.findMany();
+  let scouts, count;
+  if (req.query.name) {
+    scouts = await getScoutByName(req.query.name as string);
+    count = scouts ? 1 : 0;
+  } else {
+    scouts = await prisma.scout.findMany();
+    count = scouts.length;
+  }
+
+  if (!scouts) {
+    throw new AppError(404, "No scouts found", "لم يتم العثور على كشافين");
+  }
+
   res.status(200).json({
     message: "Successful retrieval",
     body: scouts,
-    count: scouts.length,
+    count,
   });
 }
 
@@ -80,10 +93,6 @@ async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
   });
 }
 
-
-
-
-
 // Get scouts in a specific unit
 async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
   const { unitCaptainId } = req.params;
@@ -102,8 +111,6 @@ async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
     count: result.length,
   });
 }
-
-
 
 // Get a specific scout by ID
 
@@ -125,9 +132,6 @@ async function getScout(req: Request, res: Response) {
     body: result,
   });
 }
-
-
-
 
 // Update a specific scout by ID
 async function updateScout(req: UpdateScoutRequest, res: Response) {
@@ -167,36 +171,34 @@ async function updateScout(req: UpdateScoutRequest, res: Response) {
     message: "Successful update",
     body: scout,
   });
-};
+}
 
 // Insert a new scout
-async function insertScout (req: InsertScoutRequest, res: Response) {
-    const {
+async function insertScout(req: InsertScoutRequest, res: Response) {
+  const {
+    name,
+    address,
+    phoneNumber,
+    gender,
+    sectorBaseName,
+    sectorSuffixName,
+    birthDate,
+    enrollDate,
+  } = req.body;
+
+  const enrollDateParsed = enrollDate ? new Date(enrollDate) : undefined;
+  const birthDateParsed = birthDate ? new Date(birthDate) : undefined;
+
+  const scout = await prisma.scout.create({
+    data: {
       name,
       address,
       phoneNumber,
-      gender,
+      gender: gender === "male" ? Gender.male : Gender.female,
       sectorBaseName,
       sectorSuffixName,
-      birthDate,
-      enrollDate,
-    } = req.body;
-
-
-    const enrollDateParsed = enrollDate ? new Date(enrollDate) : undefined;
-    const birthDateParsed = birthDate ? new Date(birthDate) : undefined;
-
-    const scout = await prisma.scout.create({
-      data: {
-        name,
-        address,
-        phoneNumber,
-        gender: gender === "male" ? Gender.male : Gender.female,
-        sectorBaseName,
-        sectorSuffixName,
-        enrollDate: enrollDateParsed,
-        birthDate: birthDateParsed,
-      },
+      enrollDate: enrollDateParsed,
+      birthDate: birthDateParsed,
     },
   });
 
@@ -230,7 +232,53 @@ async function deleteScout(req: Request, res: Response) {
   });
 }
 
+// Delete a specific scout by ID (expel)
+async function expelScout(req: Request, res: Response) {
+  const { scoutId } = req.params;
 
+  const scout = await prisma.scout.update({
+    where: {
+      scoutId: parseInt(scoutId),
+    },
+    data: {
+      expelled: true,
+      expelDate: new Date(),
+    },
+  });
+
+  if (!scout) {
+    throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
+  }
+
+  res.status(204).json({
+    message: "Successful Removal",
+    body: null,
+  });
+}
+
+// Unexpel a specific scout by ID
+async function unexpelScout(req: Request, res: Response) {
+  const { scoutId } = req.params;
+
+  const scout = await prisma.scout.update({
+    where: {
+      scoutId: parseInt(scoutId),
+    },
+    data: {
+      expelled: false,
+      expelDate: null,
+    },
+  });
+
+  if (!scout) {
+    throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
+  }
+
+  res.status(204).json({
+    message: "Successful Retrieval",
+    body: scout,
+  });
+}
 
 // Controller with asyncDec decorator applied and error handling
 const scoutController = {
@@ -240,7 +288,8 @@ const scoutController = {
   getScout: asyncDec(getScout),
   updateScout: asyncDec(updateScout),
   insertScout: asyncDec(insertScout),
-  deleteScout: asyncDec(deleteScout),
+  expelScout: asyncDec(expelScout),
+  unexpelScout: asyncDec(unexpelScout),
 };
 
 export default scoutController;
