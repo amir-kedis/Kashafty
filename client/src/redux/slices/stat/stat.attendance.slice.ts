@@ -70,6 +70,9 @@ export const activitiesApi = apiSlice.injectEndpoints({
       },
       {
         name: string;
+        sectorBaseName?: string;
+        sectorSuffixName?: string;
+        unitCaptainId?: number;
       }
     >({
       query: (query) => ({
