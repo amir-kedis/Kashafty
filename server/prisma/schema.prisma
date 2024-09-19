@@ -135,21 +135,21 @@ model Report {
 
 model Scout {
   scoutId            Int                  @id @default(autoincrement())
-  name               String               @db.VarChar(255) @unique
-  createdAt          DateTime             @db.Date @default(now())
-  updatedAt          DateTime?            @db.Date
-  birthDate          DateTime?            @db.Date
-  enrollDate         DateTime?            @db.Date
   expelled           Boolean              @default(false)
-  expelDate          DateTime?            @db.Date
-  address            String?              @db.VarChar(255)
-  phoneNumber        String?              @db.VarChar(20)
-  gender             Gender?
   sectorBaseName     String               @db.VarChar(255)
   sectorSuffixName   String               @db.VarChar(255)
-  Sector             Sector               @relation(fields: [sectorSuffixName, sectorBaseName], references: [suffixName, baseName], map: "scout_sector_FK")
+  gender             Gender?
+  address            String?              @db.VarChar(255)
+  birthDate          DateTime?            @db.Date
+  createdAt          DateTime             @default(now()) @db.Date
+  enrollDate         DateTime?            @db.Date
+  expelDate          DateTime?            @db.Date
+  name               String               @unique @db.VarChar(255)
+  phoneNumber        String?              @db.VarChar(20)
+  updatedAt          DateTime?            @updatedAt @db.Date
   ActivityAttendance ActivityAttendance[]
   Report             Report[]
+  Sector             Sector               @relation(fields: [sectorSuffixName, sectorBaseName], references: [suffixName, baseName], map: "scout_sector_FK")
   ScoutAttendance    ScoutAttendance[]
   ScoutScore         ScoutScore[]
 }

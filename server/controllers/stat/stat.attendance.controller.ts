@@ -241,11 +241,16 @@ async function getAttendanceStackLineChart(req: Request, res: Response) {
 }
 
 async function getScoutAttendanceRate(req: Request, res: Response) {
-  const { name } = req.query;
+  const { name, sectorBaseName, sectorSuffixName, unitCaptainId } = req.query;
+
   if (!name)
     throw new AppError(400, "No scouts match this name", "لا يوجد كشافة بهذا الاسم");
 
-  let scouts = (await getScoutByName(name as string)) as Scout[] | null;
+  let scouts = (await getScoutByName(name as string,
+    {
+      sectorBaseName: sectorBaseName as string, sectorSuffixName: sectorSuffixName as string,
+      unitCaptainId: parseInt(unitCaptainId as string) as number
+    })) as Scout[] | null;
 
   if (!scouts)
     throw new AppError(400, "No scouts match this name", "لا يوجد كشافة بهذا الاسم");

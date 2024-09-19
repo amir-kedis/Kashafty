@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
 import { prisma } from "../database/db";
 import { AttendanceStatus } from "@prisma/client";
-import AttendanceRecord from "../types/AttendanceRecord";
-import AttendanceService from "../services/captainAttendance.service";
 import asyncDec from "../utils/asyncDec";
 import AppError from "../utils/AppError";
 
 interface UpsertAttendanceRequest extends Request {
   body: {
-    attendanceRecords: AttendanceRecord[];
+    attendanceRecords: {
+      captainId: string;
+      weekNumber: number;
+      termNumber: number;
+      attendanceStatus: string;
+    }[];
   };
 }
 
@@ -41,14 +44,34 @@ async function upsertAttendance(
   req: UpsertAttendanceRequest,
   res: Response
 ): Promise<any> {
-
   const { attendanceRecords } = req.body;
 
   if (!attendanceRecords || attendanceRecords.length === 0) {
     throw new AppError(404, "No records were found", "لم يتم العثور على سجلات");
   }
 
-  const result = await AttendanceService.upsertManyAttendance(attendanceRecords);
+  const result = [];
+  for (let i = 0; i < attendanceRecords.length; i++) {
+    const attendanceRecord = await prisma.captainAttendance.upsert({
+      where: {
+        captainId_weekNumber_termNumber: {
+          captainId: parseInt(attendanceRecords[i].captainId),
+          weekNumber: attendanceRecords[i].weekNumber,
+          termNumber: attendanceRecords[i].termNumber,
+        },
+      },
+      update: {
+        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+      },
+      create: {
+        captainId: parseInt(attendanceRecords[i].captainId),
+        weekNumber: attendanceRecords[i].weekNumber,
+        termNumber: attendanceRecords[i].termNumber,
+        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+      },
+    });
+    result.push(attendanceRecord);
+  }
 
   return res.status(200).json({
     message: "Successful insertion",

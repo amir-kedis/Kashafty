@@ -56,7 +56,7 @@ interface InsertScoutRequest extends Request {
 async function getAllScouts(req: Request, res: Response) {
   let scouts, count;
   if (req.query.name) {
-    scouts = await getScoutByName(req.query.name as string);
+    scouts = await getScoutByName(req.query.name as string, {});
     count = scouts ? 1 : 0;
   } else {
     scouts = await prisma.scout.findMany();
@@ -163,7 +163,6 @@ async function updateScout(req: UpdateScoutRequest, res: Response) {
       sectorSuffixName,
       enrollDate: enrollDateParsed,
       birthDate: birthDateParsed,
-      updatedAt: new Date(),
     },
   });
 
