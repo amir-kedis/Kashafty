@@ -1,8 +1,8 @@
 import InfoBox from "../common/InfoBox";
 
-export default function CaptainAttendanceInfo({ attendance }) {
+export default function AttendanceInfo({ attendance }) {
   const numberOfCheckedPresent =
-    attendance.filter((captain) => captain.attendanceStatus === "attended")
+    attendance.filter((type) => type.attendanceStatus === "attended")
       ?.length || 0;
 
   return (
