@@ -4,11 +4,11 @@ import "./CaptainAttendancePage.scss";
 
 import PageTitle from "../components/common/PageTitle";
 import TermWeeksDropdown from "../components/molecules/TermWeeksDropdown";
-import UnitCaptainsTable from "../components/molecules/UnitCaptainsTable";
 import Button from "../components/common/Button";
 
 import { useCaptainAttendance } from "../hooks/useCaptainAttendance";
-import CaptainAttendanceInfo from "../components/molecules/CaptainAttendanceInfo";
+import AttendanceInfo from "../components/molecules/AttendanceInfo";
+import Table from "../components/molecules/Table";
 
 type Props = {};
 
@@ -39,13 +39,14 @@ const CaptainAttendancePage = (props: Props) => {
           setTermNumber={setTermNumber}
           style={{ marginBottom: "2rem" }}
         />
-        <UnitCaptainsTable
+        <Table
+          attendanceType="captain"
           attendance={attendance}
           setAttendance={setAttendance}
           isError={isError}
           isLoading={isLoading}
         />
-        <CaptainAttendanceInfo attendance={attendance} />
+        <AttendanceInfo attendance={attendance} />
 
         <Button
           disabled={isLoadingUpsertAttendance}
@@ -61,7 +62,7 @@ const CaptainAttendancePage = (props: Props) => {
               direction: "rtl",
             }}
           >
-            جاري التحميل
+            جاري التحميل...
           </p>
         )}
       </form>

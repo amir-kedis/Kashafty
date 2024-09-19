@@ -5,34 +5,32 @@ type Props = {
   setAttendance: any;
   isLoading: boolean;
   isError: boolean;
+  attendanceType: "captain" | "scout";
 };
 
-function UnitCaptainsTable({
+function Table({
   attendance,
   setAttendance,
   isLoading,
   isError,
+  attendanceType,
 }: Props) {
-  const handleCheckboxChange = (captainId, checkboxType) => {
+  const handleCheckboxChange = (id, checkboxType) => {
     setAttendance((prevState) =>
-      prevState.map((captain) =>
-        captainId === captain.captainId
+      prevState.map((type) =>
+        id === type.id
           ? {
-              ...captain,
+              ...type,
               attendanceStatus:
-                captain?.attendanceStatus === checkboxType
+                type?.attendanceStatus === checkboxType
                   ? "absent"
                   : checkboxType,
               present:
-                checkboxType === "attended"
-                  ? !captain.present
-                  : captain.present,
+                checkboxType === "attended" ? !type.present : type.present,
               excused:
-                checkboxType === "execused"
-                  ? !captain.excused
-                  : captain.excused,
+                checkboxType === "execused" ? !type.excused : type.excused,
             }
-          : captain
+          : type
       )
     );
   };
@@ -41,12 +39,14 @@ function UnitCaptainsTable({
     <div>
       {!isLoading && !isError && (
         <AttendanceTable
+          attendanceType={attendanceType}
           attendance={attendance || []}
           handleCheckboxChange={handleCheckboxChange}
         />
       )}
+      {isLoading && <p style={{ margin: "1rem 0" }}>جاري التحميل...</p>}
     </div>
   );
 }
 
-export default UnitCaptainsTable;
+export default Table;

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGetAllWeeksQuery } from "../../redux/slices/termApiSlice";
+
 import CustomSelect from "../common/CustomSelect";
 
 type Props = {
@@ -48,6 +49,7 @@ const TermWeeksDropdown = ({ setWeek, setTermNumber, style }: Props) => {
         }}
         required={true}
       />
+      {isLoading && <p style={{ margin: "1rem 0" }}>جاري التحميل...</p>}
     </div>
   );
 };
