@@ -1,18 +1,50 @@
 import prisma from "../database/db";
 
-export default async function getScoutByName(name: string) {
+interface GetScoutByNameFilters {
+  sectorBaseName?: string;
+  sectorSuffixName?: string;
+  unitCaptainId?: number;
+};
+
+export default async function getScoutByName(name: string, filters: GetScoutByNameFilters) {
   try {
-    let searchConditions: string[] = [];
-    name.split(" ").forEach((searchTerm, index) => {
-      searchConditions.push(
-        `lower(concat(U."firstName", U."middleName", U."lastName")) like '%${searchTerm}%' ${
-          index + 1 === name?.split(" ").length ? "" : "AND"
-        }`,
-      );
+    const { sectorBaseName, sectorSuffixName, unitCaptainId } = filters;
+    const searchTerms = name.split(" ").map(term => term.toLowerCase());
+
+    let sectorsBaseNameInUnit: string[] = [];
+    let sectorsSuffixNameInUnit: string[] = [];
+
+    if (unitCaptainId) {
+      const results = await prisma.sector.findMany({
+        where: {
+          unitCaptainId: unitCaptainId
+        }
+      });
+
+      sectorsBaseNameInUnit = results.map((sector) => sector.baseName);
+      sectorsSuffixNameInUnit = results.map((sector) => sector.suffixName);
+    }
+
+    const scouts = await prisma.scout.findMany({
+      where: {
+        AND: [
+          {
+            OR: searchTerms.map(function checkTermExists(term) {
+              return {
+                OR: [
+                  { firstName: { contains: term, mode: 'insensitive' } },
+                  { middleName: { contains: term, mode: 'insensitive' } },
+                  { lastName: { contains: term, mode: 'insensitive' } },
+                ]
+              }
+            })
+          },
+          ...((sectorBaseName && sectorSuffixName) ? [{ sectorBaseName, sectorSuffixName }] : []),
+          ...((unitCaptainId) ? [{ sectorBaseName: { in: sectorsBaseNameInUnit }, sectorSuffixName: { in: sectorsSuffixNameInUnit } }] : []),
+        ]
+      }
     });
-    const scouts = await prisma.$queryRawUnsafe(
-      `SELECT U.* FROM public."Scout" U WHERE (${searchConditions.join(" ")});`,
-    );
+
     return scouts;
   } catch (error) {
     console.log(error);

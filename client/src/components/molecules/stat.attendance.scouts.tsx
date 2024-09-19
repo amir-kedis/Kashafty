@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import { useGetScoutAttendanceQuery } from "../../redux/slices/stat/stat.attendance.slice";
 import TextInput from "../common/Inputs";
+import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 
 type ScoutAttendanceByNameProps = {};
 
 const ScoutAttendanceByName: React.FC<ScoutAttendanceByNameProps> = () => {
+  const userInfo = useAuthUser();
   const [searchName, setSearchName] = useState("");
+  const attendanceQueryArguments = {
+    name: searchName,
+    ...(
+      userInfo.type == 'regular' ?
+        { sectorBaseName: userInfo.rSectorBaseName, sectorSuffixName: userInfo.rSectorSuffixName } :
+        userInfo.type == 'unit' ?
+          { unitCaptainId: userInfo.captainId } :
+          {}
+    )
+  };
+
   const { data, error, isLoading } = useGetScoutAttendanceQuery(
-    {
-      name: searchName,
-    },
+    attendanceQueryArguments,
     { refetchOnMountOrArgChange: true },
   );
 
