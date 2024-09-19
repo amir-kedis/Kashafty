@@ -25,6 +25,8 @@ export const useScoutAttendance = (chosenWeek, termNumber) => {
     {
       weekNumber: parseInt(chosenWeek),
       termNumber,
+      baseName,
+      suffixName,
     },
     { refetchOnMountOrArgChange: true, skip: !chosenWeek }
   );
