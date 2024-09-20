@@ -18,15 +18,10 @@ const importData = async (fileName: string) => {
       scoutsPrismaCreate = scouts.map((scout: any) => {
         const { "الاسم الثلاثي": name, النوع: gender } = scout;
 
-        const [firstName, middleName, ...lastNameParts] = name.split(" ");
-        const lastName: string = lastNameParts.join(" ");
-
         //TODO: add birth date
 
         return {
-          firstName,
-          middleName: middleName || "",
-          lastName,
+          name: name,
           gender: gender === "ذكر" ? "male" : "female",
           sectorBaseName: sectorBaseName,
           sectorSuffixName: sectorSuffixName,
