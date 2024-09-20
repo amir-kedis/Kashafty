@@ -9,8 +9,9 @@
     "vercel-build": "prisma generate",
     "start-prod": "nodemon dist/index.js",
     "generate-pisma-types": "prisma generate",
-    "seed": "ts-node ./prisma/seed.ts",
-    "db-import": "ts-node ./prisma/import-scouts.ts"
+    "create-db": "prisma db push",
+    "seed-db": "ts-node ./prisma/seed.ts",
+    "import-db": "ts-node ./prisma/import-scouts.ts"
   },
   "keywords": [],
   "author": "",

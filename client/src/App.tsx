@@ -16,6 +16,7 @@ const AuthStore = createStore({
   cookieSecure: window.location.protocol === "https:",
 });
 
+
 const App: React.FC = () => {
   return (
     <>

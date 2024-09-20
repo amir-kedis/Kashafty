@@ -25,6 +25,7 @@ const allowedOrigins = [
   "https://kashafty-git-main-amir-kedis-projects.vercel.app",
   "http://cron-job.org",
   "https://cron-job.org",
+  process.env.FRONTEND_URL || "",
 ];
 
 const corsOptions = {
