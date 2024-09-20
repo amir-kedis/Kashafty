@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: ${API_URL}
+    restart: always
+    # NOTE: commented for coolify caddy when running prod locally uncomment
+    # ports:
+    #   - 80:80
+    networks:
+      - frontend
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      FRONTEND_URL: ${FRONTEND_URL}
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      PORT: 5000
+    depends_on:
+      - db
+    networks:
+      - backend
+      - frontend
+
+networks:
+  backend:
+  frontend:
+
+volumes:
+  db-data:
+    
