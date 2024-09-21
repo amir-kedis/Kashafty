@@ -1,50 +1,85 @@
 services:
   db:
-    build: ./server/database/.
+    image: postgres:16
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db-data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - "5432:5432"
+    networks:
+      - backend
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    networks:
+      - frontend
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "5000:5000"
+    environment:
+      FRONTEND_URL: http://localhost:3000
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      PORT: 5000
+    depends_on:
+      - db
+    networks:
+      - backend
+      - frontend
+    command: npm run start
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
+    networks:
+      - backend
 
   pgadmin:
     image: dpage/pgadmin4
     restart: always
-    ports:
-      - 5050:80
     environment:
-      PGADMIN_DEFAULT_EMAIL: amir.kedis@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - backend
 
-  frontend:
-    build: ./client/.
-    restart: always
-    ports:
-      - 4173:4173
-      - 3000:3000
-      - 3001:3001
-    environment:
-      VITE_API_URL: http://localhost:5000
-    volumes:
-      - ./client:/kashafty/client
-      - ./client/node_modules:/kashafty/client/node_modules
-  
+networks:
   backend:
-    build: ./server/.
-    restart: always
-    ports:
-      - 5000:5000
-    environment:
-      FRONTEND_URL: http://localhost:4173
-    volumes:
-      - ./server:/kashafty/server
-    depends_on:
-      - db
+  frontend:
+
+volumes:
+  db-data:
+  pgadmin-data:
