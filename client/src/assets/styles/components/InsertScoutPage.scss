@@ -3,18 +3,13 @@
     flex-direction: column;
     direction: rtl;
 
-    .add-new-scout {
-        padding-right: 20px;
-
-    }
-
     .add-scout-form {
         display: flex;
         flex-direction: column;
         justify-content: center;
 
         gap: 20px;
-        width: 95%;
+        width: 100%;
     }
 
     .horizontally-aligned {
@@ -27,6 +22,6 @@
     }
 
     .form-card {
-        width: 45%;
+        width: 47%;
     }
 }

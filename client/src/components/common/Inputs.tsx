@@ -11,6 +11,7 @@ type TextInputProps = {
   pattern?: string;
   onInvalid?: (e: React.FormEvent<HTMLInputElement>) => void;
   dir?: string;
+  disabled?: boolean;
 };
 
 function TextInput({
@@ -24,6 +25,7 @@ function TextInput({
   pattern,
   onInvalid,
   dir,
+  disabled,
 }: TextInputProps) {
   return (
     <label className="input input--text">
@@ -37,6 +39,7 @@ function TextInput({
         required={required}
         pattern={pattern}
         onInvalid={onInvalid}
+        disabled={disabled}
         {...(dir && { style: { direction: dir as "ltr" | "rtl" } })}
       />
     </label>
