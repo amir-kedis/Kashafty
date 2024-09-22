@@ -101,12 +101,45 @@ We have designed a complete UX design for all system pages: about 40 pages
 
 ## How to run locally?
 
-after filling the `.env` file as required. run the following commands in the terminal
+> [!note]
+> you need to have `docker` and `docker-compose` installed on your machine
 
-```bash
-npm i
-npm run dev
+1. clone the repo
+
+```sh
+git clone <repo-url>
+cd kashafty
 ```
+
+2. create a `.env` in the root of the repo and fill the following variables
+
+```env
+DB_USER=
+DB_PASSWORD=
+DB_NAME=kashafty
+API_URL=http://localhost:5000
+FRONTEND_URL=http://localhost:3000
+JWT_SECRET=
+JWT_EXPIRES_IN='60d'
+NODE_ENV=development
+PORT=5000
+```
+
+3. run the following command
+
+```sh
+docker-compose up
+```
+
+4. create the db doing the following
+
+```sh
+docker exec -it kashafty_backend_1 sh
+npm run create-db
+npm run seed-db
+```
+
+5. open your browser and navigate to `http://localhost:3000`
 
 ## Contributors
 
