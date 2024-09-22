@@ -9,9 +9,7 @@ import { toast } from "react-toastify";
 import { useGetSectorsQuery } from "../../redux/slices/sectorApiSlice";
 
 const InsertScoutPage: React.FC = () => {
-  const [firstName, setFirstName] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [chosenSector, setChosenSector] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -35,24 +33,10 @@ const InsertScoutPage: React.FC = () => {
     }
   }
 
-  const schoolYears = [
-    { name: "الأول الإبتدائي", value: 1 },
-    { name: "الثاني الإبتدائي", value: 2 },
-    { name: "الثالث الإبتدائي", value: 3 },
-    { name: "الرابع الإبتدائي", value: 4 },
-    { name: "الخامس الإبتدائي", value: 5 },
-    { name: "السادس الإبتدائي", value: 6 },
-    { name: "الأول الإعدادي", value: 7 },
-    { name: "الثاني الإعدادي", value: 8 },
-    { name: "الثالث الإعدادي", value: 9 },
-    { name: "الأول الثانوي", value: 10 },
-    { name: "الثاني الثانوي", value: 11 },
-    { name: "الثالث الثانوي", value: 12 },
-  ];
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newScout = {
-      name: [firstName, middleName, lastName].filter(Boolean).join(' '),
+      name: name,
       gender: gender === "ذكر" ? "male" : "female",
       sectorBaseName: chosenSector.split(" ")[0],
       sectorSuffixName: chosenSector.split(" ")[1] || "",
@@ -85,18 +69,17 @@ const InsertScoutPage: React.FC = () => {
         <form className="add-scout-form" onSubmit={handleSubmit}>
           <div>
             <div className="horizontally-aligned">
-              <div className="form-card ">
                 <TextInput
                   type="text"
-                  label="الاسم الأول"
-                  name="firstname"
-                  placeholder="جون"
-                  value={firstName}
+                  label="الاسم"
+                  name="name"
+                  placeholder="جون دوي السيد"
+                  value={name}
                   onChange={(e) => {
-                    setFirstName(e.target.value);
+                    setName(e.target.value);
                     e.target.setCustomValidity("");
                   }}
-                  pattern="^[\u0621-\u064Aa-zA-Z]+$"
+                  pattern="^[\u0621-\u064AazAZ\s]+$"
                   onInvalid={(e: FormEvent) => {
                     const inputEl = e.target as HTMLInputElement;
                     inputEl.setCustomValidity(
@@ -105,49 +88,24 @@ const InsertScoutPage: React.FC = () => {
                   }}
                   required={true}
                 />
-              </div>
-              <div className="form-card">
-                <TextInput
-                  type="text"
-                  label="الاسم الأوسط (الأب)"
-                  name="middlename"
-                  placeholder="دوي"
-                  value={middleName}
-                  onChange={(e) => {
-                    setMiddleName(e.target.value);
-                    e.target.setCustomValidity("");
-                  }}
-                  pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => {
-                    const inputE = e.target as HTMLInputElement;
-                    inputE.setCustomValidity(
-                      "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)"
-                    );
-                  }}
-                  required={true}
-                />
-              </div>
             </div>
             <div className="horizontally-aligned">
-              <div className="form-card form-item">
-                <TextInput
-                  type="text"
-                  label="الاسم الأخير (الجد)"
-                  name="lastname"
-                  placeholder="السيد"
-                  value={lastName}
-                  onChange={(e) => {
-                    setLastName(e.target.value);
-                    e.target.setCustomValidity("");
-                  }}
-                  pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => {
-                    const inputEl = e.target as HTMLInputElement;
-                    inputEl.setCustomValidity(
-                      "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)"
-                    );
-                  }}
-                />
+              <div className="form-card">
+                <CustomSelect
+                  name="sectors"
+                  label={"اختر القطاع"}
+                  data={sectors.map((sector) => {
+                    return {
+                      ...sector,
+                      sectorAllName: sector.baseName + " " + sector.suffixName,
+                    };
+                  })}
+                  displayMember={"sectorAllName"}
+                  valueMember={"sectorAllName"}
+                  selectedValue={chosenSector}
+                  required={true}
+                  onChange={(e) => setChosenSector(e.target.value)}
+                  />
               </div>
               <div className="form-card">
                 <RadioInput
@@ -159,6 +117,9 @@ const InsertScoutPage: React.FC = () => {
                 />
               </div>
             </div>
+          </div>
+          <div>
+            <small>*المعلومات التالية غير ضرورية ويمكن تعديلها لاحقاً</small>
             <div className="horizontally-aligned">
               <TextInput
                 type="text"
@@ -180,26 +141,26 @@ const InsertScoutPage: React.FC = () => {
               />
             </div>
             <div className="horizontally-aligned">
-              <div className="form-card">
-                <TextInput
-                  type="tel"
-                  label="رقم الهاتف"
-                  name="phoneNumber"
-                  placeholder="01234567890"
-                  value={phoneNumber}
-                  onChange={(e) => {
-                    setPhoneNumber(e.target.value);
-                    e.target.setCustomValidity("");
-                  }}
-                  pattern="^[\d\s()+-]+$"
-                  onInvalid={(e) => {
-                    const inputEl = e.target as HTMLInputElement;
-                    inputEl.setCustomValidity(
-                      "الرجاء إدخال رقم الهاتف فقط (باللغة العربية أو الإنجليزية)"
-                    );
-                  }}
-                />
-              </div>
+              <TextInput
+                type="tel"
+                label="رقم الهاتف"
+                name="phoneNumber"
+                placeholder="01234567890"
+                value={phoneNumber}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                pattern="^[\d\s()+-]+$"
+                onInvalid={(e) => {
+                  const inputEl = e.target as HTMLInputElement;
+                  inputEl.setCustomValidity(
+                    "الرجاء إدخال رقم الهاتف فقط (باللغة العربية أو الإنجليزية)"
+                  );
+                }}
+              />
+            </div>
+            <div className="horizontally-aligned">
               <div className="form-card ">
                 <TextInput
                   type="date"
@@ -208,25 +169,6 @@ const InsertScoutPage: React.FC = () => {
                   value={birthDate}
                   onChange={(e) => setBirthDate(e.target.value)}
                 />
-              </div>
-            </div>
-            <div className="horizontally-aligned">
-              <div className="form-card">
-                <CustomSelect
-                  name="sectors"
-                  label={"اختر القطاع"}
-                  data={sectors.map((sector) => {
-                    return {
-                      ...sector,
-                      sectorAllName: sector.baseName + " " + sector.suffixName,
-                    };
-                  })}
-                  displayMember={"sectorAllName"}
-                  valueMember={"sectorAllName"}
-                  selectedValue={chosenSector}
-                  required={true}
-                  onChange={(e) => setChosenSector(e.target.value)}
-                  />
               </div>
               <div className="form-card">
                 <TextInput
