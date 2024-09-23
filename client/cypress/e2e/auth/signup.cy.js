@@ -8,9 +8,7 @@ describe("Registration Functionality", () => {
     const email = `johndoe${uniqueId}@example.com`;
     const uniquePhone11Digits = `010${uniqueId.slice(-8)}`;
 
-    cy.get('input[name="firstName"]').type("John");
-    cy.get('input[name="middleName"]').type("Doe");
-    cy.get('input[name="lastName"]').type("Smith");
+    cy.get('input[name="name"]').type("John Doe Smith");
     cy.get('input[name="email"]').type(email);
     cy.get('input[name="phone"]').type(uniquePhone11Digits);
     cy.get('input[name="password"]').type("securePassword123");
@@ -27,9 +25,7 @@ describe("Registration Functionality", () => {
     const uniquePhone11Digits = `010${uniqueId.slice(-8)}`;
     const email = "existing@example.com"; // Using a known existing email
 
-    cy.get('input[name="firstName"]').type("Jane");
-    cy.get('input[name="middleName"]').type("Ann");
-    cy.get('input[name="lastName"]').type("Doe");
+    cy.get('input[name="name"]').type("Jane Ann Doe");
     cy.get('input[name="email"]').type(email);
     cy.get('input[name="phone"]').type(uniquePhone11Digits);
     cy.get('input[name="password"]').type("anotherPassword456");
@@ -46,9 +42,7 @@ describe("Registration Functionality", () => {
     const uniquePhone11Digits = `010${uniqueId.slice(-8)}`;
     const email = `alice${uniqueId}@example.com`;
 
-    cy.get('input[name="firstName"]').type("Alice");
-    cy.get('input[name="middleName"]').type("Marie");
-    cy.get('input[name="lastName"]').type("Johnson");
+    cy.get('input[name="name"]').type("Alice Marie Johnson");
     cy.get('input[name="email"]').type(email);
     cy.get('input[name="phone"]').type(uniquePhone11Digits);
     cy.get('input[name="password"]').type("password123");

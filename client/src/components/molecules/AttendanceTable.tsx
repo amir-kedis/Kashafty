@@ -29,7 +29,7 @@ export const AttendanceTable: React.FC<AttendanceTableProps> = ({
             key={attendanceType === "captain" ? type?.captainId : type.scoutId}
           >
             <td className="num-col">{index + 1}</td>
-            <td>{`${type.firstName} ${type.middleName} ${type.lastName}`}</td>
+            <td>{attendanceType === "captain" ? `${type.firstName} ${type.middleName} ${type.lastName}` : type.name}</td>
             <td className="check-col">
               <input
                 type="checkbox"
