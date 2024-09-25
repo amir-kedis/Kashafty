@@ -60,10 +60,7 @@ const prisma = new PrismaClient().$extends({
           }
         }
 
-        if (
-          scoutInclusionModels.includes(model) &&
-          operation.match(/^(find|update|upsert)/)
-        ) {
+        if (scoutInclusionModels.includes(model) && operation.match(/^find/)) {
           args = handleScoutInclusion(args);
         }
 
