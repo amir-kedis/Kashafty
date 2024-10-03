@@ -205,30 +205,6 @@ async function insertScout(req: InsertScoutRequest, res: Response) {
     message: "Successful insertion",
     body: scout,
   });
-};
-
-// Delete a specific scout by ID (expel)
-async function deleteScout(req: Request, res: Response) {
-  const { scoutId } = req.params;
-
-  const scout = await prisma.scout.update({
-    where: {
-      scoutId: parseInt(scoutId),
-    },
-    data: {
-      expelled: true,
-      expelDate: new Date(),
-    },
-  });
-
-  if (!scout) {
-    throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
-  }
-
-  res.status(204).json({
-    message: "Successful Removal",
-    body: null,
-  });
 }
 
 // Delete a specific scout by ID (expel)
@@ -273,7 +249,7 @@ async function unexpelScout(req: Request, res: Response) {
     throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
   }
 
-  res.status(204).json({
+  res.status(201).json({
     message: "Successful Retrieval",
     body: scout,
   });
