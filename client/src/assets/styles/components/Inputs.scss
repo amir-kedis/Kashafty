@@ -47,6 +47,14 @@
   input[type="email"] {
     direction: ltr;
   }
+
+  input[type="date"] {
+    padding: 6px;
+  }
+
+  input[type="tel"] {
+    text-align: right;
+  }
 }
 
 input[type="radio"] {
@@ -57,10 +65,10 @@ input[type="radio"] {
   border-radius: 50%;
   outline: none;
   margin-inline: 0.5rem;
-}
 
-input[type="radio"]:checked {
-  border: 6px solid var(--primary-500);
+  &:checked {
+    border: 6px solid var(--primary-500);
+  }
 }
 
 input[type="checkbox"] {

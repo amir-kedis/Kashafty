@@ -11,6 +11,7 @@ type TextInputProps = {
   pattern?: string;
   onInvalid?: (e: React.FormEvent<HTMLInputElement>) => void;
   dir?: string;
+  disabled?: boolean;
 };
 
 function TextInput({
@@ -24,6 +25,7 @@ function TextInput({
   pattern,
   onInvalid,
   dir,
+  disabled,
 }: TextInputProps) {
   return (
     <label className="input input--text">
@@ -37,6 +39,7 @@ function TextInput({
         required={required}
         pattern={pattern}
         onInvalid={onInvalid}
+        disabled={disabled}
         {...(dir && { style: { direction: dir as "ltr" | "rtl" } })}
       />
     </label>
@@ -80,6 +83,7 @@ type RadioInputProps = {
   required: boolean;
   valuesArr: string[];
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  checkedValue?: string;
 };
 
 function RadioInput({
@@ -88,6 +92,7 @@ function RadioInput({
   required,
   valuesArr,
   onChange,
+  checkedValue,
 }: RadioInputProps) {
   return (
     <label className="input input--radio">
@@ -101,6 +106,7 @@ function RadioInput({
               value={value}
               onChange={onChange}
               required={required}
+              checked={checkedValue === value}
             />
             <span>{value}</span>
           </div>

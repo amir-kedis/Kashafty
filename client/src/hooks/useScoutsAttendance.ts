@@ -42,7 +42,7 @@ export const useScoutAttendance = (chosenWeek, termNumber) => {
         present: scout?.attendanceStatus === "attended",
         excused: scout?.attendanceStatus === "execused",
         id: scout.scoutId,
-        name: `${scout.firstName} ${scout.middleName} ${scout.lastName}`,
+        name: scout.name,
       }));
       setAttendance(formattedScouts);
     }
@@ -59,16 +59,16 @@ export const useScoutAttendance = (chosenWeek, termNumber) => {
     }));
 
     console.log(attendanceReqBody);
-    try {
-      const res = await upsertSectorAttendance({
-        attendanceRecords: attendanceReqBody,
-      });
+    const res = await upsertSectorAttendance({
+      attendanceRecords: attendanceReqBody,
+    });
+    if (res?.status === 200) {
       console.log(res?.data);
       toast.success("تم تسجيل الغياب بنجاح");
-    } catch (err) {
-      console.log(err?.data?.message);
+    } else {
+      console.log(res?.data?.message);
       toast.error("حدث خطأ أثناء تسجيل الغياب");
-      toast.error(err?.data?.arabicMessage);
+      toast.error(res?.data?.arabicMessage);
     }
   }
 
