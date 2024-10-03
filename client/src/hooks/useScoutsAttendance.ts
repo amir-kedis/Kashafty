@@ -59,16 +59,16 @@ export const useScoutAttendance = (chosenWeek, termNumber) => {
     }));
 
     console.log(attendanceReqBody);
-    const res = await upsertSectorAttendance({
-      attendanceRecords: attendanceReqBody,
-    });
-    if (res?.status === 200) {
+    try {
+      const res = await upsertSectorAttendance({
+        attendanceRecords: attendanceReqBody,
+      });
       console.log(res?.data);
       toast.success("تم تسجيل الغياب بنجاح");
-    } else {
-      console.log(res?.data?.message);
+    } catch (err) {
+      console.log(err?.data?.message);
       toast.error("حدث خطأ أثناء تسجيل الغياب");
-      toast.error(res?.data?.arabicMessage);
+      toast.error(err?.data?.arabicMessage);
     }
   }
 
