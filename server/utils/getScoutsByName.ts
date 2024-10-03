@@ -9,7 +9,7 @@ interface GetScoutByNameFilters {
 export default async function getScoutByName(name: string, filters: GetScoutByNameFilters) {
   try {
     const { sectorBaseName, sectorSuffixName, unitCaptainId } = filters;
-    const searchTerms = name.split(" ").map(term => term.toLowerCase());
+    name = name.toLowerCase();
 
     let sectorsBaseNameInUnit: string[] = [];
     let sectorsSuffixNameInUnit: string[] = [];
@@ -25,25 +25,27 @@ export default async function getScoutByName(name: string, filters: GetScoutByNa
       sectorsSuffixNameInUnit = results.map((sector) => sector.suffixName);
     }
 
+    const conditions: any[] = [
+      { name: { contains: name, mode: 'insensitive' } }
+    ];
+
+    if (sectorBaseName && sectorSuffixName) {
+      conditions.push({ sectorBaseName, sectorSuffixName });
+    }
+
+    if (unitCaptainId) {
+      conditions.push({
+        sectorBaseName: { in: sectorsBaseNameInUnit },
+        sectorSuffixName: { in: sectorsSuffixNameInUnit }
+      });
+    }
+
     const scouts = await prisma.scout.findMany({
       where: {
-        AND: [
-          {
-            OR: searchTerms.map(function checkTermExists(term) {
-              return {
-                OR: [
-                  { firstName: { contains: term, mode: 'insensitive' } },
-                  { middleName: { contains: term, mode: 'insensitive' } },
-                  { lastName: { contains: term, mode: 'insensitive' } },
-                ]
-              }
-            })
-          },
-          ...((sectorBaseName && sectorSuffixName) ? [{ sectorBaseName, sectorSuffixName }] : []),
-          ...((unitCaptainId) ? [{ sectorBaseName: { in: sectorsBaseNameInUnit }, sectorSuffixName: { in: sectorsSuffixNameInUnit } }] : []),
-        ]
+        AND: conditions
       }
     });
+
 
     return scouts;
   } catch (error) {

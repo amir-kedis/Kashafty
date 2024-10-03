@@ -9,14 +9,15 @@ import { toast } from "react-toastify";
 import { useGetSectorsQuery } from "../../redux/slices/sectorApiSlice";
 
 const InsertScoutPage: React.FC = () => {
-  const [firstName, setFirstName] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [chosenSector, setChosenSector] = useState("");
-  const [studyYear, setStudyYear] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [enrollDate, setEnrollDate] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [birthCertificate, setBirthCertificate] = useState("");
 
   const [insertScout, { isLoading: isLoadingInsertScout }] =
     useInsertScoutMutation();
@@ -32,30 +33,15 @@ const InsertScoutPage: React.FC = () => {
     }
   }
 
-  const schoolYears = [
-    { name: "الأول الإبتدائي", value: 1 },
-    { name: "الثاني الإبتدائي", value: 2 },
-    { name: "الثالث الإبتدائي", value: 3 },
-    { name: "الرابع الإبتدائي", value: 4 },
-    { name: "الخامس الإبتدائي", value: 5 },
-    { name: "السادس الإبتدائي", value: 6 },
-    { name: "الأول الإعدادي", value: 7 },
-    { name: "الثاني الإعدادي", value: 8 },
-    { name: "الثالث الإعدادي", value: 9 },
-    { name: "الأول الثانوي", value: 10 },
-    { name: "الثاني الثانوي", value: 11 },
-    { name: "الثالث الثانوي", value: 12 },
-  ];
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const newScout = {
-      firstName: firstName,
-      middleName: middleName,
-      lastName: lastName,
+      name: name,
       gender: gender === "ذكر" ? "male" : "female",
       sectorBaseName: chosenSector.split(" ")[0],
       sectorSuffixName: chosenSector.split(" ")[1] || "",
-      schoolGrade: studyYear,
+      phoneNumber: phoneNumber,
+      address: address,
       photo: null,
       birthCertificate: null,
       birthDate: birthDate,
@@ -76,25 +62,24 @@ const InsertScoutPage: React.FC = () => {
   };
 
   return (
-    <div className="add-scout-page">
+    <div className="add-scout-page container">
       <PageTitle title="إضافة وتعيين كشافيين" />
       <section className="add-new-scout">
         <h4>إضافة كشاف جديد</h4>
         <form className="add-scout-form" onSubmit={handleSubmit}>
           <div>
             <div className="horizontally-aligned">
-              <div className="form-card ">
                 <TextInput
                   type="text"
-                  label="الاسم الأول"
-                  name="firstname"
-                  placeholder="جون"
-                  value={firstName}
+                  label="الاسم"
+                  name="name"
+                  placeholder="جون دوي السيد"
+                  value={name}
                   onChange={(e) => {
-                    setFirstName(e.target.value);
+                    setName(e.target.value);
                     e.target.setCustomValidity("");
                   }}
-                  pattern="^[\u0621-\u064Aa-zA-Z]+$"
+                  pattern="^[\u0621-\u064AazAZ\s]+$"
                   onInvalid={(e: FormEvent) => {
                     const inputEl = e.target as HTMLInputElement;
                     inputEl.setCustomValidity(
@@ -103,49 +88,24 @@ const InsertScoutPage: React.FC = () => {
                   }}
                   required={true}
                 />
-              </div>
-              <div className="form-card">
-                <TextInput
-                  type="text"
-                  label="الاسم الأوسط (الأب)"
-                  name="middlename"
-                  placeholder="دوي"
-                  value={middleName}
-                  onChange={(e) => {
-                    setMiddleName(e.target.value);
-                    e.target.setCustomValidity("");
-                  }}
-                  pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => {
-                    const inputE = e.target as HTMLInputElement;
-                    inputE.setCustomValidity(
-                      "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)"
-                    );
-                  }}
-                  required={true}
-                />
-              </div>
             </div>
             <div className="horizontally-aligned">
-              <div className="form-card form-item">
-                <TextInput
-                  type="text"
-                  label="الاسم الأخير (الجد)"
-                  name="lastname"
-                  placeholder="السيد"
-                  value={lastName}
-                  onChange={(e) => {
-                    setLastName(e.target.value);
-                    e.target.setCustomValidity("");
-                  }}
-                  pattern="^[\u0621-\u064Aa-zA-Z]+$"
-                  onInvalid={(e) => {
-                    const inputEl = e.target as HTMLInputElement;
-                    inputEl.setCustomValidity(
-                      "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)"
-                    );
-                  }}
-                />
+              <div className="form-card">
+                <CustomSelect
+                  name="sectors"
+                  label={"اختر القطاع"}
+                  data={sectors.map((sector) => {
+                    return {
+                      ...sector,
+                      sectorAllName: sector.baseName + " " + sector.suffixName,
+                    };
+                  })}
+                  displayMember={"sectorAllName"}
+                  valueMember={"sectorAllName"}
+                  selectedValue={chosenSector}
+                  required={true}
+                  onChange={(e) => setChosenSector(e.target.value)}
+                  />
               </div>
               <div className="form-card">
                 <RadioInput
@@ -158,55 +118,110 @@ const InsertScoutPage: React.FC = () => {
               </div>
             </div>
           </div>
-
-          <div className="choose-sector">
-            <CustomSelect
-              name="sectors"
-              label={"اختر القطاع"}
-              data={sectors.map((sector) => {
-                return {
-                  ...sector,
-                  sectorAllName: sector.baseName + " " + sector.suffixName,
-                };
-              })}
-              displayMember={"sectorAllName"}
-              valueMember={"sectorAllName"}
-              selectedValue={chosenSector}
-              required={true}
-              onChange={(e) => setChosenSector(e.target.value)}
-            />
-          </div>
-
-          <div className="horizontally-aligned">
-            <div className="form-card ">
+          <div>
+            <small>*المعلومات التالية غير ضرورية ويمكن تعديلها لاحقاً</small>
+            <div className="horizontally-aligned">
               <TextInput
-                type="date"
-                label="تاريخ الميلاد"
-                name="birthDate"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
+                type="text"
+                label="عنوان الإقامة"
+                name="address"
+                placeholder="١٢٣ شارع الرئيسي، الحي السابع، مدينة المستقبل، القاهرة، مصر"
+                value={address}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                pattern="^[\u0621-\u064Aa-zA-Z0-9\s,.-/]+$"
+                onInvalid={(e) => {
+                  const inputEl = e.target as HTMLInputElement;
+                  inputEl.setCustomValidity(
+                    "الرجاء إدخال العنوان فقط (باللغة العربية أو الإنجليزية)"
+                  );
+                }}
               />
             </div>
-            <div className="form-card">
+            <div className="horizontally-aligned">
               <TextInput
-                type="date"
-                label="تاريخ دخول الكشافة"
-                name="enrollDate"
-                value={enrollDate}
-                onChange={(e) => setEnrollDate(e.target.value)}
+                type="tel"
+                label="رقم الهاتف"
+                name="phoneNumber"
+                placeholder="01234567890"
+                value={phoneNumber}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                pattern="^[\d\s()+-]+$"
+                onInvalid={(e) => {
+                  const inputEl = e.target as HTMLInputElement;
+                  inputEl.setCustomValidity(
+                    "الرجاء إدخال رقم الهاتف فقط (باللغة العربية أو الإنجليزية)"
+                  );
+                }}
               />
             </div>
+            <div className="horizontally-aligned">
+              <div className="form-card ">
+                <TextInput
+                  type="date"
+                  label="تاريخ الميلاد"
+                  name="birthDate"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                />
+              </div>
+              <div className="form-card">
+                <TextInput
+                  type="date"
+                  label="تاريخ دخول الكشافة"
+                  name="enrollDate"
+                  value={enrollDate}
+                  onChange={(e) => setEnrollDate(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="horizontally-aligned">
+              <div className="form-card">
+                <TextInput
+                  type="file"
+                  label="صورة شخصية"
+                  name="photo"
+                  value={photo}
+                  onChange={(e) => {
+                    setPhoto(e.target.value);
+                    e.target.setCustomValidity("");
+                  }}
+                  onInvalid={(e) => {
+                    const inputEl = e.target as HTMLInputElement;
+                    inputEl.setCustomValidity(
+                      "الرجاء إدخال صورة شخصية (باللغة العربية أو الإنجليزية)"
+                    );
+                  }}
+                  disabled={true}
+                />
+              </div>
+              <div className="form-card">
+                <TextInput
+                  type="file"
+                  label="شهادة الميلاد"
+                  name="birthCertificate"
+                  value={birthCertificate}
+                  onChange={(e) => {
+                    setBirthCertificate(e.target.value);
+                    e.target.setCustomValidity("");
+                  }}
+                  onInvalid={(e) => {
+                    const inputEl = e.target as HTMLInputElement;
+                    inputEl.setCustomValidity(
+                      "الرجاء إدخال شهادة الميلاد (باللغة العربية أو الإنجليزية)"
+                    );
+                  }}
+                  disabled={true}
+                />
+              </div>
+            </div>
           </div>
-
-          <CustomSelect
-            label="السنة الدراسية"
-            name="studyYear"
-            data={schoolYears}
-            displayMember="name"
-            valueMember="value"
-            selectedValue={studyYear}
-            onChange={(e) => setStudyYear(e.target.value)}
-          />
+          
           <Button className="insert-sector__btn Button--medium Button--primary-darker">
             إضافة
           </Button>

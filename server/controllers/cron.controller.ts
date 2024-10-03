@@ -147,7 +147,7 @@ const cronController = {
           notifications.push({
             captainId: captain.captainId,
             title: "غياب كشاف",
-            message: `الكشاف ${scout.firstName} ${scout.middleName} تخطى غيابه الـ 50%`,
+            message: `الكشاف ${scout.name} تخطى غيابه الـ 50%`,
             type: NotificationType.attendance,
             status: NotificationStatus.UNREAD,
           });
@@ -157,7 +157,7 @@ const cronController = {
           notifications.push({
             captainId: captain.captainId,
             title: "غياب كشاف",
-            message: `الكشاف ${scout.firstName} ${scout.middleName} تخطى غيابه الـ 50%`,
+            message: `الكشاف ${scout.name} تخطى غيابه الـ 50%`,
             type: NotificationType.attendance,
             status: NotificationStatus.UNREAD,
           });
@@ -167,7 +167,7 @@ const cronController = {
           notifications.push({
             captainId: unitCaptinOfSector?.unitCaptainId,
             title: "غياب كشاف",
-            message: `الكشاف ${scout.firstName} ${scout.middleName} تخطى غيابه الـ 50%`,
+            message: `الكشاف ${scout.name} تخطى غيابه الـ 50%`,
             type: NotificationType.attendance,
             status: NotificationStatus.UNREAD,
           });

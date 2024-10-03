@@ -153,15 +153,13 @@ async function main() {
 
     const scout = await prisma.scout.create({
       data: {
-        firstName: fakerAR.person.firstName(gender),
-        middleName: fakerAR.person.firstName(),
-        lastName: fakerAR.person.lastName(),
+        name: fakerAR.person.fullName({ sex: gender }),
         gender,
         sectorBaseName: fixedSectors[0].baseName,
         sectorSuffixName: fixedSectors[0].suffixName,
       },
     });
-    console.log({ scoutName: scout.firstName });
+    console.log({ scoutName: scout.name });
   }
 
   console.log("Finished seeding scouts ...");

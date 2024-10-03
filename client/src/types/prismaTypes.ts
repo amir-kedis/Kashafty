@@ -153,12 +153,17 @@ export interface Report {
 
 export interface Scout {
   scoutId: number;
-  firstName: string;
-  middleName: string;
-  lastName?: string;
+  name: string;
+  sectorBaseName: string;
+  sectorSuffixName: string;
+  createdAt: Date;
   expelled: boolean;
-  sectorBaseName?: string;
-  sectorSuffixName?: string;
+  expelDate?: Date;
+  updatedAt?: Date;
+  birthDate?: Date;
+  enrollDate?: Date;
+  address?: string;
+  phoneNumber?: string;
   gender?: Gender;
 }
 
@@ -167,15 +172,6 @@ export interface ScoutAttendance {
   weekNumber: number;
   termNumber: number;
   attendanceStatus: AttendanceStatus;
-}
-
-export interface ScoutProfile {
-  birthCertificate?: string;
-  birthDate?: Date;
-  enrollDate?: Date;
-  photo?: string;
-  scoutId: number;
-  schoolGrade?: number;
 }
 
 export interface ScoutScore {

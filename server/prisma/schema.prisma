@@ -135,18 +135,22 @@ model Report {
 
 model Scout {
   scoutId            Int                  @id @default(autoincrement())
-  firstName          String               @db.VarChar(255)
-  middleName         String               @db.VarChar(255)
-  lastName           String?              @db.VarChar(255)
   expelled           Boolean              @default(false)
-  sectorBaseName     String?              @db.VarChar(255)
-  sectorSuffixName   String?              @db.VarChar(255)
+  sectorBaseName     String               @db.VarChar(255)
+  sectorSuffixName   String               @db.VarChar(255)
   gender             Gender?
+  address            String?              @db.VarChar(255)
+  birthDate          DateTime?            @db.Date
+  createdAt          DateTime             @default(now()) @db.Date
+  enrollDate         DateTime?            @db.Date
+  expelDate          DateTime?            @db.Date
+  name               String               @db.VarChar(255)
+  phoneNumber        String?              @db.VarChar(20)
+  updatedAt          DateTime?            @updatedAt @db.Date
   ActivityAttendance ActivityAttendance[]
   Report             Report[]
-  Sector             Sector?              @relation(fields: [sectorSuffixName, sectorBaseName], references: [suffixName, baseName], map: "scout_sector_FK")
+  Sector             Sector               @relation(fields: [sectorSuffixName, sectorBaseName], references: [suffixName, baseName], map: "scout_sector_FK")
   ScoutAttendance    ScoutAttendance[]
-  ScoutProfile       ScoutProfile?
   ScoutScore         ScoutScore[]
 }
 
@@ -159,16 +163,6 @@ model ScoutAttendance {
   Week             Week             @relation(fields: [weekNumber, termNumber], references: [weekNumber, termNumber], onUpdate: Restrict, map: "attendance_week_FK")
 
   @@id([scoutId, weekNumber, termNumber])
-}
-
-model ScoutProfile {
-  birthCertificate String?   @db.VarChar(255)
-  birthDate        DateTime? @db.Date
-  enrollDate       DateTime? @db.Date
-  photo            String?   @db.VarChar(255)
-  scoutId          Int       @id
-  schoolGrade      Int?
-  Scout            Scout     @relation(fields: [scoutId], references: [scoutId], onDelete: Cascade, onUpdate: Restrict, map: "scoutProfile_scout_FK")
 }
 
 model ScoutScore {
