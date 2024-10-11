@@ -55,6 +55,7 @@ const MoneyPage = () => {
         <RadioInput
           label="النوع"
           name="itemType"
+          checkedValue={itemType}
           valuesArr={["ايراد", "مصروف"]}
           onChange={(e) => setItemType(e.target.value)}
           required={true}

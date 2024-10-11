@@ -69,25 +69,25 @@ const InsertScoutPage: React.FC = () => {
         <form className="add-scout-form" onSubmit={handleSubmit}>
           <div>
             <div className="horizontally-aligned">
-                <TextInput
-                  type="text"
-                  label="الاسم"
-                  name="name"
-                  placeholder="جون دوي السيد"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    e.target.setCustomValidity("");
-                  }}
-                  pattern="^[\u0621-\u064AazAZ\s]+$"
-                  onInvalid={(e: FormEvent) => {
-                    const inputEl = e.target as HTMLInputElement;
-                    inputEl.setCustomValidity(
-                      "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)"
-                    );
-                  }}
-                  required={true}
-                />
+              <TextInput
+                type="text"
+                label="الاسم"
+                name="name"
+                placeholder="جون دوي السيد"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  e.target.setCustomValidity("");
+                }}
+                pattern="^[\u0621-\u064AazAZ\s]+$"
+                onInvalid={(e: FormEvent) => {
+                  const inputEl = e.target as HTMLInputElement;
+                  inputEl.setCustomValidity(
+                    "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)",
+                  );
+                }}
+                required={true}
+              />
             </div>
             <div className="horizontally-aligned">
               <div className="form-card">
@@ -105,13 +105,14 @@ const InsertScoutPage: React.FC = () => {
                   selectedValue={chosenSector}
                   required={true}
                   onChange={(e) => setChosenSector(e.target.value)}
-                  />
+                />
               </div>
               <div className="form-card">
                 <RadioInput
                   label="النوع"
                   name="gender"
                   valuesArr={["ذكر", "أنثى"]}
+                  checkedValue={gender}
                   onChange={(e) => setGender(e.target.value)}
                   required={true}
                 />
@@ -135,7 +136,7 @@ const InsertScoutPage: React.FC = () => {
                 onInvalid={(e) => {
                   const inputEl = e.target as HTMLInputElement;
                   inputEl.setCustomValidity(
-                    "الرجاء إدخال العنوان فقط (باللغة العربية أو الإنجليزية)"
+                    "الرجاء إدخال العنوان فقط (باللغة العربية أو الإنجليزية)",
                   );
                 }}
               />
@@ -155,7 +156,7 @@ const InsertScoutPage: React.FC = () => {
                 onInvalid={(e) => {
                   const inputEl = e.target as HTMLInputElement;
                   inputEl.setCustomValidity(
-                    "الرجاء إدخال رقم الهاتف فقط (باللغة العربية أو الإنجليزية)"
+                    "الرجاء إدخال رقم الهاتف فقط (باللغة العربية أو الإنجليزية)",
                   );
                 }}
               />
@@ -194,7 +195,7 @@ const InsertScoutPage: React.FC = () => {
                   onInvalid={(e) => {
                     const inputEl = e.target as HTMLInputElement;
                     inputEl.setCustomValidity(
-                      "الرجاء إدخال صورة شخصية (باللغة العربية أو الإنجليزية)"
+                      "الرجاء إدخال صورة شخصية (باللغة العربية أو الإنجليزية)",
                     );
                   }}
                   disabled={true}
@@ -213,7 +214,7 @@ const InsertScoutPage: React.FC = () => {
                   onInvalid={(e) => {
                     const inputEl = e.target as HTMLInputElement;
                     inputEl.setCustomValidity(
-                      "الرجاء إدخال شهادة الميلاد (باللغة العربية أو الإنجليزية)"
+                      "الرجاء إدخال شهادة الميلاد (باللغة العربية أو الإنجليزية)",
                     );
                   }}
                   disabled={true}
@@ -221,7 +222,7 @@ const InsertScoutPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <Button className="insert-sector__btn Button--medium Button--primary-darker">
             إضافة
           </Button>

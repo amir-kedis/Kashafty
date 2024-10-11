@@ -105,10 +105,12 @@ function RadioInput({
               name={name}
               value={value}
               onChange={onChange}
+              onInput={onChange}
               required={required}
               checked={checkedValue === value}
+              id={name + value}
             />
-            <span>{value}</span>
+            <label htmlFor={name + value}>{value}</label>
           </div>
         ))}
       </div>

@@ -46,6 +46,7 @@ const AddScout = () => {
           <RadioInput
             label="النوع"
             name="gender"
+            checkedValue={gender}
             valuesArr={["ذكر", "أنثى"]}
             onChange={(e) => setGender(e.target.value)}
             required={true}

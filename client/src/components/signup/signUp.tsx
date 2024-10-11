@@ -99,7 +99,7 @@ export default function SignUp() {
               pattern="^\s*[\u0621-\u064Aa-zA-Z]+(?:\s+[\u0621-\u064Aa-zA-Z]+)*\s*$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)"
+                  "الرجاء إدخال الاسم الأول فقط (باللغة العربية أو الإنجليزية)",
                 )
               }
               required
@@ -117,7 +117,7 @@ export default function SignUp() {
               pattern="^\s*[\u0621-\u064Aa-zA-Z]+(?:\s+[\u0621-\u064Aa-zA-Z]+)*\s*$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)"
+                  "الرجاء إدخال الاسم الأوسط فقط (باللغة العربية أو الإنجليزية)",
                 )
               }
               required
@@ -135,7 +135,7 @@ export default function SignUp() {
               pattern="^\s*[\u0621-\u064Aa-zA-Z]+(?:\s+[\u0621-\u064Aa-zA-Z]+)*\s*$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)"
+                  "الرجاء إدخال الاسم الأخير فقط (باللغة العربية أو الإنجليزية)",
                 )
               }
               required
@@ -156,7 +156,7 @@ export default function SignUp() {
               pattern="^[a-zA-Z0-9._%\+\-]*@[a-zA-Z0-9._%\+\-]*\.[a-z]*$" // Updated pattern to handle optional email
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال بريد إليكتروني صحيح"
+                  "الرجاء إدخال بريد إليكتروني صحيح",
                 )
               }
             />
@@ -194,7 +194,7 @@ export default function SignUp() {
               pattern="^01[0-9]{9}$"
               onInvalid={(e) =>
                 (e.target as HTMLInputElement).setCustomValidity(
-                  "الرجاء إدخال رقم هاتف صحيح"
+                  "الرجاء إدخال رقم هاتف صحيح",
                 )
               }
               required
@@ -203,7 +203,10 @@ export default function SignUp() {
               label="النوع"
               name="gender"
               valuesArr={["ذكر", "أنثى"]}
-              onChange={(e) => setGender(e.target.value)}
+              checkedValue={gender}
+              onChange={(e) => {
+                setGender(e.target.value);
+              }}
               required
             />
           </div>

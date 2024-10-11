@@ -81,6 +81,7 @@ export default function SendNotificationPage() {
             label="لمن تريد الإرسال"
             name="toWhom"
             valuesArr={["إرسال إلى الكل", "إرسال إلى قطاع"]}
+            checkedValue={toWhom}
             onChange={(e) => setToWhom(e.target.value)}
             required={true}
           />
