@@ -42,7 +42,7 @@ interface GetUnitAttendanceRequest extends Request {
 
 async function upsertAttendance(
   req: UpsertAttendanceRequest,
-  res: Response
+  res: Response,
 ): Promise<any> {
   const { attendanceRecords } = req.body;
 
@@ -61,13 +61,15 @@ async function upsertAttendance(
         },
       },
       update: {
-        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+        attendanceStatus: attendanceRecords[i]
+          .attendanceStatus as AttendanceStatus,
       },
       create: {
         captainId: parseInt(attendanceRecords[i].captainId),
         weekNumber: attendanceRecords[i].weekNumber,
         termNumber: attendanceRecords[i].termNumber,
-        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+        attendanceStatus: attendanceRecords[i]
+          .attendanceStatus as AttendanceStatus,
       },
     });
     result.push(attendanceRecord);
@@ -82,7 +84,7 @@ async function upsertAttendance(
 
 async function getSectorAttendance(
   req: GetSectorAttendanceRequest,
-  res: Response
+  res: Response,
 ): Promise<any> {
   const { baseName, suffixName, weekNumber, termNumber } = req.query;
 
@@ -124,7 +126,11 @@ async function getSectorAttendance(
   });
 
   if (result.length === 0) {
-    throw new AppError(404, "No data exists for the provided info", "لا توجد بيانات للمعلومات المقدمة");
+    throw new AppError(
+      404,
+      "No data exists for the provided info",
+      "لا توجد بيانات للمعلومات المقدمة",
+    );
   }
 
   return res.status(200).json({
@@ -136,7 +142,7 @@ async function getSectorAttendance(
 
 async function getCaptainAttendance(
   req: GetCaptainAttendanceRequest,
-  res: Response
+  res: Response,
 ): Promise<any> {
   const { captainId, weekNumber, termNumber } = req.params;
 
@@ -157,9 +163,13 @@ async function getCaptainAttendance(
 
 async function getUnitAttendance(
   req: GetUnitAttendanceRequest,
-  res: Response
+  res: Response,
 ): Promise<any> {
-  let { unitCaptainId, weekNumber: weekNumberStr, termNumber: termNumberStr } = req.query;
+  let {
+    unitCaptainId,
+    weekNumber: weekNumberStr,
+    termNumber: termNumberStr,
+  } = req.query;
   const weekNumber = parseInt(weekNumberStr);
 
   let termNumber = termNumberStr ? parseInt(termNumberStr) : undefined;
@@ -179,17 +189,20 @@ async function getUnitAttendance(
     include: {
       CaptainAttendance: true,
     },
+    orderBy: [{ firstName: "asc" }, { middleName: "asc" }, { lastName: "asc" }],
   });
 
   // Filter CaptainAttendance for the specified weekNumber and termNumber
   const filteredCaptains = captains.map((captain) => {
     const filteredAttendance = captain.CaptainAttendance.filter(
       (attendance) =>
-        attendance.weekNumber === weekNumber && attendance.termNumber === termNumber
+        attendance.weekNumber === weekNumber &&
+        attendance.termNumber === termNumber,
     );
     return {
       ...captain,
-      CaptainAttendance: filteredAttendance.length > 0 ? filteredAttendance : null,
+      CaptainAttendance:
+        filteredAttendance.length > 0 ? filteredAttendance : null,
     };
   });
 
@@ -201,7 +214,11 @@ async function getUnitAttendance(
   }));
 
   if (!result.length) {
-    throw new AppError(404, "No data exists for the provided info", "لا توجد بيانات للمعلومات المقدمة");
+    throw new AppError(
+      404,
+      "No data exists for the provided info",
+      "لا توجد بيانات للمعلومات المقدمة",
+    );
   }
 
   return res.status(200).json({

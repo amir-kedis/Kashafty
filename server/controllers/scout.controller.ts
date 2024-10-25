@@ -84,6 +84,9 @@ async function getScoutsInSector(req: GetScoutsInSectorRequest, res: Response) {
       sectorBaseName: sectorBaseName,
       sectorSuffixName: sectorSuffixName,
     },
+    orderBy: {
+      name: "asc",
+    },
   });
 
   res.status(200).json({
@@ -102,6 +105,9 @@ async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
       Sector: {
         unitCaptainId: parseInt(unitCaptainId),
       },
+    },
+    orderBy: {
+      name: "asc",
     },
   });
 

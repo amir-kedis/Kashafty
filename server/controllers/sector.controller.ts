@@ -54,7 +54,9 @@ interface AssignCaptainRequest extends Request {
 }
 
 async function getAllSectors(_: GetAllSectorsRequest, res: Response) {
-  const result = await prisma.sector.findMany();
+  const result = await prisma.sector.findMany({
+    orderBy: [{ baseName: "asc" }, { suffixName: "asc" }],
+  });
 
   res.status(200).json({
     message: "Successful retrieval",
@@ -63,7 +65,10 @@ async function getAllSectors(_: GetAllSectorsRequest, res: Response) {
   });
 }
 
-async function getAllSectorsInUnit(req: GetAllSectorsInUnitRequest, res: Response) {
+async function getAllSectorsInUnit(
+  req: GetAllSectorsInUnitRequest,
+  res: Response,
+) {
   const { unitCaptainId: unitCaptainIdString } = req.params;
   const unitCaptainId = parseInt(unitCaptainIdString);
 
@@ -71,6 +76,7 @@ async function getAllSectorsInUnit(req: GetAllSectorsInUnitRequest, res: Respons
     where: {
       unitCaptainId,
     },
+    orderBy: [{ baseName: "asc" }, { suffixName: "asc" }],
   });
 
   res.status(200).json({
@@ -103,7 +109,11 @@ async function insertSector(req: InsertSectorRequest, res: Response) {
   const unitCaptainId = unitCaptainIdStr ? parseInt(unitCaptainIdStr) : null;
 
   if (!baseName) {
-    throw new AppError(400, "You must insert a baseName for the sector", "يجب إدخال اسم أساسي للقطاع");
+    throw new AppError(
+      400,
+      "You must insert a baseName for the sector",
+      "يجب إدخال اسم أساسي للقطاع",
+    );
   }
 
   if (!suffixName) {
@@ -130,7 +140,11 @@ async function setUnitCaptain(req: SetUnitCaptainRequest, res: Response) {
   const unitCaptainId = parseInt(unitCaptainIdStr);
 
   if (!unitCaptainId) {
-    throw new AppError(400, "Please provide a valid unit captain id", "يرجى تقديم معرف قائد وحدة صالح");
+    throw new AppError(
+      400,
+      "Please provide a valid unit captain id",
+      "يرجى تقديم معرف قائد وحدة صالح",
+    );
   }
 
   const sector = await prisma.sector.findUnique({
@@ -143,7 +157,11 @@ async function setUnitCaptain(req: SetUnitCaptainRequest, res: Response) {
   });
 
   if (!sector) {
-    throw new AppError(404, "No sector exists with these ids", "لا يوجد قطاع بهذه المعرفات");
+    throw new AppError(
+      404,
+      "No sector exists with these ids",
+      "لا يوجد قطاع بهذه المعرفات",
+    );
   }
 
   const captain = await prisma.captain.findUnique({
@@ -153,11 +171,19 @@ async function setUnitCaptain(req: SetUnitCaptainRequest, res: Response) {
   });
 
   if (!captain) {
-    throw new AppError(404, "No captain exists with this id", "لا يوجد قائد بهذا المعرف");
+    throw new AppError(
+      404,
+      "No captain exists with this id",
+      "لا يوجد قائد بهذا المعرف",
+    );
   }
 
   if (captain?.type !== "unit") {
-    throw new AppError(400, "The provided captain id is not for a unit captain", "معرف القائد المقدم ليس لقائد وحدة");
+    throw new AppError(
+      400,
+      "The provided captain id is not for a unit captain",
+      "معرف القائد المقدم ليس لقائد وحدة",
+    );
   }
 
   const result = await prisma.sector.update({
@@ -210,3 +236,4 @@ const sectorController = {
 };
 
 export default sectorController;
+

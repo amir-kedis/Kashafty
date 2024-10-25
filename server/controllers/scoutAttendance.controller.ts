@@ -55,13 +55,15 @@ async function upsertAttendance(req: UpsertAttendanceRequest, res: Response) {
         },
       },
       update: {
-        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+        attendanceStatus: attendanceRecords[i]
+          .attendanceStatus as AttendanceStatus,
       },
       create: {
         scoutId: parseInt(attendanceRecords[i].scoutId),
         weekNumber: attendanceRecords[i].weekNumber,
         termNumber: attendanceRecords[i].termNumber,
-        attendanceStatus: attendanceRecords[i].attendanceStatus as AttendanceStatus,
+        attendanceStatus: attendanceRecords[i]
+          .attendanceStatus as AttendanceStatus,
       },
     });
     result.push(attendanceRecord);
@@ -74,7 +76,10 @@ async function upsertAttendance(req: UpsertAttendanceRequest, res: Response) {
   });
 }
 
-async function getSectorAttendance(req: GetSectorAttendanceRequest, res: Response) {
+async function getSectorAttendance(
+  req: GetSectorAttendanceRequest,
+  res: Response,
+) {
   let { baseName, suffixName, weekNumber, termNumber } = req.query;
 
   const scouts = await prisma.scout.findMany({
@@ -84,6 +89,9 @@ async function getSectorAttendance(req: GetSectorAttendanceRequest, res: Respons
     },
     include: {
       ScoutAttendance: true,
+    },
+    orderBy: {
+      name: "asc",
     },
   });
 
@@ -114,9 +122,12 @@ async function getSectorAttendance(req: GetSectorAttendanceRequest, res: Respons
   });
 }
 
-async function getScoutAttendance(req: GetScoutAttendanceRequest, res: Response) {
+async function getScoutAttendance(
+  req: GetScoutAttendanceRequest,
+  res: Response,
+) {
   let { scoutId, weekNumber, termNumber } = req.params;
-  
+
   const result = await prisma.scoutAttendance.findMany({
     where: {
       scoutId: parseInt(scoutId),
@@ -139,3 +150,4 @@ const scoutAttendanceController = {
 };
 
 export default scoutAttendanceController;
+

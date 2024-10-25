@@ -29,12 +29,12 @@ interface GetCaptainRequest extends Request {
   };
 }
 
-
-
 async function getAllCaptains(req: GetAllCaptainsRequest, res: Response) {
   const { type } = req.query;
 
-  let result: Captain[] = await prisma.captain.findMany();
+  let result: Captain[] = await prisma.captain.findMany({
+    orderBy: [{ firstName: "asc" }, { middleName: "asc" }],
+  });
 
   if (type) {
     result = result.filter((captain) => captain.type === type);
@@ -47,7 +47,10 @@ async function getAllCaptains(req: GetAllCaptainsRequest, res: Response) {
   });
 }
 
-async function getCaptainsInSector(req: GetCaptainsInSectorRequest, res: Response) {
+async function getCaptainsInSector(
+  req: GetCaptainsInSectorRequest,
+  res: Response,
+) {
   const { baseName, suffixName } = req.query;
 
   const result = await prisma.captain.findMany({
@@ -55,6 +58,7 @@ async function getCaptainsInSector(req: GetCaptainsInSectorRequest, res: Respons
       rSectorBaseName: baseName,
       rSectorSuffixName: suffixName,
     },
+    orderBy: [{ firstName: "asc" }, { middleName: "asc" }, { lastName: "asc" }],
   });
 
   return res.status(200).json({
@@ -71,10 +75,11 @@ async function getCaptainsInUnit(req: GetCaptainsInUnitRequest, res: Response) {
     where: {
       type: "regular",
       Sector_Captain_rSectorBaseName_rSectorSuffixNameToSector: {
-        unitCaptainId: parseInt(unitCaptainId)
-      }
-    }
-  })
+        unitCaptainId: parseInt(unitCaptainId),
+      },
+    },
+    orderBy: [{ firstName: "asc" }, { middleName: "asc" }, { lastName: "asc" }],
+  });
 
   return res.status(200).json({
     message: "Successful retrieval",
@@ -111,7 +116,11 @@ async function setCaptainType(req: Request, res: Response): Promise<any> {
   }
 
   if (type !== "regular" && type !== "unit" && type !== "general") {
-    throw new AppError(400, "Please enter a valid captain type", "الرجاء إدخال نوع قائد صحيح");
+    throw new AppError(
+      400,
+      "Please enter a valid captain type",
+      "الرجاء إدخال نوع قائد صحيح",
+    );
   }
 
   const result = await prisma.captain.update({
