@@ -76,6 +76,24 @@ export const financeApi = apiSlice.injectEndpoints({
         params: { sectorBaseName, sectorSuffixName, termNumber, weekNumber },
       }),
     }),
+
+    GetAllItems: builder.query({
+      query: () => ({
+        url: `${FINANCE_URL}/all`,
+        method: "GET",
+      }),
+      providesTags: ["Finance"],
+    }),
+
+    deleteItem: builder.mutation({
+      query: (itemId) => ({
+        url: `${FINANCE_URL}/item`,
+        method: "DELETE",
+        body: { itemId },
+        params: { itemId },
+      }),
+      invalidatesTags: ["Finance"],
+    }),
   }),
 });
 
@@ -87,4 +105,6 @@ export const {
   useInsertOtherItemMutation,
   useGetCurrentWeekSubscriptionsQuery,
   useGetSectorSubscriptionQuery,
+  useGetAllItemsQuery,
+  useDeleteItemMutation,
 } = financeApi;

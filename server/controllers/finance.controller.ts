@@ -12,13 +12,11 @@ interface GetSubscriptionRequest extends Request {
   };
 }
 
-
 // @desc    Get a budget
 // @route   GET /api/finance/budget
 // @access  Private
 
 async function getBudget(_: Request, res: Response) {
-
   const incomeAgg = await prisma.financeItem.aggregate({
     _sum: {
       value: true,
@@ -54,7 +52,6 @@ async function getBudget(_: Request, res: Response) {
 // @access  Private
 
 async function getIncome(_: Request, res: Response) {
-
   const result = await prisma.financeItem.findMany({
     where: {
       type: "income",
@@ -70,17 +67,13 @@ async function getIncome(_: Request, res: Response) {
     message: "Get income successfully",
     body: income,
   });
-
 }
-
 
 // @desc    Get expense
 // @route   GET /api/finance/expense
 // @access  Private
 
-
 async function getExpense(_: Request, res: Response) {
-
   const result = await prisma.financeItem.findMany({
     where: {
       type: "expense",
@@ -96,30 +89,21 @@ async function getExpense(_: Request, res: Response) {
     message: "Get expense successfully",
     body: expense,
   });
-
 }
-
-
 
 // @desc    Add a subscription
 // @route   POST /api/finance/subscription
 // @access  Private
 
 async function addSubscription(req: Request, res: Response) {
-
-  const {
-    value,
-    sectorBaseName,
-    sectorSuffixName,
-    termNumber,
-    weekNumber,
-  } = req.body as {
-    value: number;
-    sectorBaseName: string;
-    sectorSuffixName: string;
-    termNumber: string;
-    weekNumber: string;
-  };
+  const { value, sectorBaseName, sectorSuffixName, termNumber, weekNumber } =
+    req.body as {
+      value: number;
+      sectorBaseName: string;
+      sectorSuffixName: string;
+      termNumber: string;
+      weekNumber: string;
+    };
 
   // let result = await db.query(
   //   `SELECT "itemId" AS id
@@ -214,7 +198,6 @@ async function addSubscription(req: Request, res: Response) {
 // @access  Private
 
 async function getAllSubscriptionsOfCurrentWeek(req: any, res: Response) {
-
   const subscription = await prisma.subscription.findMany({
     where: {
       termNumber: req.currentWeek.termNumber,
@@ -236,13 +219,11 @@ async function getAllSubscriptionsOfCurrentWeek(req: any, res: Response) {
   });
 }
 
-
 // @desc    Get a subscription
 // @route   GET /api/finance/subscription
 // @access  Private
 
 async function getSubscription(req: GetSubscriptionRequest, res: Response) {
-
   let { sectorBaseName, sectorSuffixName, weekNumber, termNumber }: any =
     req.query;
 
@@ -270,16 +251,12 @@ async function getSubscription(req: GetSubscriptionRequest, res: Response) {
     message: "Get subscription successfully",
     body: subscriptionValue,
   });
-
 }
-
 
 // @desc    Add an other item
 // @route   POST /api/finance/otherItem
 // @access  Private
-
 async function addOtherItem(req: Request, res: Response) {
-
   const { value, type, description } = req.body;
 
   const financeItem = await prisma.financeItem.create({
@@ -289,6 +266,7 @@ async function addOtherItem(req: Request, res: Response) {
       timestamp: new Date(),
     },
   });
+
   const otherItem = await prisma.otherItem.create({
     data: {
       description: description,
@@ -300,9 +278,70 @@ async function addOtherItem(req: Request, res: Response) {
     message: "Add other item successfully",
     body: { financeItem: financeItem, otherItem: otherItem },
   });
-
 }
 
+// @desc    Get All items
+// @route   GET /api/finance/all
+// @access  Private
+async function getAllItems(req: Request, res: Response) {
+  let financeItems: any = await prisma.financeItem.findMany({
+    include: {
+      OtherItem: true,
+      Subscription: true,
+    },
+  });
+
+  financeItems = financeItems.map((item: any) => {
+    return {
+      itemId: item.itemId,
+      value: item.value,
+      type: item.type,
+      timestamp: item.timestamp,
+      isSubscription: item.Subscription ? true : false,
+      description: item.OtherItem?.description,
+      sectorBaseName: item.Subscription?.sectorBaseName,
+      sectorSuffixName: item.Subscription?.sectorSuffixName,
+      weekNumber: item.Subscription?.weekNumber,
+      termNumber: item.Subscription?.termNumber,
+    };
+  });
+
+  res.status(200).json({
+    message: "Get all items successfully",
+    body: { financeItems: financeItems },
+  });
+}
+
+// @desc    Delete an Item
+// @route   DELETE /api/finance/item
+// @access  Private
+async function deleteItem(req: Request, res: Response) {
+  console.log(req.body);
+  const { itemId } = req.body;
+
+  if (!itemId) {
+    return res.status(400).json({
+      message: "itemId is required",
+    });
+  }
+
+  const deletedItem = await prisma.financeItem.delete({
+    where: {
+      itemId: parseInt(itemId),
+    },
+  });
+
+  if (!deletedItem) {
+    return res.status(404).json({
+      message: "Item not found",
+    });
+  }
+
+  res.status(200).json({
+    message: "Delete item successfully",
+    body: { deletedItem: deletedItem },
+  });
+}
 
 const financeController = {
   getBudget: asyncDec(getBudget),
@@ -311,7 +350,9 @@ const financeController = {
   addSubscription: asyncDec(addSubscription),
   getAllSubscriptionsOfCurrentWeek: asyncDec(getAllSubscriptionsOfCurrentWeek),
   getSubscription: asyncDec(getSubscription),
-  addOtherItem: asyncDec(addOtherItem)
+  addOtherItem: asyncDec(addOtherItem),
+  getAllItems: asyncDec(getAllItems),
+  deleteItem: asyncDec(deleteItem),
 };
 
 export default financeController;

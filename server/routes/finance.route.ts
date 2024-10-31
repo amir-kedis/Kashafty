@@ -4,6 +4,7 @@ import { getCurrentWeekMiddleware } from "../middlewares/current.middleware";
 const financeRouter = Router();
 
 financeRouter.get("/", financeController.getBudget);
+financeRouter.get("/all", financeController.getAllItems);
 financeRouter.get("/income", financeController.getIncome);
 financeRouter.get("/expense", financeController.getExpense);
 financeRouter.get(
@@ -18,5 +19,6 @@ financeRouter.get(
 );
 financeRouter.post("/subscription", financeController.addSubscription);
 financeRouter.post("/otherItem", financeController.addOtherItem);
+financeRouter.delete("/item", financeController.deleteItem);
 
 export default financeRouter;

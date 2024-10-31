@@ -5,71 +5,29 @@ import {
   useGetExpenseQuery,
   useGetIncomeQuery,
 } from "../../redux/slices/financeApiSlice";
-import StatisticTable from "../common/StatisticTable";
 import InfoBox from "../common/InfoBox";
 import "../../assets/styles/components/MoneyInfoSection.scss";
+import useFinanceItems from "../../hooks/useFinanceItems";
+import { Delete } from "@mui/icons-material";
 
 const InfoSectionMoneyPage: React.FC = () => {
-  const ItemsColNames = [
-    { name: "#" },
-    { name: "الوصف" },
-    { name: "القيمة" },
-    { name: "النوع" },
-  ];
-
   const { data: budget, isFetching: isFetchingBudget } = useGetBudgetQuery({});
   const { data: income, isFetching: isFetchingIncome } = useGetIncomeQuery({});
   const { data: expense, isFetching: isFetchingExpense } = useGetExpenseQuery(
-    {}
+    {},
   );
   const { data: currentWeekSub, isFetching: isFetchingCurrentWeekSub } =
     useGetCurrentWeekSubscriptionsQuery({});
-  if (budget && !isFetchingBudget) console.log("budget = ", budget);
-  let AllItems = [{}];
-
-  let TotalIncome = 0;
-  if (income && !isFetchingIncome) {
-    console.log("income = ", income);
-    income.body.map((item) => {
-      TotalIncome += item.value;
-      AllItems = [
-        ...AllItems,
-        {
-          date: item.timestamp.split("T")[0],
-          description: item.description ? item.description : "اشتراك",
-          value: item.value,
-          type: "ايراد",
-        },
-      ];
-    });
-    console.log(AllItems);
-  }
-
-  let TotalExpense = 0;
-  if (expense && !isFetchingExpense) {
-    console.log("expense = ", expense);
-    expense.body.map((item) => {
-      TotalExpense += item.value;
-      AllItems = [
-        ...AllItems,
-
-        {
-          date: item.timestamp.split("T")[0],
-          description: item.description,
-          value: item.value,
-          type: "مصروف",
-        },
-      ];
-    });
-
-    console.log(AllItems);
-  }
-
-  if (!isFetchingCurrentWeekSub) console.log("sub = ", currentWeekSub);
+  const {
+    totalIcome: TotalIncome,
+    totalExpense: TotalExpense,
+    data: items,
+    deleteItem,
+  } = useFinanceItems();
 
   return (
-    <div className="all-info">
-      <section className="info-section">
+    <div className="all-info" style={{ width: "100%" }}>
+      <section className="info-section" style={{ width: "100%" }}>
         <InfoBox
           title="محتوى الخزنة"
           value={isFetchingBudget ? "جاري التحميل" : budget?.body + " جنيه"}
@@ -81,8 +39,8 @@ const InfoSectionMoneyPage: React.FC = () => {
             isFetchingCurrentWeekSub
               ? "جاري التحميل"
               : currentWeekSub?.body
-              ? currentWeekSub?.body + " جنيه"
-              : "لا يوجد"
+                ? currentWeekSub?.body + " جنيه"
+                : "لا يوجد"
           }
           color="dark"
         />
@@ -97,21 +55,57 @@ const InfoSectionMoneyPage: React.FC = () => {
           color="dark"
         />
       </section>
-
-      <section
-        style={{
-          width: "100%",
-          padding: "0",
-          margin: "0",
-          marginBottom: "2rem",
-        }}
-        className="table"
-      >
-        <StatisticTable
-          title="البنود"
-          columnNames={ItemsColNames}
-          dataRows={AllItems}
-        />
+      <section style={{ width: "100%", overflowX: "auto" }}>
+        <table
+          className="simple-table-for-checkboxes"
+          style={{ minWidth: "30rem" }}
+        >
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>الوقت</th>
+              <th>القيمة</th>
+              <th>النوع</th>
+              <th>الوصف</th>
+              <th>لقطاع</th>
+              <th>حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items &&
+              items.map((item) => (
+                <tr>
+                  <td>
+                    {new Date(item.timestamp).toLocaleDateString("ar-EG")}
+                  </td>
+                  <td>
+                    {new Date(item.timestamp).toLocaleTimeString("ar-EG")}
+                  </td>
+                  <td>{item.value}</td>
+                  <td>{item.type === "income" ? "ايراد" : "مصروف"}</td>
+                  <td>{item?.description ? item.description : "-"}</td>
+                  <td>
+                    {item?.sectorBaseName
+                      ? item.sectorBaseName + " " + item.sectorSuffixName
+                      : "-"}
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => deleteItem(item.itemId)}
+                      style={{
+                        backgroundColor: "transparent",
+                        color: "red",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Delete />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       </section>
     </div>
   );
