@@ -74,7 +74,7 @@ const MoneyPage = () => {
         <Button className="Button--medium Button--primary-darker">إضافة</Button>
       </form>
 
-      <section>
+      <section style={{ width: "100%" }}>
         <h4 className="section__heading">الماليات</h4>
         <InfoSectionMoneyPage />
       </section>
