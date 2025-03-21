@@ -1,6 +1,7 @@
 import useAuthUser from "react-auth-kit/hooks/useAuthUser";
 import "../../assets/styles/components/UserActions.scss";
 import Button from "./Button";
+import Tooltip from "../atoms/Tooltip";
 
 const ActionRoutes = {
   "Assign Sector Leader": "/assign-captain",
@@ -19,7 +20,38 @@ const ActionRoutes = {
   "Record Scouts Absence": "/record-scouts-absence",
   Scores: "/scores",
   Sector: "/sector",
+  "Delete Scout": "/delete-scout",
 };
+
+const SparkleIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="sparkle-icon"
+  >
+    <path d="M12 3l1.88 5.76a1 1 0 0 0 .95.69h6.08a1 1 0 0 1 .59 1.8l-4.93 3.58a1 1 0 0 0-.36 1.12l1.88 5.76a1 1 0 0 1-1.54 1.12l-4.93-3.58a1 1 0 0 0-1.18 0l-4.93 3.58a1 1 0 0 1-1.54-1.12l1.88-5.76a1 1 0 0 0-.36-1.12l-4.93-3.58a1 1 0 0 1 .59-1.8h6.08a1 1 0 0 0 .95-.69L12 3z" />
+  </svg>
+);
+
+const NewFeatureButton = ({ linkTo, className, children }) => (
+  <Tooltip text="ميزة جديدة!">
+    <div className="new-feature-button-wrapper">
+      <Button linkTo={linkTo} className={className}>
+        <div className="button-content">
+          <SparkleIcon />
+          <span>{children}</span>
+        </div>
+      </Button>
+    </div>
+  </Tooltip>
+);
 
 export default function UserActions() {
   const userInfo = useAuthUser();
@@ -90,6 +122,12 @@ export default function UserActions() {
         >
           المواضيع
         </Button>
+        <NewFeatureButton
+          linkTo={ActionRoutes["Delete Scout"]}
+          className="Button--medium Button--regular"
+        >
+          حذف كشاف
+        </NewFeatureButton>
         <Button
           linkTo={ActionRoutes["Start New Term"]}
           className="Button--medium span-2-cols Button--success"
@@ -127,6 +165,12 @@ export default function UserActions() {
         >
           إضافة كشاف
         </Button>
+        <NewFeatureButton
+          linkTo={ActionRoutes["Delete Scout"]}
+          className="Button--medium Button--regular"
+        >
+          حذف كشاف
+        </NewFeatureButton>
         <Button
           linkTo={ActionRoutes["Edit Scout"]}
           className="Button--medium Button--regular"

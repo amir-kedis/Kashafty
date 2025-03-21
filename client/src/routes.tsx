@@ -34,6 +34,7 @@ import AddActivityPage from "./components/addactivitypage/AddActivityPage";
 import StatsPage from "./components/stats-page/StatsPage";
 import ErrorBoundary from "./components/atoms/ErrorBoundary";
 import CaptainAttendancePage from "./pages/CaptainAttendancePage";
+import DeleteScoutPage from "./pages/DeleteScoutPage";
 
 const Routes: React.FC = () => {
   return (
@@ -58,6 +59,15 @@ const Routes: React.FC = () => {
               element={
                 <RequireAuth fallbackPath="/logIn">
                   <CaptainProfile />
+                </RequireAuth>
+              }
+            />
+
+            <Route
+              path="/delete-scout"
+              element={
+                <RequireAuth fallbackPath="/logIn">
+                  <DeleteScoutPage />
                 </RequireAuth>
               }
             />

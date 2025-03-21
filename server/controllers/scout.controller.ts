@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "../database/db";
 import { Gender } from "@prisma/client";
 import AppError from "../utils/AppError";
@@ -237,27 +237,70 @@ async function expelScout(req: Request, res: Response) {
   });
 }
 
-// Unexpel a specific scout by ID
-async function unexpelScout(req: Request, res: Response) {
-  const { scoutId } = req.params;
+interface DeleteScoutRequest extends Request {
+  params: {
+    scoutId: string;
+  };
+  captain: {
+    captainId: number;
+    type: string;
+    firstName: string;
+    lastName: string;
+    rSectorBaseName?: string;
+    rSectorSuffixName?: string;
+  };
+}
 
-  const scout = await prisma.scout.update({
-    where: {
-      scoutId: parseInt(scoutId),
-    },
+
+async function deleteScoutHandler(req: DeleteScoutRequest, res: Response) {
+  const { scoutId } = req.params;
+  
+  if (!scoutId || isNaN(parseInt(scoutId))) {
+    throw new AppError(400, "Invalid scout ID", "معرف الكشاف غير صالح");
+  }
+  
+  // Find the scout
+  const scout = await prisma.scout.findUnique({
+    where: { scoutId: parseInt(scoutId) },
+  });
+  
+  if (!scout) {
+    throw new AppError(404, "Scout not found", "الكشاف غير موجود");
+  }
+  
+  // Check permissions for unit captains
+  if (req.captain.type === "unit") {
+    if (
+      scout.sectorBaseName !== req.captain.rSectorBaseName ||
+      scout.sectorSuffixName !== req.captain.rSectorSuffixName
+    ) {
+      throw new AppError(
+        403, 
+        "You cannot delete scouts from other sectors", 
+        "لا يمكنك حذف كشاف من قطاع آخر"
+      );
+    }
+  }
+  
+  // Create audit log
+  await prisma.notification.create({
     data: {
-      expelled: false,
-      expelDate: null,
+      type: "other",
+      status: "UNREAD",
+      title: "حذف كشاف",
+      message: `تم حذف الكشاف ${scout.name} بواسطة ${req.captain.firstName} ${req.captain.lastName}`,
+      captainId: req.captain.captainId,
     },
   });
-
-  if (!scout) {
-    throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
-  }
-
-  res.status(201).json({
-    message: "Successful Retrieval",
-    body: scout,
+  
+  // Delete the scout
+  await prisma.scout.delete({
+    where: { scoutId: parseInt(scoutId) },
+  });
+  
+  res.status(200).json({
+    message: "Scout deleted successfully",
+    arabicMessage: "تم حذف الكشاف بنجاح",
   });
 }
 
@@ -269,8 +312,9 @@ const scoutController = {
   getScout: asyncDec(getScout),
   updateScout: asyncDec(updateScout),
   insertScout: asyncDec(insertScout),
+  deleteScout: asyncDec(deleteScoutHandler),
+  unexpelScout: asyncDec(expelScout),
   expelScout: asyncDec(expelScout),
-  unexpelScout: asyncDec(unexpelScout),
 };
 
 export default scoutController;
