@@ -43,6 +43,14 @@ export const scoutsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Scouts"],
     }),
+
+    deleteScout: builder.mutation({
+      query: (scoutId) => ({
+        url: `${SCOUT_URL}/${scoutId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Scouts"],
+    }),
   }),
 });
 
@@ -52,4 +60,5 @@ export const {
   useInsertScoutMutation,
   useGetScoutsInSectorQuery,
   useUpdateScoutMutation,
+  useDeleteScoutMutation,
 } = scoutsApi;
