@@ -3,8 +3,34 @@
     margin-bottom: 8rem;
     text-align: center;
   }
-}
-
-.notificationBox {
-  text-align: center;
+  
+  .notification-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    
+    button {
+      flex: 1;
+    }
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+  
+  .no-notifications {
+    padding: 2rem;
+    color: var(--grey-400);
+    font-style: italic;
+  }
+  
+  .loading-text {
+    padding: 2rem;
+    color: var(--grey-300);
+  }
+  
+  .read-notifications-section {
+    margin-top: 2rem;
+  }
 }
