@@ -1,0 +1,47 @@
+.sectors-page {
+  direction: rtl;
+  
+  .sector-selector {
+    margin-bottom: 2rem;
+  }
+  
+  .sector-data {
+    margin-top: 2rem;
+    gap: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    h2 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+  }
+  
+  .download-all {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    
+    button {
+      min-width: 200px;
+    }
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text-color);
+  }
+  
+  .error {
+    color: var(--red-400);
+  }
+}

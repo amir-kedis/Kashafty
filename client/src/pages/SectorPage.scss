@@ -1,0 +1,59 @@
+.sector-page {
+  direction: rtl;
+  
+  .sector-info {
+    margin-bottom: 2rem;
+    background-color: var(--grey-900);
+    padding: 1.5rem;
+    border-radius: 8px;
+    
+    h2 {
+      text-align: center;
+      margin: 0;
+    }
+  }
+  
+  .sector-data {
+    margin-top: 2rem;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    h2 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+  }
+  
+  .download-all {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    
+    button {
+      min-width: 200px;
+    }
+  }
+  
+  .no-sector {
+    text-align: center;
+    padding: 3rem;
+    background-color: var(--grey-800);
+    border-radius: 8px;
+    margin-top: 2rem;
+    
+    h3 {
+      color: var(--primary-300);
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      color: var(--grey-300);
+    }
+  }
+}

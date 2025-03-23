@@ -16,10 +16,10 @@ const ActionRoutes = {
   Sessions: "/sessions",
   "Start New Term": "/start-new-term",
   Sectors: "/sectors",
+  Sector: "/my-sector",
   "Record Captain Absence": "/record-captains-absence",
   "Record Scouts Absence": "/record-scouts-absence",
   Scores: "/scores",
-  Sector: "/sector",
   "Delete Scout": "/delete-scout",
 };
 
@@ -128,6 +128,12 @@ export default function UserActions() {
         >
           حذف كشاف
         </NewFeatureButton>
+        <NewFeatureButton
+          linkTo={ActionRoutes["Sectors"]}
+          className="Button--medium Button--regular"
+        >
+          القطاعات
+        </NewFeatureButton>
         <Button
           linkTo={ActionRoutes["Start New Term"]}
           className="Button--medium span-2-cols Button--success"
@@ -197,13 +203,12 @@ export default function UserActions() {
         >
           المواضيع
         </Button>
-        <Button
-          disabled
+        <NewFeatureButton
           linkTo={ActionRoutes["Sectors"]}
-          className="Button--medium span-2-cols Button--regular"
+          className="Button--medium Button--regular"
         >
           القطاعات
-        </Button>
+        </NewFeatureButton>
         <Button
           linkTo={ActionRoutes["Record Captain Absence"]}
           className="Button--medium span-2-cols Button--success"
@@ -256,13 +261,12 @@ export default function UserActions() {
         >
           تقييم أفراد
         </Button>
-        <Button
-          disabled
+        <NewFeatureButton
           linkTo={ActionRoutes["Sector"]}
           className="Button--medium Button--regular"
         >
           القطاع
-        </Button>
+        </NewFeatureButton>
         <Button
           linkTo={ActionRoutes["Record Scouts Absence"]}
           className="Button--medium span-2-cols Button--success"

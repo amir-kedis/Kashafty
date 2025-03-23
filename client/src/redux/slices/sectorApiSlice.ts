@@ -2,7 +2,7 @@ import { apiSlice } from "./apiSlice";
 
 const SECTOR_URL = "/api/sector";
 
-export const captainsApi = apiSlice.injectEndpoints({
+export const sectorApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     GetSectors: builder.query({
       query: () => ({
@@ -45,4 +45,4 @@ export const {
   useInsertSectorMutation,
   useUpdateSectorUnitCaptainMutation,
   useUpdateSectorRegularCaptainMutation,
-} = captainsApi;
+} = sectorApiSlice;

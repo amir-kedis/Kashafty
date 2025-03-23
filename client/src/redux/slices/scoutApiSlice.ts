@@ -2,7 +2,7 @@ import { apiSlice } from "./apiSlice";
 
 const SCOUT_URL = "/api/scout";
 
-export const scoutsApi = apiSlice.injectEndpoints({
+export const scoutsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     GetAllScoutsCount: builder.query({
       query: () => ({
@@ -26,6 +26,7 @@ export const scoutsApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Scouts"],
     }),
+
     GetScoutsInSector: builder.query({
       query: (sector) => ({
         url: `${SCOUT_URL}/sector/all`,
@@ -33,6 +34,15 @@ export const scoutsApi = apiSlice.injectEndpoints({
         params: sector,
       }),
       providesTags: ["Scouts"],
+    }),
+
+    GetScoutsBySector: builder.query({
+      query: (sector) => ({
+        url: `${SCOUT_URL}/sector/attendance`,
+        method: "GET",
+        params: sector,
+      }),
+      providesTags: ["Scouts", "Attendance"],
     }),
 
     UpdateScout: builder.mutation({
@@ -59,6 +69,7 @@ export const {
   useGetScoutsInUnitQuery,
   useInsertScoutMutation,
   useGetScoutsInSectorQuery,
+  useGetScoutsBySectorQuery, 
   useUpdateScoutMutation,
   useDeleteScoutMutation,
-} = scoutsApi;
+} = scoutsApiSlice;

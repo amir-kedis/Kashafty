@@ -91,6 +91,11 @@ async function getCaptainsInUnit(req: GetCaptainsInUnitRequest, res: Response) {
 async function getCaptain(req: GetCaptainRequest, res: Response): Promise<any> {
   const { captainId } = req.params;
 
+  if (!captainId) {
+    throw new AppError(400, "Please enter a valid id", "الرجاء إدخال رقم صحيح");
+  }
+
+  console.log({captainId});
   const result = await prisma.captain.findUnique({
     where: {
       captainId: parseInt(captainId),
@@ -138,12 +143,73 @@ async function setCaptainType(req: Request, res: Response): Promise<any> {
   });
 }
 
+async function getCaptainsBySector(req: Request, res: Response) {
+  const { baseName, suffixName } = req.query;
+  
+  if (!baseName || !suffixName) {
+    throw new AppError(400, 'Sector information is required', 'معلومات القطاع مطلوبة');
+  }
+  
+  // Get current term
+  const currentTerm = await prisma.term.findFirst({
+    orderBy: { termNumber: 'desc' },
+  });
+  
+  if (!currentTerm) {
+    throw new AppError(404, 'No active term found', 'لا يوجد فترة نشطة');
+  }
+  
+  // Get captains with attendance data
+  const captains = await prisma.captain.findMany({
+    where: {
+      rSectorBaseName: baseName as string,
+      rSectorSuffixName: suffixName as string,
+    },
+    include: {
+      CaptainAttendance: {
+        where: {
+          Week: {
+            termNumber: currentTerm.termNumber,
+          },
+        },
+      },
+    },
+    orderBy: {
+      firstName: 'asc',
+    },
+  });
+  
+  // Calculate attendance statistics
+  const captainsWithStats = captains.map(captain => {
+    const attendedCount = captain.CaptainAttendance.filter(
+      a => a.attendanceStatus === 'attended'
+    ).length;
+    
+    const absentCount = captain.CaptainAttendance.filter(
+      a => a.attendanceStatus === 'absent'
+    ).length;
+    
+    return {
+      ...captain,
+      attendedCount,
+      absentCount,
+    };
+  });
+  
+  return res.status(200).json({
+    message: 'Captains retrieved successfully',
+    arabicMessage: 'تم استرجاع بيانات القادة بنجاح',
+    body: captainsWithStats,
+  });
+}
+
 const captainController = {
   getAllCaptains: asyncDec(getAllCaptains),
   getCaptainsInSector: asyncDec(getCaptainsInSector),
   getCaptainsInUnit: asyncDec(getCaptainsInUnit),
   getCaptain: asyncDec(getCaptain),
   setCaptainType: asyncDec(setCaptainType),
+  getCaptainsBySector: asyncDec(getCaptainsBySector),
 };
 
 export default captainController;
