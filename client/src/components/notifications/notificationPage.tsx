@@ -18,7 +18,6 @@ export default function NotificationPage() {
   const [isMarkingAll, setIsMarkingAll] = useState(false);
   const [isDeletingAll, setIsDeletingAll] = useState(false);
 
-  // Queries for unread and read notifications
   const { 
     data: notifications, 
     isLoading: isLoadingUnread,
@@ -36,30 +35,18 @@ export default function NotificationPage() {
     status: "READ",
   });
 
-  // Mutations for notification actions
   const [updateNotification] = useUpdateNotificationMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
   const [bulkUpdateNotifications] = useBulkUpdateNotificationsMutation();
   const [bulkDeleteNotifications] = useBulkDeleteNotificationsMutation();
 
-  // Handle marking a single notification as read with optimistic update
   const handleMarkAsRead = (notification) => {
-    // Optimistic update - modify the cache immediately
     updateNotification({
-      status: "READ",
       id: notification.id,
-    }, {
-      // Optimistic update configuration
-      optimisticUpdate: {
-        // Remove from unread list
-        unreadList: notifications?.body?.filter(n => n.id !== notification.id) || [],
-        // Add to read list
-        readList: [notification, ...(ReadNotifications?.body || [])]
-      }
+      status: "READ"
     });
   };
 
-  // Handle marking all notifications as read
   const handleMarkAllAsRead = async () => {
     if (!notifications?.body?.length) {
       toast.info("لا توجد إشعارات غير مقروءة");
@@ -68,21 +55,12 @@ export default function NotificationPage() {
 
     setIsMarkingAll(true);
     try {
-      // Get all unread notification IDs
-      const notificationIds = notifications.body.map(notification => notification.id);
-      
-      // Optimistic update - move all to read immediately in UI
-      const unreadNotifications = [...(notifications.body || [])];
-      
-      // Call API to update all notifications
       await bulkUpdateNotifications({
-        ids: notificationIds,
-        status: "READ"
+        captainId: user.captainId
       }).unwrap();
       
       toast.success("تم تعليم جميع الإشعارات كمقروءة");
       
-      // Refetch both lists to ensure consistency
       refetchUnread();
       refetchRead();
     } catch (error) {
@@ -93,7 +71,6 @@ export default function NotificationPage() {
     }
   };
 
-  // Handle deleting all read notifications
   const handleDeleteAllRead = async () => {
     if (!ReadNotifications?.body?.length) {
       toast.info("لا توجد إشعارات مقروءة للحذف");
@@ -102,17 +79,12 @@ export default function NotificationPage() {
 
     setIsDeletingAll(true);
     try {
-      // Get all read notification IDs
-      const notificationIds = ReadNotifications.body.map(notification => notification.id);
-      
-      // Call API to delete all read notifications
       await bulkDeleteNotifications({
-        ids: notificationIds
+        captainId: user.captainId
       }).unwrap();
       
       toast.success("تم حذف جميع الإشعارات المقروءة");
       
-      // Refetch read list
       refetchRead();
     } catch (error) {
       toast.error("حدث خطأ أثناء حذف الإشعارات المقروءة");
@@ -166,6 +138,7 @@ export default function NotificationPage() {
                     OnCloseClick={() => handleMarkAsRead(notification)}
                     showRightBox={true}
                     color={notification.type === "attendance" ? "red" : "mint-green"}
+                    date={notification.createdAt}
                   />
                 ))
               )}
@@ -191,6 +164,7 @@ export default function NotificationPage() {
                       OnCloseClick={() => {}}
                       showRightBox={true}
                       color={notification.type === "attendance" ? "red" : "mint-green"}
+                      date={notification.createdAt}
                     />
                   ))
                 )}

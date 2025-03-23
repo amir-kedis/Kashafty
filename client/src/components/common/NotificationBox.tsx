@@ -56,6 +56,7 @@ export default function NotificationBox() {
               }}
               showRightBox={true}
               color={getColor(notification.type)}
+              date={notification.createdAt}
             />
           );
         })}
