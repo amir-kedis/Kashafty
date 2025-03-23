@@ -66,6 +66,25 @@ export const notificationApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Notifications"],
     }),
+
+    bulkUpdateNotifications: builder.mutation({
+      query: (data) => ({
+        url: "/api/notification/bulk-update",
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Notifications"],
+    }),
+
+    bulkDeleteNotifications: builder.mutation({
+      query: (data) => ({
+        url: "/api/notification/bulk-delete",
+        method: "DELETE",
+        body: data,
+      }),
+      invalidatesTags: ["Notifications"],
+    }),
+
   }),
 });
 
@@ -74,4 +93,6 @@ export const {
   useGetNotificationsQuery,
   useUpdateNotificationMutation,
   useDeleteNotificationMutation,
+  useBulkDeleteNotificationsMutation,
+  useBulkUpdateNotificationsMutation,
 } = notificationApi;

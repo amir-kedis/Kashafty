@@ -41,6 +41,18 @@
   height: fit-content;
 }
 
+.right-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .date-display {
+    font-size: 0.75rem;
+    color: var(--grey-400);
+    font-weight: normal;
+  }
+}
+
 .right-box {
   --size: 20px;
   width: var(--size);

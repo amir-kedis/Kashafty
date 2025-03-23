@@ -4,6 +4,14 @@ import { NotificationStatus, NotificationType, Prisma } from "@prisma/client";
 import asyncDec from "../utils/asyncDec";
 import AppError from "../utils/AppError";
 
+// Define a custom Request type that includes the captain property
+interface AuthenticatedRequest extends Request {
+  captain?: {
+    captainId: number;
+    type: string;
+    [key: string]: any;
+  };
+}
 
 const notificationController = {
   /* ============================================================================
@@ -156,6 +164,67 @@ const notificationController = {
     });
 
     res.status(200).json({ message: "Notification deleted" });
+  }),
+
+  /* bulkUpdateNotifications
+   *
+   * @desc Update the status of multiple notifications at once
+   * @endpoint PATCH /api/notification/bulk-update
+   * @access Private
+   */
+  bulkUpdateNotifications: asyncDec(async (req: AuthenticatedRequest, res: Response) => {
+    // Get captain ID from authenticated user object
+    const captainId = req.captain?.captainId;
+    
+    if (!captainId) {
+      throw new AppError(401, "Authentication required", "يجب تسجيل الدخول");
+    }
+    
+    // Update all UNREAD notifications to READ for this captain
+    const result = await prisma.notification.updateMany({
+      where: {
+        captainId: captainId,
+        status: NotificationStatus.UNREAD
+      },
+      data: {
+        status: NotificationStatus.READ
+      }
+    });
+    
+    res.status(200).json({
+      message: "Notifications marked as read successfully",
+      arabicMessage: "تم تعليم جميع الإشعارات كمقروءة",
+      count: result.count
+    });
+  }),
+
+  /* bulkDeleteNotifications
+   *
+   * @desc Delete all READ notifications for a captain
+   * @endpoint DELETE /api/notification/bulk-delete
+   * @access Private
+   */
+  bulkDeleteNotifications: asyncDec(async (req: AuthenticatedRequest, res: Response) => {
+    // Get captain ID from authenticated user object
+    const captainId = req.captain?.captainId;
+    
+    if (!captainId) {
+      throw new AppError(401, "Authentication required", "يجب تسجيل الدخول");
+    }
+    
+    // Delete only READ notifications for this captain
+    const result = await prisma.notification.deleteMany({
+      where: {
+        captainId: captainId,
+        status: NotificationStatus.READ
+      }
+    });
+    
+    res.status(200).json({
+      message: "Read notifications deleted successfully",
+      arabicMessage: "تم حذف جميع الإشعارات المقروءة",
+      count: result.count
+    });
   }),
 };
 
