@@ -20,6 +20,15 @@ export const statsApi = apiSlice.injectEndpoints({
       providesTags: ["Graph", "Attendance", "Absence"],
     }),
 
+    DownloadSectorData: builder.mutation({
+      query: (data) => ({
+        url: `${STATS_URL}/sector-data`,
+        method: "POST",
+        body: data,
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
+
     GetSectorAbsenceRate: builder.query<
       {
         message: string;

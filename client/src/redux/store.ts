@@ -8,7 +8,16 @@ const store = configureStore({
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          'api/executeMutation/fulfilled',
+          'reportApiSlice/executeMutation/fulfilled',
+          'statsApi/executeMutation/fulfilled',
+          'reportApiSlice'
+        ],
+      }
+    }).concat(apiSlice.middleware),
   devTools: true,
 });
 

@@ -16,5 +16,9 @@ scoutRouter.patch("/:scoutId", scoutController.unexpelScout);
 scoutRouter.get("/", scoutController.getAllScouts);
 scoutRouter.get("/unit/:unitCaptainId", scoutController.getScoutsInUnit);
 scoutRouter.get("/sector/all", scoutController.getScoutsInSector);
+scoutRouter.get(
+  "/sector/attendance",
+  scoutController.getScoutsBySectorWithAttendance
+);
 
 export default scoutRouter;

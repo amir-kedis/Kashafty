@@ -304,6 +304,66 @@ async function deleteScoutHandler(req: DeleteScoutRequest, res: Response) {
   });
 }
 
+async function getScoutsBySectorWithAttendance(req: Request, res: Response) {
+  const { baseName, suffixName } = req.query;
+  
+  if (!baseName || !suffixName) {
+    throw new AppError(400, 'Sector information is required', 'معلومات القطاع مطلوبة');
+  }
+  
+  // Get current term
+  const currentTerm = await prisma.term.findFirst({
+    orderBy: { termNumber: 'desc' },
+  });
+  
+  if (!currentTerm) {
+    throw new AppError(404, 'No active term found', 'لا يوجد فترة نشطة');
+  }
+  
+  // Get scouts with attendance data
+  const scouts = await prisma.scout.findMany({
+    where: {
+      sectorBaseName: baseName as string,
+      sectorSuffixName: suffixName as string,
+    },
+    include: {
+      ScoutAttendance: {
+        where: {
+          Week: {
+            termNumber: currentTerm.termNumber,
+          },
+        },
+      },
+    },
+    orderBy: {
+      name: 'asc',
+    },
+  });
+  
+  // Calculate attendance statistics
+  const scoutsWithStats = scouts.map(scout => {
+    const attendedCount = scout.ScoutAttendance.filter(
+      a => a.attendanceStatus === 'attended'
+    ).length;
+    
+    const absentCount = scout.ScoutAttendance.filter(
+      a => a.attendanceStatus === 'absent'
+    ).length;
+    
+    return {
+      ...scout,
+      attendedCount,
+      absentCount,
+    };
+  });
+  
+  return res.status(200).json({
+    message: 'Scouts retrieved successfully',
+    arabicMessage: 'تم استرجاع بيانات الكشافة بنجاح',
+    body: scoutsWithStats,
+  });
+}
+
 // Controller with asyncDec decorator applied and error handling
 const scoutController = {
   getAllScouts: asyncDec(getAllScouts),
@@ -315,6 +375,7 @@ const scoutController = {
   deleteScout: asyncDec(deleteScoutHandler),
   unexpelScout: asyncDec(expelScout),
   expelScout: asyncDec(expelScout),
+  getScoutsBySectorWithAttendance: asyncDec(getScoutsBySectorWithAttendance),
 };
 
 export default scoutController;

@@ -13,6 +13,7 @@ import activitiesRouter from "./activities.route";
 import statRouter from "./stat/stat.route";
 import cronRouter from "./cron.route";
 import passport from "passport";
+import reportRouter from "./report.route";
 
 const apiRouter = Router();
 
@@ -61,8 +62,11 @@ apiRouter.use(
 apiRouter.use(
   "/captainAttendance",
   passport.authenticate("jwt", { session: false }),
-
   captainAttendanceRouter,
+);
+apiRouter.use("/report", 
+  passport.authenticate("jwt", { session: false }),
+  reportRouter
 );
 apiRouter.use("/activities", activitiesRouter);
 apiRouter.use("/cron", cronRouter);

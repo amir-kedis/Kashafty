@@ -2,7 +2,7 @@ import { apiSlice } from "./apiSlice";
 
 const CAPTAINS_URL = "/api/captain";
 
-export const captainsApi = apiSlice.injectEndpoints({
+export const captainsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     GetCaptains: builder.query({
       query: () => ({
@@ -10,6 +10,14 @@ export const captainsApi = apiSlice.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["Captains"],
+    }),
+    GetCaptainsBySector: builder.query({
+      query: (sector) => ({
+        url: `${CAPTAINS_URL}/sector`,
+        method: "GET",
+        params: sector,
+      }),
+      providesTags: ["Captains", "Absence"],
     }),
     GetCaptainsInUnit: builder.query({
       query: (unitCaptain) => ({
@@ -38,7 +46,8 @@ export const captainsApi = apiSlice.injectEndpoints({
 
 export const {
   useGetCaptainsQuery,
+  useGetCaptainsBySectorQuery, 
   useGetCaptainsInUnitQuery,
   useGetUnitCaptainsQuery,
   useUpdateCaptainTypeMutation,
-} = captainsApi;
+} = captainsApiSlice;

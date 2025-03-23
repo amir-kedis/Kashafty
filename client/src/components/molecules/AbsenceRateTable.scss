@@ -1,0 +1,133 @@
+.absence-rate-table-container {
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  
+  .search-container {
+    flex: 1;
+    
+    .search-input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: 1px solid var(--grey-600);
+      background: var(--grey-700);
+      color: var(--grey-100);
+      font-family: var(--font-primary);
+      direction: rtl;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--primary-500);
+      }
+    }
+  }
+  
+  .filter-container {
+    min-width: 150px;
+    
+    .filter-select {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      border: 1px solid var(--grey-600);
+      background: var(--grey-700);
+      color: var(--grey-100);
+      font-family: var(--font-primary);
+      direction: rtl;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--primary-500);
+      }
+      
+      option {
+        background-color: var(--grey-800);
+      }
+    }
+  }
+}
+
+.table-info {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+  color: var(--grey-400);
+  font-size: 0.9rem;
+}
+
+.absence-rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--grey-800);
+  border-radius: 8px;
+  overflow: hidden;
+  
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: right;
+  }
+  
+  th {
+    background-color: var(--grey-700);
+    color: var(--text-color);
+    font-weight: 600;
+    
+    &.sortable-header {
+      cursor: pointer;
+      user-select: none;
+      
+      &:hover {
+        background-color: var(--grey-650, #414b5c);
+      }
+    }
+  }
+  
+  tr:nth-child(even) {
+    background-color: var(--grey-750, #2d3748);
+  }
+  
+  tr:hover {
+    background-color: var(--grey-700);
+  }
+  
+  .sort-indicator {
+    display: inline-block;
+    margin-right: 0.25rem;
+  }
+  
+  .status-excellent {
+    color: var(--green-400);
+  }
+  
+  .status-good {
+    color: var(--teal-400);
+  }
+  
+  .status-warning {
+    color: var(--yellow-400);
+  }
+  
+  .status-danger {
+    color: var(--red-400);
+  }
+}
+
+.loading-indicator, .no-data, .no-results {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--grey-800);
+  border-radius: 8px;
+  color: var(--grey-400);
+}
+
+.no-results {
+  margin-top: 1rem;
+  padding: 1rem;
+}
