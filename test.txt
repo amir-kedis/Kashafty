@@ -1,0 +1,77 @@
+Folder PATH listing for volume System
+Volume serial number is 541A-8F64
+C:\USERS\Z0050CBE\DOCUMENTS\KASHAFTY
++---client
+¦   +---cypress
+¦   ¦   +---e2e
+¦   ¦   ¦   +---auth
+¦   ¦   +---fixtures
+¦   ¦   +---support
+¦   +---public
+¦   +---src
+¦       +---assets
+¦       ¦   +---images
+¦       ¦   +---styles
+¦       ¦       +---components
+¦       ¦       +---global
+¦       +---components
+¦       ¦   +---activitypage
+¦       ¦   +---addactivitypage
+¦       ¦   +---addscout
+¦       ¦   +---assign-captain-page
+¦       ¦   +---atoms
+¦       ¦   ¦   +---inputs
+¦       ¦   +---cancel-week
+¦       ¦   +---captain-profile
+¦       ¦   +---captains-attendance
+¦       ¦   +---common
+¦       ¦   +---dashboard
+¦       ¦   +---edit-password
+¦       ¦   +---insert-scout
+¦       ¦   +---insert-sector
+¦       ¦   +---insert-term
+¦       ¦   +---landingpage
+¦       ¦   +---layout
+¦       ¦   +---login
+¦       ¦   +---molecules
+¦       ¦   +---moneypage
+¦       ¦   +---notifications
+¦       ¦   +---organisms
+¦       ¦   +---scouts-attendance
+¦       ¦   +---send-notification
+¦       ¦   +---signup
+¦       ¦   +---stats-page
+¦       ¦   +---update-scout
+¦       ¦   +---update-term-page
+¦       +---hooks
+¦       +---pages
+¦       +---redux
+¦       ¦   +---slices
+¦       ¦       +---stat
+¦       +---types
++---READMEImages
++---resources
++---server
+    +---api
+    +---config
+    +---controllers
+    ¦   +---stat
+    +---database
+    ¦   +---scripts
+    +---middlewares
+    +---prisma
+    ¦   +---import-data
+    ¦   ¦   +---data
+    ¦   ¦   ¦   +---scouts
+    ¦   ¦   +---fixtures
+    ¦   +---migrations
+    ¦   ¦   +---20240724092056_make_email_optional
+    ¦   ¦   +---20240724092206_make_email_optional
+    ¦   +---scouts-csv
+    ¦   +---scouts-csv-archive
+    +---public
+    +---routes
+    ¦   +---stat
+    +---services
+    +---types
+    +---utils

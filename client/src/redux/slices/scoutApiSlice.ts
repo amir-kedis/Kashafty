@@ -36,6 +36,14 @@ export const scoutsApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Scouts"],
     }),
 
+    GetScoutById: builder.query({
+      query: (id) => ({
+        url: `${SCOUT_URL}/${id}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, id) => [{ type: "Scouts", id }],
+    }),
+
     GetScoutsBySector: builder.query({
       query: (sector) => ({
         url: `${SCOUT_URL}/sector/attendance`,
@@ -72,4 +80,5 @@ export const {
   useGetScoutsBySectorQuery, 
   useUpdateScoutMutation,
   useDeleteScoutMutation,
+  useGetScoutByIdQuery
 } = scoutsApiSlice;

@@ -73,6 +73,25 @@ export const attendanceApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Attendance", "AttendanceRate"],
     }),
+
+    GetScoutAttendanceHistory: builder.query({
+      query: (scoutId) => ({
+        url: `${ATTENDANCE_URL}/scoutAttendance/scout/${scoutId}/history`,
+        method: "GET",
+      }),
+      providesTags: (result, error, scoutId) => [
+        { type: "Attendance", id: scoutId },
+      ],
+    }),
+    GetScoutAttendanceStats: builder.query({
+      query: (scoutId) => ({
+        url: `${ATTENDANCE_URL}/scoutAttendance/scout/${scoutId}/stats`,
+        method: "GET",
+      }),
+      providesTags: (result, error, scoutId) => [
+        { type: "Attendance", id: scoutId },
+      ],
+    }),
   }),
 });
 
@@ -81,4 +100,6 @@ export const {
   useUpsertSectorAttendanceMutation,
   useGetUnitAttendanceQuery,
   useUpsertUnitAttendanceMutation,
+  useGetScoutAttendanceHistoryQuery,
+  useGetScoutAttendanceStatsQuery
 } = attendanceApi;

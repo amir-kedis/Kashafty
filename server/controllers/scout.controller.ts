@@ -121,21 +121,29 @@ async function getScoutsInUnit(req: GetScoutsInUnitRequest, res: Response) {
 // Get a specific scout by ID
 
 async function getScout(req: Request, res: Response) {
-  const { scoutId } = req.params;
-
-  const result = await prisma.scout.findUnique({
+  const { scoutId: id } = req.params;
+  
+  if (!id || isNaN(parseInt(id))) {
+    throw new AppError(400, 'Invalid scout ID', 'معرف الكشاف غير صالح');
+  }
+  
+  const scout = await prisma.scout.findUnique({
     where: {
-      scoutId: parseInt(scoutId),
+      scoutId: parseInt(id),
+    },
+    include: {
+      Sector: true,
     },
   });
-
-  if (!result) {
-    throw new AppError(404, "No scout found", "لم يتم العثور على الكشاف");
+  
+  if (!scout) {
+    throw new AppError(404, 'Scout not found', 'لم يتم العثور على الكشاف');
   }
-
-  res.status(200).json({
-    message: "Successful retrieval",
-    body: result,
+  
+  return res.status(200).json({
+    message: 'Scout retrieved successfully',
+    arabicMessage: 'تم استرجاع بيانات الكشاف بنجاح',
+    body: scout,
   });
 }
 

@@ -1,0 +1,234 @@
+.scout-page {
+  direction: rtl;
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .scout-info-card {
+    background-color: var(--grey-800);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    
+    .scout-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+      
+      .detail-group {
+        h3 {
+          color: var(--primary-100);
+          margin-bottom: 1.5rem;
+          font-size: 1.25rem;
+        }
+        
+        .detail-item {
+          display: flex;
+          margin-bottom: 0.75rem;
+          
+          .label {
+            color: var(--grey-400);
+            min-width: 120px;
+          }
+          
+          .value {
+            color: var(--grey-100);
+            font-weight: 500;
+          }
+        }
+      }
+    }
+    
+    .attendance-summary {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      
+      @media (max-width: 576px) {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .rate-circle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        .circle {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 0.5rem;
+          
+          &.excellent {
+            background-color: rgba(49, 196, 141, 0.2);
+            border: 3px solid var(--green-400);
+            
+            .rate-value {
+              color: var(--green-400);
+            }
+          }
+          
+          &.good {
+            background-color: rgba(22, 189, 202, 0.2);
+            border: 3px solid var(--teal-400);
+            
+            .rate-value {
+              color: var(--teal-400);
+            }
+          }
+          
+          &.warning {
+            background-color: rgba(250, 202, 21, 0.2);
+            border: 3px solid var(--yellow-400);
+            
+            .rate-value {
+              color: var(--yellow-400);
+            }
+          }
+          
+          &.danger {
+            background-color: rgba(240, 82, 82, 0.2);
+            border: 3px solid var(--red-400);
+            
+            .rate-value {
+              color: var(--red-400);
+            }
+          }
+          
+          .rate-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+          }
+        }
+        
+        .rate-label {
+          color: var(--grey-400);
+          font-size: 0.875rem;
+        }
+      }
+      
+      .attendance-counts {
+        display: flex;
+        gap: 1.5rem;
+        
+        .count-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          
+          .count {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+          }
+          
+          .label {
+            color: var(--grey-400);
+            font-size: 0.875rem;
+          }
+          
+          &.attended .count {
+            color: var(--green-400);
+          }
+          
+          &.absent .count {
+            color: var(--red-400);
+          }
+          
+          &.total .count {
+            color: var(--grey-100);
+          }
+        }
+      }
+    }
+  }
+  
+  .attendance-section,
+  .attendance-history-section,
+  .terms-stats-section {
+    background-color: var(--grey-800);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    
+    h3 {
+      color: var(--primary-100);
+      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
+    }
+    
+    .chart-container {
+      height: 300px;
+    }
+    
+    .loading,
+    .no-data {
+      padding: 2rem;
+      text-align: center;
+      color: var(--grey-400);
+      background-color: var(--grey-750);
+      border-radius: 4px;
+    }
+  }
+  
+  .attendance-table,
+  .terms-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: right;
+    }
+    
+    th {
+      background-color: var(--grey-700);
+      color: var(--text-color);
+      font-weight: 600;
+    }
+    
+    tr:nth-child(even) {
+      background-color: var(--grey-750);
+    }
+    
+    tr:hover {
+      background-color: var(--grey-700);
+    }
+    
+    .status-attended {
+      color: var(--green-400);
+    }
+    
+    .status-absent {
+      color: var(--red-400);
+    }
+    
+    .status-excellent {
+      color: var(--green-400);
+    }
+    
+    .status-good {
+      color: var(--teal-400);
+    }
+    
+    .status-warning {
+      color: var(--yellow-400);
+    }
+    
+    .status-danger {
+      color: var(--red-400);
+    }
+  }
+}

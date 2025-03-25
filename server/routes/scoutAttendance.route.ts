@@ -5,6 +5,9 @@ const scoutAttendanceRouter = Router();
 
 // Insert a new attendance for a scout
 scoutAttendanceRouter.post("/", scoutAttendanceController.upsertAttendance);
+scoutAttendanceRouter.get('/scout/:scoutId/history', scoutAttendanceController.getScoutAttendanceHistory);
+scoutAttendanceRouter.get('/scout/:scoutId/stats', scoutAttendanceController.getScoutAttendanceStats);
+
 scoutAttendanceRouter.get(
   "/sector/all",
   scoutAttendanceController.getSectorAttendance,
