@@ -44,31 +44,32 @@ const scoutInclusionModels = [
   "ScoutScore",
 ];
 const NotAllowedOperations = ["findUnique", "update"];
-const prisma = new PrismaClient().$extends({
-  query: {
-    $allModels: {
-      $allOperations({ model, operation, args, query }) {
-        if (
-          operation.match(/^(find|update|upsert)|aggregate|groupBy/) &&
-          !NotAllowedOperations.includes(operation) &&
-          model === "Scout"
-        ) {
-          if ("where" in args) {
-            args.where = { ...args.where, expelled: false };
-          } else if (!operation.match(/^create/)) {
-            args = { ...args, where: { expelled: false } };
-          }
-        }
+const prisma = new PrismaClient()
+// .$extends({
+//   query: {
+//     $allModels: {
+//       $allOperations({ model, operation, args, query }) {
+//         if (
+//           operation.match(/^(find|update|upsert)|aggregate|groupBy/) &&
+//           !NotAllowedOperations.includes(operation) &&
+//           model === "Scout"
+//         ) {
+//           if ("where" in args) {
+//             args.where = { ...args.where, expelled: false };
+//           } else if (!operation.match(/^create/)) {
+//             args = { ...args, where: { expelled: false } };
+//           }
+//         }
 
-        if (scoutInclusionModels.includes(model) && operation.match(/^find/)) {
-          args = handleScoutInclusion(args);
-        }
+//         if (scoutInclusionModels.includes(model) && operation.match(/^find/)) {
+//           args = handleScoutInclusion(args);
+//         }
 
-        return query(args);
-      },
-    },
-  },
-});
+//         return query(args);
+//       },
+//     },
+//   },
+// });
 
 export { prisma };
 export default prisma;

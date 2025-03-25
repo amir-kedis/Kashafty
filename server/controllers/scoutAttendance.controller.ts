@@ -78,7 +78,7 @@ async function upsertAttendance(req: UpsertAttendanceRequest, res: Response) {
 
 async function getSectorAttendance(
   req: GetSectorAttendanceRequest,
-  res: Response,
+  res: Response
 ) {
   let { baseName, suffixName, weekNumber, termNumber } = req.query;
 
@@ -99,7 +99,7 @@ async function getSectorAttendance(
     const filteredAttendance = scout.ScoutAttendance.filter(
       (attendance) =>
         attendance.weekNumber === parseInt(weekNumber) &&
-        attendance.termNumber === parseInt(termNumber),
+        attendance.termNumber === parseInt(termNumber)
     );
     return {
       ...scout,
@@ -124,7 +124,7 @@ async function getSectorAttendance(
 
 async function getScoutAttendance(
   req: GetScoutAttendanceRequest,
-  res: Response,
+  res: Response
 ) {
   let { scoutId, weekNumber, termNumber } = req.params;
 
@@ -143,11 +143,113 @@ async function getScoutAttendance(
   });
 }
 
+async function getScoutAttendanceHistory(req: Request, res: Response) {
+  const { scoutId } = req.params;
+
+  if (!scoutId || isNaN(parseInt(scoutId))) {
+    throw new AppError(400, "Invalid scout ID", "معرف الكشاف غير صالح");
+  }
+
+  // Get all attendance records for the scout
+  const attendanceHistory = await prisma.scoutAttendance.findMany({
+    where: {
+      scoutId: parseInt(scoutId),
+    },
+    include: {
+      Week: {
+        include: {
+          Term: true,
+        },
+      },
+      Scout: true,
+    },
+    orderBy: [
+      { Week: { termNumber: "desc" } },
+      { Week: { weekNumber: "desc" } },
+    ],
+  });
+
+  // Format the response
+  const formattedHistory = attendanceHistory.map((record) => ({
+    weekNumber: record.Week.weekNumber,
+    termNumber: record.Week.termNumber,
+    termName: record.Week.Term.termName,
+    date: record.Week.startDate,
+    attendanceStatus: record.attendanceStatus,
+  }));
+
+  return res.status(200).json({
+    message: "Scout attendance history retrieved successfully",
+    arabicMessage: "تم استرجاع سجل حضور الكشاف بنجاح",
+    body: formattedHistory,
+  });
+}
+
+async function getScoutAttendanceStats(req: Request, res: Response) {
+  const { scoutId } = req.params;
+
+
+  if (!scoutId || isNaN(parseInt(scoutId))) {
+    throw new AppError(400, "Invalid scout ID", "معرف الكشاف غير صالح");
+  }
+
+  // Get all terms
+  const terms = await prisma.term.findMany({
+    orderBy: {
+      termNumber: "desc",
+    },
+  });
+
+  // Get attendance stats for each term
+  const stats = await Promise.all(
+    terms.map(async (term) => {
+      const attendance = await prisma.scoutAttendance.findMany({
+        where: {
+          scoutId: parseInt(scoutId),
+          Week: {
+            termNumber: term.termNumber,
+          },
+        },
+        include: {
+          Week: true,
+          Scout: true,
+        },
+      });
+
+      const attended = attendance.filter(
+        (a) => a.attendanceStatus === "attended"
+      ).length;
+      const absent = attendance.filter(
+        (a) => a.attendanceStatus === "absent"
+      ).length;
+
+      return {
+        termNumber: term.termNumber,
+        termName: term.termName,
+        attended,
+        absent,
+      };
+    })
+  );
+
+  // Filter out terms with no attendance records
+  const filteredStats = stats.filter(
+    (term) => term.attended > 0 || term.absent > 0
+  );
+
+  return res.status(200).json({
+    message: "Scout attendance stats retrieved successfully",
+    arabicMessage: "تم استرجاع إحصائيات حضور الكشاف بنجاح",
+    body: filteredStats,
+  });
+}
+
 const scoutAttendanceController = {
   upsertAttendance: asyncDec(upsertAttendance),
   getSectorAttendance: asyncDec(getSectorAttendance),
   getScoutAttendance: asyncDec(getScoutAttendance),
+  getScoutAttendanceHistory: asyncDec(getScoutAttendanceHistory),
+  getScoutAttendanceStats: asyncDec(getScoutAttendanceStats),
 };
 
 export default scoutAttendanceController;
-

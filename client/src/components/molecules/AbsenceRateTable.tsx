@@ -1,83 +1,90 @@
-import { useState, useMemo } from 'react';
-import './AbsenceRateTable.scss';
+import { useState, useMemo } from "react";
+import "./AbsenceRateTable.scss";
+import { Link } from "react-router-dom";
 
 interface AbsenceRateTableProps {
   data: any[];
   isLoading: boolean;
-  type: 'captains' | 'scouts';
+  type: "captains" | "scouts";
 }
 
 const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
-  const [sortField, setSortField] = useState<string>('');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+
   // Handle sorting
   const handleSort = (field: string) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('desc');
+      setSortDirection("desc");
     }
   };
-  
+
   // Process data with filtering and sorting
   const processedData = useMemo(() => {
     // First apply search filter
-    let filteredData = data.filter(item => {
-      const searchName = type === 'captains' 
-        ? `${item.firstName} ${item.middleName || ''} ${item.lastName || ''}`.toLowerCase()
-        : item.name.toLowerCase();
-      
-      return searchTerm === '' || searchName.includes(searchTerm.toLowerCase());
+    let filteredData = data.filter((item) => {
+      const searchName =
+        type === "captains"
+          ? `${item.firstName} ${item.middleName || ""} ${
+              item.lastName || ""
+            }`.toLowerCase()
+          : item.name.toLowerCase();
+
+      return searchTerm === "" || searchName.includes(searchTerm.toLowerCase());
     });
-    
+
     // Then apply status filter
-    if (filterStatus !== 'all') {
-      filteredData = filteredData.filter(item => {
+    if (filterStatus !== "all") {
+      filteredData = filteredData.filter((item) => {
         const attendedCount = item.attendedCount || 0;
         const absentCount = item.absentCount || 0;
         const totalDays = attendedCount + absentCount;
-        const attendanceRate = totalDays > 0 ? (attendedCount / totalDays) * 100 : 0;
-        
+        const attendanceRate =
+          totalDays > 0 ? (attendedCount / totalDays) * 100 : 0;
+
         switch (filterStatus) {
-          case 'excellent':
+          case "excellent":
             return attendanceRate >= 75;
-          case 'good':
+          case "good":
             return attendanceRate >= 50 && attendanceRate < 75;
-          case 'warning':
+          case "warning":
             return attendanceRate >= 25 && attendanceRate < 50;
-          case 'danger':
+          case "danger":
             return attendanceRate < 25;
           default:
             return true;
         }
       });
     }
-    
+
     // Finally sort the data
     if (sortField) {
       filteredData = [...filteredData].sort((a, b) => {
         let aValue, bValue;
-        
-        if (sortField === 'name') {
-          aValue = type === 'captains' 
-            ? `${a.firstName} ${a.middleName || ''} ${a.lastName || ''}`
-            : a.name;
-          bValue = type === 'captains' 
-            ? `${b.firstName} ${b.middleName || ''} ${b.lastName || ''}`
-            : b.name;
-        } else if (sortField === 'role' && type === 'captains') {
+
+        if (sortField === "name") {
+          aValue =
+            type === "captains"
+              ? `${a.firstName} ${a.middleName || ""} ${a.lastName || ""}`
+              : a.name;
+          bValue =
+            type === "captains"
+              ? `${b.firstName} ${b.middleName || ""} ${b.lastName || ""}`
+              : b.name;
+        } else if (sortField === "role" && type === "captains") {
           aValue = a.type;
           bValue = b.type;
-        } else if (sortField === 'attendanceRate') {
+        } else if (sortField === "attendanceRate") {
           const aAttended = a.attendedCount || 0;
           const aAbsent = a.absentCount || 0;
           const aTotalDays = aAttended + aAbsent;
           aValue = aTotalDays > 0 ? (aAttended / aTotalDays) * 100 : 0;
-          
+
           const bAttended = b.attendedCount || 0;
           const bAbsent = b.absentCount || 0;
           const bTotalDays = bAttended + bAbsent;
@@ -86,34 +93,34 @@ const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
           aValue = a[sortField] || 0;
           bValue = b[sortField] || 0;
         }
-        
-        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+
+        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
         return 0;
       });
     }
-    
+
     return filteredData;
   }, [data, searchTerm, filterStatus, sortField, sortDirection, type]);
-  
+
   if (isLoading) {
     return <div className="loading-indicator">جاري تحميل البيانات...</div>;
   }
-  
+
   if (!data.length) {
     return <div className="no-data">لا توجد بيانات متاحة</div>;
   }
-  
+
   // Render sort indicator
   const renderSortIndicator = (field: string) => {
     if (sortField !== field) return null;
     return (
       <span className="sort-indicator">
-        {sortDirection === 'asc' ? ' ▲' : ' ▼'}
+        {sortDirection === "asc" ? " ▲" : " ▼"}
       </span>
     );
   };
-  
+
   return (
     <div className="absence-rate-table-container">
       <div className="table-controls">
@@ -126,7 +133,7 @@ const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
             className="search-input"
           />
         </div>
-        
+
         <div className="filter-container">
           <select
             value={filterStatus}
@@ -141,46 +148,43 @@ const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
           </select>
         </div>
       </div>
-      
+
       <div className="table-info">
         <span>عدد النتائج: {processedData.length}</span>
       </div>
-      
+
       <table className="absence-rate-table">
         <thead>
           <tr>
             <th>#</th>
-            <th 
-              className="sortable-header" 
-              onClick={() => handleSort('name')}
-            >
-              الاسم {renderSortIndicator('name')}
+            <th className="sortable-header" onClick={() => handleSort("name")}>
+              الاسم {renderSortIndicator("name")}
             </th>
-            {type === 'captains' && (
-              <th 
-                className="sortable-header" 
-                onClick={() => handleSort('role')}
+            {type === "captains" && (
+              <th
+                className="sortable-header"
+                onClick={() => handleSort("role")}
               >
-                الدور {renderSortIndicator('role')}
+                الدور {renderSortIndicator("role")}
               </th>
             )}
-            <th 
-              className="sortable-header" 
-              onClick={() => handleSort('attendedCount')}
+            <th
+              className="sortable-header"
+              onClick={() => handleSort("attendedCount")}
             >
-              عدد الحضور {renderSortIndicator('attendedCount')}
+              عدد الحضور {renderSortIndicator("attendedCount")}
             </th>
-            <th 
-              className="sortable-header" 
-              onClick={() => handleSort('absentCount')}
+            <th
+              className="sortable-header"
+              onClick={() => handleSort("absentCount")}
             >
-              عدد الغياب {renderSortIndicator('absentCount')}
+              عدد الغياب {renderSortIndicator("absentCount")}
             </th>
-            <th 
-              className="sortable-header" 
-              onClick={() => handleSort('attendanceRate')}
+            <th
+              className="sortable-header"
+              onClick={() => handleSort("attendanceRate")}
             >
-              نسبة الحضور {renderSortIndicator('attendanceRate')}
+              نسبة الحضور {renderSortIndicator("attendanceRate")}
             </th>
             <th>الحالة</th>
           </tr>
@@ -190,34 +194,43 @@ const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
             const attendedCount = item.attendedCount || 0;
             const absentCount = item.absentCount || 0;
             const totalDays = attendedCount + absentCount;
-            const attendanceRate = totalDays > 0 ? (attendedCount / totalDays) * 100 : 0;
-            
-            let statusClass = '';
-            let statusText = '';
-            
+            const attendanceRate =
+              totalDays > 0 ? (attendedCount / totalDays) * 100 : 0;
+
+            let statusClass = "";
+            let statusText = "";
+
             if (attendanceRate >= 75) {
-              statusClass = 'status-excellent';
-              statusText = 'ممتاز';
+              statusClass = "status-excellent";
+              statusText = "ممتاز";
             } else if (attendanceRate >= 50) {
-              statusClass = 'status-good';
-              statusText = 'جيد';
+              statusClass = "status-good";
+              statusText = "جيد";
             } else if (attendanceRate >= 25) {
-              statusClass = 'status-warning';
-              statusText = 'تحذير';
+              statusClass = "status-warning";
+              statusText = "تحذير";
             } else {
-              statusClass = 'status-danger';
-              statusText = 'خطر';
+              statusClass = "status-danger";
+              statusText = "خطر";
             }
-            
+
             return (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>
-                  {type === 'captains' 
-                    ? `${item.firstName} ${item.middleName || ''} ${item.lastName || ''}` 
-                    : item.name}
+                  {type === "captains" ? (
+                    `${item.firstName} ${item.middleName || ""} ${
+                      item.lastName || ""
+                    }`
+                  ) : (
+                    <Link to={`/scout/${item.scoutId}`} className="scout-link">
+                      {item.name}
+                    </Link>
+                  )}
                 </td>
-                {type === 'captains' && <td>{getCaptainRoleText(item.type)}</td>}
+                {type === "captains" && (
+                  <td>{getCaptainRoleText(item.type)}</td>
+                )}
                 <td>{attendedCount}</td>
                 <td>{absentCount}</td>
                 <td>{attendanceRate.toFixed(1)}%</td>
@@ -227,7 +240,7 @@ const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
           })}
         </tbody>
       </table>
-      
+
       {processedData.length === 0 && (
         <div className="no-results">لا توجد نتائج تطابق البحث</div>
       )}
@@ -238,12 +251,12 @@ const AbsenceRateTable = ({ data, isLoading, type }: AbsenceRateTableProps) => {
 // Helper function to get role text in Arabic
 function getCaptainRoleText(type: string): string {
   switch (type) {
-    case 'general':
-      return 'قائد عام';
-    case 'unit':
-      return 'قائد وحدة';
-    case 'regular':
-      return 'قائد';
+    case "general":
+      return "قائد عام";
+    case "unit":
+      return "قائد وحدة";
+    case "regular":
+      return "قائد";
     default:
       return type;
   }

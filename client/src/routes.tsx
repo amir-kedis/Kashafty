@@ -37,6 +37,7 @@ import CaptainAttendancePage from "./pages/CaptainAttendancePage";
 import DeleteScoutPage from "./pages/DeleteScoutPage";
 import SectorsPage from "./pages/SectorsPage";
 import SectorPage from "./pages/SectorPage";
+import ScoutPage from "./pages/ScoutPage";
 
 const Routes: React.FC = () => {
   return (
@@ -90,6 +91,8 @@ const Routes: React.FC = () => {
                 </RequireAuth>
               }
             />
+
+            <Route path="/scout/:id" element={<ScoutPage />} />
 
             <Route
               path="/start-new-term"

@@ -131,3 +131,12 @@
   margin-top: 1rem;
   padding: 1rem;
 }
+
+.scout-link {
+  color: var(--primary-100);
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
